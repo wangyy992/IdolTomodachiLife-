@@ -7,7 +7,6 @@ import { callGeminiAPI } from './geminiService';
 
 const LOCAL_STORAGE_KEY = 'star_reality_kpop_game_state';
 
-// KKT UI
 const KKTMessageUI = ({ data }: { data: any }) => (
   <div className="my-6 max-w-xs mx-auto font-sans">
     <div className="relative bg-[#1A1A1A] rounded-[2.5rem] p-3 shadow-2xl">
@@ -49,7 +48,6 @@ const KKTMessageUI = ({ data }: { data: any }) => (
   </div>
 );
 
-// Weverse UI
 const WeversePostUI = ({ data }: { data: any }) => (
   <div className="my-6 max-w-sm mx-auto font-sans">
     <div className="bg-[#0D0D0D] rounded-3xl overflow-hidden shadow-2xl border border-white/5">
@@ -78,7 +76,6 @@ const WeversePostUI = ({ data }: { data: any }) => (
   </div>
 );
 
-// Bubble UI
 const BubbleMessageUI = ({ data }: { data: any }) => (
   <div className="my-6 max-w-xs mx-auto font-sans">
     <div className="relative">
@@ -113,7 +110,6 @@ const BubbleMessageUI = ({ data }: { data: any }) => (
   </div>
 );
 
-// Theqoo UI
 const TheqooPostUI = ({ post }: { post: TheqooPost }) => (
   <div className="bg-[#F2F2F2] border border-gray-200 rounded-3xl overflow-hidden shadow-2xl my-6 max-w-lg mx-auto font-sans">
     <div className="bg-white px-4 py-3 flex items-center justify-between border-b border-gray-200">
@@ -153,7 +149,6 @@ const TheqooPostUI = ({ post }: { post: TheqooPost }) => (
   </div>
 );
 
-// Character Card UI
 const CharacterCardUI = ({ card }: any) => {
   if (!card || typeof card !== 'object') return null;
   const name = card.name || '未知角色';
@@ -187,7 +182,6 @@ const CharacterCardUI = ({ card }: any) => {
   );
 };
 
-// Music Show UI
 const MusicShowUI = ({ result }: { result: any }) => (
   <div className="bg-white border-2 border-[#FFB7C5] rounded-[2rem] overflow-hidden shadow-2xl my-6 max-w-lg mx-auto font-sans">
     <div className="bg-gradient-to-r from-[#FF8DA1] to-[#FFB7C5] p-5 text-white text-center relative">
@@ -217,7 +211,6 @@ const MusicShowUI = ({ result }: { result: any }) => (
   </div>
 );
 
-// Options UI
 const OptionsUI = ({ options, onSelect, disabled, isLatest }: { options: any[], onSelect: (a: string) => void, disabled: boolean, isLatest: boolean }) => {
   if (!isLatest || !options?.length) return null;
   return (
@@ -231,7 +224,6 @@ const OptionsUI = ({ options, onSelect, disabled, isLatest }: { options: any[], 
   );
 };
 
-// Character Creation Wizard
 const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete: (data: any) => void, onReset: () => void, members: Member[] }) => {
   const [step, setStep] = useState(1);
   const [data, setData] = useState({ playerName: '', playerAge: 19, identity: [] as string[], gameMode: GameMode.ROMANCE, storyPace: StoryPace.STANDARD, targets: [] as string[], selectedCPs: [] as string[] });
@@ -298,8 +290,10 @@ const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete:
 };
 
 // ============================================================
-// 解析函数
+// 核心解析函数
 // ============================================================
+
+// 提取块：先移除，再解析JSON（关键修复：不管JSON解析成不成功，都先从正文移除）
 function extractBlock(text: string, startTag: string, endTag: string): { content: string; remaining: string } | null {
   const start = text.indexOf(startTag);
   if (start === -1) return null;
@@ -311,7 +305,6 @@ function extractBlock(text: string, startTag: string, endTag: string): { content
 }
 
 function parseOptions(text: string): { text: string; action: string }[] {
-  // A/B/C 格式
   const abcdPattern = /^([A-C])[\.、。\s]+(.+)$/gm;
   const options: { text: string; action: string }[] = [];
   let match;
@@ -322,8 +315,6 @@ function parseOptions(text: string): { text: string; action: string }[] {
     }
   }
   if (options.length >= 2) return options;
-
-  // JSON 数组格式兜底
   const jsonMatch = text.match(/\[[\s\S]*?\]/);
   if (jsonMatch) {
     try {
@@ -396,33 +387,55 @@ export default function App() {
     let bubbleMessage: any = null;
     let cards: any[] = [];
 
-    // 提取各个块
+    // ============================================================
+    // 关键修复：每个块都先移除 remaining，再尝试解析 JSON
+    // 这样就算 JSON 解析失败，内容也不会显示在正文里
+    // ============================================================
+
     const snapshotBlock = extractBlock(remaining, 'SNAPSHOT_START', 'SNAPSHOT_END');
-    if (snapshotBlock) { try { snapshot = JSON.parse(snapshotBlock.content); remaining = snapshotBlock.remaining; } catch(e) {} }
+    if (snapshotBlock) {
+      remaining = snapshotBlock.remaining; // 先移除
+      try { snapshot = JSON.parse(snapshotBlock.content); } catch(e) {}
+    }
 
     const theqooBlock = extractBlock(remaining, 'THEQOO_START', 'THEQOO_END');
-    if (theqooBlock) { try { theqooPost = JSON.parse(theqooBlock.content); remaining = theqooBlock.remaining; } catch(e) {} }
+    if (theqooBlock) {
+      remaining = theqooBlock.remaining;
+      try { theqooPost = JSON.parse(theqooBlock.content); } catch(e) {}
+    }
 
     const musicBlock = extractBlock(remaining, 'MUSICSHOW_START', 'MUSICSHOW_END');
-    if (musicBlock) { try { musicResult = JSON.parse(musicBlock.content); remaining = musicBlock.remaining; } catch(e) {} }
+    if (musicBlock) {
+      remaining = musicBlock.remaining;
+      try { musicResult = JSON.parse(musicBlock.content); } catch(e) {}
+    }
 
     const kktBlock = extractBlock(remaining, 'KKTMSG_START', 'KKTMSG_END');
-    if (kktBlock) { try { kktMessage = JSON.parse(kktBlock.content); remaining = kktBlock.remaining; } catch(e) {} }
+    if (kktBlock) {
+      remaining = kktBlock.remaining; // 先移除，不管JSON能不能解析
+      try { kktMessage = JSON.parse(kktBlock.content); } catch(e) {}
+    }
 
     const weverseBlock = extractBlock(remaining, 'WEVERSE_START', 'WEVERSE_END');
-    if (weverseBlock) { try { weversePost = JSON.parse(weverseBlock.content); remaining = weverseBlock.remaining; } catch(e) {} }
+    if (weverseBlock) {
+      remaining = weverseBlock.remaining;
+      try { weversePost = JSON.parse(weverseBlock.content); } catch(e) {}
+    }
 
     const bubbleBlock = extractBlock(remaining, 'BUBBLE_START', 'BUBBLE_END');
-    if (bubbleBlock) { try { bubbleMessage = JSON.parse(bubbleBlock.content); remaining = bubbleBlock.remaining; } catch(e) {} }
+    if (bubbleBlock) {
+      remaining = bubbleBlock.remaining;
+      try { bubbleMessage = JSON.parse(bubbleBlock.content); } catch(e) {}
+    }
 
-    // 提取角色卡（可能有多张）
+    // 提取角色卡
     let cardBlock = extractBlock(remaining, 'CARD_START', 'CARD_END');
     while (cardBlock) {
-      try { 
+      remaining = cardBlock.remaining;
+      try {
         const card = JSON.parse(cardBlock.content);
         const existingNames = (stateAtCall.collectedCards || []).map((c: any) => c.name);
         if (card?.name && !existingNames.includes(card.name)) cards.push(card);
-        remaining = cardBlock.remaining;
       } catch(e) {}
       cardBlock = extractBlock(remaining, 'CARD_START', 'CARD_END');
     }
@@ -430,7 +443,7 @@ export default function App() {
     // 解析选项
     const options = parseOptions(remaining);
 
-    // 清理正文：去掉选项行和系统提示
+    // 清理正文
     const displayContent = remaining
       .replace(/^[A-D][\.、。\s]+.+$/gm, '')
       .replace(/\[必须包含.*?\]/g, '')
@@ -513,7 +526,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Sidebar */}
       <aside className="w-72 bg-white border-r border-[#F3E5E8] flex-shrink-0 flex-col hidden lg:flex">
         <div className="p-6 border-b border-[#F3E5E8] bg-gradient-to-br from-[#FFF5F6] to-white">
           <h1 className="text-base font-black text-[#FF8DA1] tracking-tighter flex items-center gap-2"><Gamepad2 className="w-5 h-5" /> 爱豆收集梦想生活</h1>
@@ -550,7 +562,6 @@ export default function App() {
         </div>
       </aside>
 
-      {/* Main Chat */}
       <main className="flex-1 flex flex-col h-full bg-white lg:rounded-l-[2rem] lg:shadow-2xl overflow-hidden">
         <header className="h-16 bg-white/90 backdrop-blur-md border-b border-[#F3E5E8] px-6 flex items-center justify-between z-10">
           <div className="flex items-center gap-3">
