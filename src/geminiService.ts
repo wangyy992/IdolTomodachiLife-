@@ -4,10 +4,16 @@ export async function callGeminiAPI(messages: ChatMessage[], gameState: GameStat
   const apiKey = import.meta.env.VITE_DEEPSEEK_API_KEY;
   if (!apiKey) throw new Error('API Key missing. Please check Settings > Secrets.');
 
+
   const targetMembersInfo = gameState.members
+  .filter(m => gameState.targets.includes(m.id))
+  .map(m => `${m.name}（${m.stageName}，${m.group}）`)
+  .join('、') || '无';
+
+  const targetMembersDetail = gameState.members
     .filter(m => gameState.targets.includes(m.id))
-    .map(m => `${m.name}（${m.stageName}，${m.group}）`)
-    .join('、') || '无';
+    .map(m => `- ${m.name}（${m.stageName}）：公开人设"${m.publicPersona}"，真实性格"${m.realPersonality}"，当前状态"${m.status}"`)
+    .join('\n');
 
   const playerIdentity = gameState.identity?.join(', ') || '普通人';
 
