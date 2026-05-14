@@ -11,7 +11,6 @@ export async function callGeminiAPI(
   }
 
   const targetList = gameState.targets.length > 0 ? gameState.targets.join(', ') : '无 (全景视角/旁观模式)';
-  const cpList = gameState.selectedCPs ? gameState.selectedCPs.join(', ') : '无';
   const playerIdentity = gameState.identity ? gameState.identity.join(', ') : '普通人';
 
   const setupGuidance = gameState.setupStep === SetupStep.CARDS 
@@ -54,17 +53,33 @@ ${currentStatusInfo}
  ### 成员与目标管理
  - 目标爱豆：${targetList} (这些是玩家 pick 的爱豆，状态栏只会显示这些人的数据)。
  - ID 规范：在 (state_snapshot) 的 members 数组中，请务必使用成员的原始 id (小写 stageName，如 'wonhee', 'karina')。不要使用中文名作为 id。
- - 旁观模式：如果目标爱豆为"无"，说明玩家处于旁观视角。此时请围绕圈内大事件展开剧情，但在 (state_snapshot) 的 members 中保持为空数组 []，除非剧情极其紧密地关联到某位成员且需要显示其数值。
+ - 旁观模式：如果目标爱豆为"无"，说明玩家处于旁观视角。此时请围绕圈内大事件展开剧情，但在 (state_snapshot) 的 members 中保持为空数组 []。
  - 严禁乱入：除非剧情需要引入新角色，否则不要在 (state_snapshot) 的 members 或 targets 中随意添加其他爱豆。
+
+ ### 角色卡生成规则 (🚨极其重要，必须严格遵守)
+ - 【禁止】在正式剧情阶段随意生成 (character_card)。
+ - 【仅允许】在以下两种情况生成角色卡：
+   1. 游戏刚开始（setupStep 为 CARDS）时，为玩家选择的目标爱豆生成档案。
+   2. 玩家明确说"查看档案"、"显示角色卡"等指令时。
+ - 【严禁】为非目标爱豆生成角色卡。目标爱豆是：${targetList}。任何其他爱豆的角色卡一律不得生成。
+ - 【严禁】在剧情推进过程中突然插入角色卡。
  
+ ### 状态面板触发规则 (🚨重要)
+ - 在 (state_snapshot) 中新增字段 "isWeekEnd": true/false。
+ - 【仅在以下情况】将 isWeekEnd 设为 true：
+   1. 一周剧情完整结束，weekCount 即将 +1 时。
+   2. 发生了重大事件（打歌节目一位、回归期结束等）。
+ - 其他普通对话轮次，isWeekEnd 必须为 false。
+ - 这个字段控制状态面板是否显示，请认真填写。
+
  ### 节奏与时间管理
- - 周次跨越：每一个大事件结束、或者一周的行程总结后，请将 (state_snapshot) 中的 weekCount +1。
+ - 周次跨越：每一个大事件结束、或者一周的行程总结后，请将 (state_snapshot) 中的 weekCount +1，并将 isWeekEnd 设为 true。
  - 场景变换：currentScene 应反映当前的地理位置。
  
  ### 回归与竞争周期管理 (🚨核心逻辑)
  - 启动逻辑：当剧情需要开启回归期时，将 isComebackSetting 设为 true。
- - 终结逻辑：一旦玩家在对话历史中确认了竞争对手（即你看到"确认同期竞争团体：..."的回复），你在【下一次】回复出的 (state_snapshot) 中【必须立即】将 isComebackSetting 设为 false。严禁连续多轮保持 isComebackSetting 为 true。
- - 对手维护：只要 isComebackSetting 为 false 且处于回归期，请在 groupHeats 中维护竞争对手的数据。回归期结束后，清空 groupHeats。
+ - 终结逻辑：一旦玩家确认了竞争对手，下一次回复中【必须立即】将 isComebackSetting 设为 false。
+ - 对手维护：处于回归期时，在 groupHeats 中维护竞争对手数据。回归期结束后清空。
  
  ### 核心设定
  - 背景：现代韩国娱乐圈（纪实向、生活化、充满质感）。
@@ -74,23 +89,22 @@ ${currentStatusInfo}
  1. 语言：必须使用中文。提到爱豆时请使用中文译名。
  2. 结构：必须遵循以下顺序：
     [剧情描写] -> 一段细腻、真实的文学描写，字数在200-500字左右。
-    (character_card) { JSON } (/character_card) -> 【🚨注意】仅在玩家要求查看档案、故事刚开始、或档案发生重大更新时生成。平时请省略。
+    (character_card) { JSON } (/character_card) -> 【🚨极其重要】仅在游戏初始化或玩家明确要求时生成，且只能是目标爱豆的档案。其他任何情况一律禁止生成。
     (options) ["选项A", "选项B", "选项C"] (/options) -> 必须提供3个剧情选项。
-    (state_snapshot) { JSON } (/state_snapshot) -> 必须包含状态快照，用于同步后端。
+    (state_snapshot) { JSON } (/state_snapshot) -> 必须包含状态快照。
  
  3. 禁忌：
     - 禁止在正文中输出 JSON 裸数据。
     - 禁止在回复中只有 JSON，没有文学描写。
-    - 必须严格遵守标签：(options)...(/options) 和 (state_snapshot)...(/state_snapshot)。
-    - (character_card) 只是一个辅助展示 UI，不要在里面写剧情。
+    - 必须严格遵守标签格式。
+    - 禁止为非目标爱豆生成角色卡。
  
  ### 角色卡 JSON 格式 (character_card)
- 当需要生成爱豆档案时，请使用以下格式：
  {
    "name": "中文名",
    "stageName": "舞台名",
    "group": "所属团体",
-   "status": "当前状态 (如：高强度行程中)",
+   "status": "当前状态",
    "publicPersona": "公开人设描述",
    "realPersonality": "私下性格描述",
    "weaknesses": ["雷区1", "雷区2"],
@@ -112,15 +126,16 @@ ${currentStatusInfo}
    "playerMoney": 数值,
    "currentScene": "当前地点",
    "weekCount": 数字,
-   "hiddenSummary": "用2-3句话总结到目前为止最重要的剧情进展和人物关系，必须包含玩家与爱豆之间发生的关键事件",
-   "isComebackSetting": true/false,
+   "isWeekEnd": true或false （🚨重要：仅在周结束或重大事件时为true，普通对话为false）,
+   "hiddenSummary": "用2-3句话总结最重要的剧情进展和人物关系",
+   "isComebackSetting": true或false,
    "groupHeats": [{ "name": "团体名", "heat": 0-100, "isPlayerTarget": true/false }], 
-   "playerImpact": { "albumImpact": 增加的分数, "voteImpact": 增加的分数 },
-   "hasContributedThisWeek": true/false
+   "playerImpact": { "albumImpact": 0, "voteImpact": 0 },
+   "hasContributedThisWeek": true或false
  }
  
  ### 打歌节目 (music_show) JSON 格式
- 当某周发生打歌节目（特别是周日的人气歌谣或周五的音乐银行）进行一位决战时，请使用以下格式：
+ 当某周发生打歌节目进行一位决战时：
  (music_show)
  {
    "winner": "团体名",
@@ -138,11 +153,11 @@ ${currentStatusInfo}
  }
  (/music_show)
  
- ### 竞争规则：
- - 比较红的团（如 aespa, IVE）基础分数（音源/销量）通常较高。
- - 如果玩家执行了"批量购买专辑"或"事前投票"，请务必在 scores 中大幅提升玩家所属偶像的 physical 或 preVote 分数。
- - 一位通常属于总分最高者。如果分差极小，可以使用"微弱优势险胜"等字眼。
- - 只有触发回归期间且设定了竞争对手后，才会在剧情中频繁出现一位竞争。
+ ### 竞争规则
+ - 比较红的团（如 aespa, IVE）基础分数通常较高。
+ - 如果玩家购买了专辑或投票，请大幅提升玩家爱豆的对应分数。
+ - 一位通常属于总分最高者。
+ - 只有触发回归期间且设定了竞争对手后，才会频繁出现一位竞争。
  `;
 
   try {
@@ -193,32 +208,22 @@ ${currentStatusInfo}
     if (!response.ok) {
       const errText = await response.text();
       console.error("[DeepSeek] HTTP error:", response.status, errText);
-      if (response.status === 401) {
-        throw new Error('API Key 无效或权限不足。请检查 VITE_DEEPSEEK_API_KEY 是否正确。');
-      }
-      if (response.status === 429) {
-        throw new Error('请求过于频繁，请稍后再试。');
-      }
-      if (response.status === 402) {
-        throw new Error('DeepSeek 账户余额不足，请充值后继续。');
-      }
+      if (response.status === 401) throw new Error('API Key 无效或权限不足。请检查 VITE_DEEPSEEK_API_KEY 是否正确。');
+      if (response.status === 429) throw new Error('请求过于频繁，请稍后再试。');
+      if (response.status === 402) throw new Error('DeepSeek 账户余额不足，请充值后继续。');
       throw new Error(`DeepSeek API 错误 (${response.status})：${errText}`);
     }
 
     const data = await response.json();
     const text = data?.choices?.[0]?.message?.content;
 
-    if (!text || text.trim() === '') {
-      throw new Error('AI 返回内容为空。');
-    }
+    if (!text || text.trim() === '') throw new Error('AI 返回内容为空。');
 
     console.log("[DeepSeek] Response received successfully");
     return text;
 
   } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') {
-      throw new Error('通讯超时 (60s)。请检查网络后重试。');
-    }
+    if (error instanceof Error && error.name === 'AbortError') throw new Error('通讯超时 (60s)。请检查网络后重试。');
     console.error("[DeepSeek] Service Exception:", error);
     throw error;
   }
