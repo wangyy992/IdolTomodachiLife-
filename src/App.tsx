@@ -485,19 +485,28 @@ export default function App() {
       .replace(/\n{3,}/g, '\n\n')
       .trim();
 
-    setGameState(prev => {
+      setGameState(prev => {
       let next = { ...prev };
-      const isWeekEnd = snapshot?.isWeekEnd === true;
+      
       if (snapshot) {
+        // 关键逻辑：获取 AI 传回的新周数
+        // 优先使用 weekCount，如果没有则看 week，最后才保持原样
+        const incomingWeek = snapshot.weekCount ?? snapshot.week ?? next.turnCount;
+
         next = { ...next,
           currentScene: snapshot.currentScene ?? next.currentScene,
-          turnCount: snapshot.weekCount ?? next.turnCount,
+          // 这里的 turnCount 对应你右上角显示的 Week 数字
+          turnCount: incomingWeek, 
           hiddenSummary: snapshot.hiddenSummary ?? next.hiddenSummary,
           isComebackSetting: snapshot.isComebackSetting ?? false,
           groupHeats: snapshot.groupHeats ?? next.groupHeats,
           currentMusicShow: musicResult || next.currentMusicShow,
-          members: next.members.map(m => { const u = snapshot.members?.find((sm: any) => sm.id === m.id); return u ? { ...m, ...u } : m; })
+          members: next.members.map(m => { 
+            const u = snapshot.members?.find((sm: any) => sm.id === m.id); 
+            return u ? { ...m, ...u } : m; 
+          })
         };
+    
       }
       if (musicResult) next.musicShowHistory = [...(next.musicShowHistory || []), musicResult];
       if (cards.length > 0) next.collectedCards = [...(next.collectedCards || []), ...cards];
