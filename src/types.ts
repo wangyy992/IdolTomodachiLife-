@@ -46,11 +46,15 @@ export interface ChatMessage {
   content: string;
   timestamp: number;
   theqooPost?: TheqooPost;
-  statusSnapshot?: string; // For the required attribute status bar
-  cardData?: any; // For character/CP cards
+  statusSnapshot?: string;
+  cardData?: any;
   options?: { text: string; action: string }[];
   currentMusicShow?: MusicShowResult;
   isComebackSetup?: boolean;
+  isWeekEnd?: boolean;
+  kktMessage?: any;
+  weversePost?: any;
+  bubbleMessage?: any;
 }
 
 export interface Member {
