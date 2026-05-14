@@ -622,8 +622,6 @@ export default function App() {
     const bubbleStr = extractTag('bubble_message');
     if (bubbleStr) { try { bubbleMessage = JSON.parse(bubbleStr); } catch(e) {} }
 
-    console.log("[Debug] raw options string:", optionsStr);
-    console.log("[Debug] full AI response:", response.substring(0, 500));
     
     const optionsStr = extractTag('options');
     if (optionsStr) { try { const parsed = JSON.parse(optionsStr); if (Array.isArray(parsed)) options = parsed.map(o => typeof o === 'string' ? { text: o, action: o } : o); } catch(e) {} }
