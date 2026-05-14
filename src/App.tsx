@@ -561,9 +561,9 @@ export default function App() {
       ];
       for (const p of patterns) { const m = response.match(p); if (m) { displayContent = displayContent.replace(m[0], ''); return m[1]; } }
       if (['state_snapshot','theqoo_post','character_card','music_show','kkt_message','weverse_post','bubble_message'].includes(tagName)) {
-        const tagIdx = response.toLowerCase().indexOf(tagName.toLowerCase());
+        const tagIdx = response.toLowerCase().indexOf(.toLowerCase());
         if (tagIdx !== -1) {
-          const firstBrace = response.indexOf('{', tagIdx + tagName.length);
+          const firstBrace = response.indexOf('{', tagIdx + .length);
           if (firstBrace !== -1 && firstBrace - tagIdx < 150) {
             let depth = 0, end = -1;
             for (let i = firstBrace; i < response.length; i++) {
@@ -574,9 +574,28 @@ export default function App() {
           }
         }
       }
-      if (tagName === 'options') { const m = response.match(/\[[\s\S]*?\]/); if (m && response.toLowerCase().includes('options')) { displayContent = displayContent.replace(m[0], ''); return m[0]; } }
+      if (tagName === 'options') {
+        // 先尝试 JSON 数组
+        const m = response.match(/\[[\s\S]*?\]/);
+        if (m && response.toLowerCase().includes('options')) { 
+          displayContent = displayContent.replace(m[0], ''); 
+          return m[0]; 
+        }
+        // 兜底：解析编号列表 "1. xxx 2. xxx 3. xxx"
+        const listMatch = response.match(/\(options\)([\s\S]*?)\(\/options\)/i);
+        if (listMatch) {
+          const lines = listMatch[1].split('\n')
+            .map(l => l.replace(/^\s*\d+[\.\、]\s*/, '').trim())
+            .filter(l => l.length > 0);
+          if (lines.length > 0) {
+            displayContent = displayContent.replace(listMatch[0], '');
+            return JSON.stringify(lines);
+          }
+        }
+      }
       return null;
     };
+    
  
     const snapshotStr = extractTag('state_snapshot');
     if (snapshotStr) { try { snapshot = JSON.parse(snapshotStr); } catch(e) {} }
