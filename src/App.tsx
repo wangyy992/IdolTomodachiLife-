@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Send, RefreshCw, Info, Users, Eye, MapPin, Gamepad2, Heart, Shield, Zap, Sparkles, MessageCircle, CheckCheck, X, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Markdown from 'react-markdown';
-import { GameState, INITIAL_MEMBERS, ChatMessage, MessageRole, Member, TheqooPost, SetupStep, GameMode, StoryPace } from './types';
+import { GameState, INITIAL_MEMBERS, ChatMessage, MessageRole, Member, TheqooPost, SetupStep, GameMode
+       } from './types';
 import { callGeminiAPI } from './geminiService';
 
 const LOCAL_STORAGE_KEY = 'star_reality_kpop_game_state';
@@ -298,9 +299,8 @@ const MobileDrawer = ({ gameState, onClose }: { gameState: GameState, onClose: (
 
 const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete: (data: any) => void, onReset: () => void, members: Member[] }) => {
   const [step, setStep] = useState(1);
-  const [data, setData] = useState({ playerName: '', playerAge: 19, identity: [] as string[], gameMode: GameMode.ROMANCE, storyPace: StoryPace.STANDARD, targets: [] as string[], selectedCPs: [] as string[] });
+  const [data, setData] = useState({ playerName: '', playerAge: 19, identity: [] as string[], gameMode: GameMode.ROMANCE, targets: [] as string[], selectedCPs: [] as string[] });
   const ids = ["韩国留学生","便利店/咖啡厅打工人","娱乐公司实习生","音乐节目工作人员","妆造师/发型助理","翻译/海外商务助理","娱乐记者/博主","普通粉丝","资深粉丝","公寓同栋住户"];
-  const paces = [{ id: StoryPace.SLOW, name: '慢热现实向' },{ id: StoryPace.STANDARD, name: '标准韩剧向' },{ id: StoryPace.HIGH_PRESSURE, name: '高压舆论向' },{ id: StoryPace.HEALING, name: '日常治愈向' }];
   const modes = [{ id: GameMode.ROMANCE, name: '攻略模式', desc: '与爱豆展开情感拉扯' },{ id: GameMode.MIXED, name: '混合模式', desc: '攻略 + 促成团内 CP' },{ id: GameMode.OBSERVER, name: '纯旁观模式', desc: '路人/工作人员视角' }];
   const availableCPs = ["Yunah x Minju","Wonhee x Iroha","Moka x Minju","Karina x Winter","Chaewon x Sakura","Kazuha x Yunjin","Wonyoung x Yujin","Yeji x Ryujin"];
   return (
@@ -330,9 +330,8 @@ const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete:
             )}
             {step === 3 && (
               <motion.div key="s3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
-                <label className="text-xs font-black text-[#FFB7C5] uppercase">选择模式与节奏</label>
+                <label className="text-xs font-black text-[#FFB7C5] uppercase">选择模式</label>
                 <div className="space-y-3">{modes.map(m => <button key={m.id} onClick={() => { const nd: any = { ...data, gameMode: m.id }; if (m.id === GameMode.OBSERVER) nd.targets = []; setData(nd); }} className={`w-full p-4 rounded-2xl border text-left transition-all ${data.gameMode === m.id ? 'bg-[#FFF5F6] border-[#FFB7C5] text-[#FF8DA1]' : 'bg-white border-gray-100'}`}><div className="font-bold text-sm">{m.name}</div><div className="text-[10px] opacity-60 mt-1">{m.desc}</div></button>)}</div>
-                <div className="grid grid-cols-2 gap-2">{paces.map(p => <button key={p.id} onClick={() => setData({...data, storyPace: p.id})} className={`p-3 rounded-xl border text-[10px] transition-all ${data.storyPace === p.id ? 'bg-[#FFF5F6] border-[#FFB7C5] text-[#FF8DA1] font-bold' : 'bg-white border-gray-100 text-gray-400'}`}>{p.name}</button>)}</div>
                 <button onClick={() => setStep(4)} className="w-full bg-[#FF8DA1] text-white py-4 rounded-2xl font-bold shadow-xl">下一步</button>
               </motion.div>
             )}
@@ -421,7 +420,7 @@ export default function App() {
 
   const handleCreationComplete = (data: any) => {
     const targetNames = INITIAL_MEMBERS.filter(m => data.targets.includes(m.id)).map(m => m.name);
-    const summary = `我的名字是 ${data.playerName}，身份是 ${data.identity.join(', ')}。我想关注 ${targetNames.join(', ')}。游戏模式：${data.gameMode}，节奏：${data.storyPace}。故事开始。`;
+    const summary = `我的名字是 ${data.playerName}，身份是 ${data.identity.join(', ')}。我想关注 ${targetNames.join(', ')}。游戏模式：${data.gameMode}。故事开始。`;
     const newState: GameState = { ...gameState, ...data, setupStep: SetupStep.CARDS, history: [] };
     setGameState(newState);
     handleAIStep(summary, newState);
