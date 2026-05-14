@@ -11,12 +11,18 @@ export enum SetupStep {
   STARTED = 'started'   // 第三步：正式开始
 }
 
+
 export enum GameMode {
   ROMANCE = 'romance', // 攻略模式
   OBSERVER = 'observer', // CP 旁观模式
   MIXED = 'mixed'       // 混合模式
 }
-
+export enum StoryPace {
+  SLOW = 'slow',     // 慢热现实向
+  STANDARD = 'standard', // 标准韩剧向
+  HIGH_PRESSURE = 'high_pressure', // 高压舆论向
+  HEALING = 'healing'   // 日常治愈向
+}
 
 export interface TheqooComment {
   id: string;
