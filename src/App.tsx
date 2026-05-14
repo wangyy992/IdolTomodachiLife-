@@ -343,7 +343,8 @@ const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete:
       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white border-2 border-[#FFB7C5] rounded-[2.5rem] shadow-2xl w-full max-w-xl overflow-hidden flex flex-col">
         <div className="bg-[#FFB7C5] p-8 text-white text-center relative">
           <button onClick={onReset} className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/40 rounded-full"><RefreshCw className="w-4 h-4" /></button>
-          <h2 className="text-2xl font-bold tracking-widest mb-1">追星现实 · 角色创建</h2>
+          <h2 className="text-2xl font-bold tracking-widest mb-1">爱豆收集梦想生活 · 角色创建
+          </h2>
           <p className="text-xs opacity-80">Step {step} of 4</p>
         </div>
         <div className="p-10 flex-1 overflow-y-auto max-h-[60vh] custom-scrollbar">
@@ -657,7 +658,7 @@ export default function App() {
  
       <aside className="w-80 bg-white border-r border-[#F3E5E8] flex-shrink-0 flex-col hidden lg:flex">
         <div className="p-8 border-b border-[#F3E5E8] bg-gradient-to-br from-[#FFF5F6] to-white">
-          <h1 className="text-xl font-black text-[#FF8DA1] tracking-tighter flex items-center gap-2"><Gamepad2 className="w-7 h-7" /> STAR REALITY</h1>
+          <h1 className="text-xl font-black text-[#FF8DA1] tracking-tighter flex items-center gap-2"> <Gamepad2 className="w-7 h-7" /> Idol Tomodachi Life</h1>
           <div className="flex items-center gap-2 mt-2">
             <span className="text-[9px] bg-[#FF8DA1] text-white px-2 py-0.5 rounded-full font-black uppercase">{gameState.gameMode === GameMode.ROMANCE ? '攻略' : gameState.gameMode === GameMode.OBSERVER ? '旁观' : '混合'}</span>
             <span className="text-[10px] text-gray-400 font-bold uppercase">K-POP Text Game</span>
