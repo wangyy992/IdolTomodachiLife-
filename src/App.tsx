@@ -481,7 +481,6 @@ const processAIResponse = (response: string, stateAtCall: GameState) => {
 
     // 清理正文
     const displayContent = remaining
-      .replace(/^[A-D][\.、。\s]+.+$/gm, '')
       .replace(/\[必须包含.*?\]/g, '')
       .replace(/^选项[：:]\s*$/gm, '')
       .replace(/^状态快照[：:]\s*$/gm, '')
