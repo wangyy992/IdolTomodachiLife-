@@ -246,7 +246,7 @@ SNAPSHOT_END
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
         body: JSON.stringify({
-          model: 'deepseek-v4-pro',
+          model: 'deepseek-v4-flash',
           messages: [{ role: 'system', content: systemPrompt }, ...chatMessages],
           temperature: 0.7,
           top_p: 0.95,
