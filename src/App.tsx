@@ -531,10 +531,23 @@ export default function App() {
     handleAIStep(summary, newState);
   };
  
-  const handleAIStep = async (userContent: string, stateToUse: GameState) => {
+const handleAIStep = async (userContent: string, stateToUse: GameState) => {
     try {
+      const cleanHistory = stateToUse.history.slice(-6).map(msg => ({
+        ...msg,
+        content: msg.content
+          .replace(/\(state_snapshot\)[\s\S]*?\(\/state_snapshot\)/gi, '')
+          .replace(/\(options\)[\s\S]*?\(\/options\)/gi, '')
+          .replace(/\(theqoo_post\)[\s\S]*?\(\/theqoo_post\)/gi, '')
+          .replace(/\(kkt_message\)[\s\S]*?\(\/kkt_message\)/gi, '')
+          .replace(/\(weverse_post\)[\s\S]*?\(\/weverse_post\)/gi, '')
+          .replace(/\(bubble_message\)[\s\S]*?\(\/bubble_message\)/gi, '')
+          .replace(/\(music_show\)[\s\S]*?\(\/music_show\)/gi, '')
+          .replace(/\(character_card\)[\s\S]*?\(\/character_card\)/gi, '')
+          .trim()
+      }));
       const response = await Promise.race([
-        callGeminiAPI(stateToUse.history.slice(-10), stateToUse),
+        callGeminiAPI(cleanHistory, stateToUse),
         new Promise((_, reject) => setTimeout(() => reject(new Error("通讯超时 (60s)，请重试。")), 60000))
       ]) as string;
       processAIResponse(response, stateToUse);
@@ -696,7 +709,7 @@ export default function App() {
     if (isLoading) return;
     setInput(''); setIsLoading(true);
     let nextState: GameState = { ...gameState, ...(stateUpdate || {}) };
-    if (textToSend && textToSend.trim()) nextState.history = [...nextState.history, { role: MessageRole.USER, content: textToSend, timestamp: Date.now() }];
+    if (textToSend && textToSend.trim()) nextState.history = [...nextState.history, { role: MessageRole.USER, content: textToSend + '\n\n[系统提示：请在回复末尾用 (options)["选项A","选项B","选项C"](/options) 格式给出3个具体行动选项]', timestamp: Date.now() }];
     setGameState(nextState);
     await handleAIStep(textToSend, nextState);
   };
