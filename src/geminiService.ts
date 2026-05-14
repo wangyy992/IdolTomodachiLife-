@@ -117,8 +117,9 @@ ${setupGuidance}
 - 禁止标签写错，如 (end_state_snapshot)、(/end_options) 等变体
 - 禁止正文出现裸JSON
 - 禁止金钱心情不变
-- 禁止无翻译韩语`
+- 禁止无翻译韩语
 - 正文控制在300字以内，必须留足空间给选项和状态快照
+`;
 
   try {
     const chatMessages: { role: 'user' | 'assistant'; content: string }[] = messages.slice(-10).map(m => ({
