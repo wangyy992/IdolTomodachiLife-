@@ -635,7 +635,9 @@ export default function App() {
     const cardPatterns = [/<character_card>([\s\S]*?)<\/character_card>/gi, /\(character_card\)([\s\S]*?)\(\/character_card\)/gi];
     for (const pattern of cardPatterns) { let match; while ((match = pattern.exec(response)) !== null) { try { rawCards.push(JSON.parse(match[1])); displayContent = displayContent.replace(match[0], ''); } catch(e) {} } }
     if (rawCards.length === 0) { const cardStr = extractTag('character_card'); if (cardStr) { try { rawCards.push(JSON.parse(cardStr)); } catch(e) {} } }
-    cards = rawCards.filter(card => isInitialCardStep ? true : isCardBelongsToTargets(card, stateAtCall.targets));
+    // 只过滤掉已经收录过的，不限制只能是目标爱豆
+    const existingCollected = (stateAtCall.collectedCards || []).map((c: any) => c.name);
+    cards = rawCards.filter(card => card?.name && !existingCollected.includes(card.name));
  
     if (options.length === 0 && currentStep !== SetupStep.CREATION) {
   if (currentStep === SetupStep.CARDS) {
