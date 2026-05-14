@@ -140,7 +140,7 @@ ${setupGuidance}
           messages: [{ role: 'system', content: systemPrompt }, ...chatMessages],
           temperature: 0.75,
           top_p: 0.95,
-          max_tokens: 2048,
+          max_tokens: 4096,
         }),
         signal: controller.signal,
       });
