@@ -559,6 +559,10 @@ export default function App() {
         new RegExp(`<${tagName}>([\\s\\S]*?)<\\/${tagName}>`, 'i'),
         new RegExp(`\\(${tagName}\\)([\\s\\S]*?)\\(\\/\\s*${tagName}\\)`, 'i'),
         new RegExp(`\\[${tagName}\\]([\\s\\S]*?)\\[\\/\\s*${tagName}\\]`, 'i'),
+        // 混用：开头方括号，结尾圆括号
+        new RegExp(`\\[${tagName}\\]([\\s\\S]*?)\\(\\/\\s*${tagName}\\)`, 'i'),
+        // 混用：开头圆括号，结尾方括号
+        new RegExp(`\\(${tagName}\\)([\\s\\S]*?)\\[\\/\\s*${tagName}\\]`, 'i'),
       ];
       for (const p of patterns) {
         const m = displayContent.match(p);
