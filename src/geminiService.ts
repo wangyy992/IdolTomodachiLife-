@@ -92,10 +92,16 @@ ${setupGuidance}
 {"title":"帖子标题","category":"分类","viewsCount":数字,"likesCount":数字,"commentsCount":数字,"comments":[{"authorId":"用户名","content":"韩文评论","translation":"中文翻译"},{"authorId":"用户名","content":"韩文评论","translation":"中文翻译"},{"authorId":"用户名","content":"韩文评论","translation":"中文翻译"},{"authorId":"用户名","content":"韩文评论","translation":"中文翻译"},{"authorId":"用户名","content":"韩文评论","translation":"中文翻译"}]}
 (/theqoo_post)
 
-选项（必须有）：
+选项（必须有，格式绝对不能改）：
 (options)
-["选项A","选项B","选项C"]
+["选项A的具体行动","选项B的具体行动","选项C的具体行动"]
 (/options)
+
+⚠️ 注意：
+- 必须是合法 JSON 数组，用英文双引号
+- 开始是 (options)，结束是 (/options)，不是 (option) 也不是其他任何写法
+- 禁止在数组里加 → 箭头或任何额外描述
+- 禁止把选项写在正文里
 
 状态快照（必须有，每轮更新金钱和心情）：
 (state_snapshot)
