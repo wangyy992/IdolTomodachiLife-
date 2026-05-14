@@ -833,6 +833,9 @@ export default function App() {
       </main>
  
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap');
+        * { font-family: 'Noto Sans SC', sans-serif; }
+      
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #FFE4E9; border-radius: 10px; }
