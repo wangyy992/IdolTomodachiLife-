@@ -142,7 +142,7 @@ UI触发规则
 根据剧情自然触发：
 - 有人发手机消息 → 输出 KKTMSG
 - 爱豆发Weverse → 输出 WEVERSE
-- 爱豆发Bubble（好感度50+才可能） → 输出 BUBBLE
+- 爱豆发Bubble → 输出 BUBBLE
 - 浏览论坛/有热帖 → 输出 THEQOO
 - 打歌节目出一位 → 输出 MUSICSHOW
 
