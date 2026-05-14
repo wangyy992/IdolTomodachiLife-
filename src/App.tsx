@@ -559,34 +559,39 @@ export default function App() {
         new RegExp(`\\(${tagName}\\)([\\s\\S]*?)\\(\\/\\s*${tagName}\\)`, 'i'),
         new RegExp(`\\[${tagName}\\]([\\s\\S]*?)\\[\\/\\s*${tagName}\\]`, 'i'),
       ];
-      for (const p of patterns) { const m = response.match(p); if (m) { displayContent = displayContent.replace(m[0], ''); return m[1]; } }
+      for (const p of patterns) {
+        const m = displayContent.match(p);
+        if (m) { displayContent = displayContent.replace(m[0], ''); return m[1]; }
+      }
       if (['state_snapshot','theqoo_post','character_card','music_show','kkt_message','weverse_post','bubble_message'].includes(tagName)) {
-        const tagIdx = response.toLowerCase().indexOf(.toLowerCase());
+        const tagIdx = displayContent.toLowerCase().indexOf(tagName.toLowerCase());
         if (tagIdx !== -1) {
-          const firstBrace = response.indexOf('{', tagIdx + .length);
+          const firstBrace = displayContent.indexOf('{', tagIdx + tagName.length);
           if (firstBrace !== -1 && firstBrace - tagIdx < 150) {
             let depth = 0, end = -1;
-            for (let i = firstBrace; i < response.length; i++) {
-              if (response[i] === '{') depth++;
-              else if (response[i] === '}') { depth--; if (depth === 0) { end = i; break; } }
+            for (let i = firstBrace; i < displayContent.length; i++) {
+              if (displayContent[i] === '{') depth++;
+              else if (displayContent[i] === '}') { depth--; if (depth === 0) { end = i; break; } }
             }
-            if (end !== -1) { const j = response.slice(firstBrace, end + 1); displayContent = displayContent.replace(j, ''); return j; }
+            if (end !== -1) {
+              const j = displayContent.slice(firstBrace, end + 1);
+              displayContent = displayContent.replace(j, '');
+              return j;
+            }
           }
         }
       }
       if (tagName === 'options') {
-        // 先尝试 JSON 数组
-        const m = response.match(/\[[\s\S]*?\]/);
-        if (m && response.toLowerCase().includes('options')) { 
-          displayContent = displayContent.replace(m[0], ''); 
-          return m[0]; 
+        const arrayMatch = displayContent.match(/\[[\s\S]*?\]/);
+        if (arrayMatch && displayContent.toLowerCase().includes('options')) {
+          displayContent = displayContent.replace(arrayMatch[0], '');
+          return arrayMatch[0];
         }
-        // 兜底：解析编号列表 "1. xxx 2. xxx 3. xxx"
-        const listMatch = response.match(/\(options\)([\s\S]*?)\(\/options\)/i);
+        const listMatch = displayContent.match(/\(options\)([\s\S]*?)\(\/options\)/i);
         if (listMatch) {
           const lines = listMatch[1].split('\n')
-            .map(l => l.replace(/^\s*\d+[\.\、]\s*/, '').trim())
-            .filter(l => l.length > 0);
+            .map((l: string) => l.replace(/^\s*\d+[\.\、]\s*/, '').trim())
+            .filter((l: string) => l.length > 0);
           if (lines.length > 0) {
             displayContent = displayContent.replace(listMatch[0], '');
             return JSON.stringify(lines);
