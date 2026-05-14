@@ -596,7 +596,10 @@ export default function App() {
  
     const bubbleStr = extractTag('bubble_message');
     if (bubbleStr) { try { bubbleMessage = JSON.parse(bubbleStr); } catch(e) {} }
- 
+
+    console.log("[Debug] raw options string:", optionsStr);
+    console.log("[Debug] full AI response:", response.substring(0, 500));
+    
     const optionsStr = extractTag('options');
     if (optionsStr) { try { const parsed = JSON.parse(optionsStr); if (Array.isArray(parsed)) options = parsed.map(o => typeof o === 'string' ? { text: o, action: o } : o); } catch(e) {} }
  
@@ -608,8 +611,11 @@ export default function App() {
     cards = rawCards.filter(card => isInitialCardStep ? true : isCardBelongsToTargets(card, stateAtCall.targets));
  
     if (options.length === 0 && currentStep !== SetupStep.CREATION) {
-      options = currentStep === SetupStep.CARDS ? [{ text: "开始我的制作人生活", action: "开始我的制作人生活" }] : [{ text: "继续前进", action: "继续前进" },{ text: "观察周围", action: "观察周围" },{ text: "思考下一步", action: "思考下一步" }];
-    }
+  if (currentStep === SetupStep.CARDS) {
+    options = [{ text: "开始我的制作人生活", action: "开始我的制作人生活" }];
+  }
+  // 正式游戏阶段不再兜底，让 AI 重新生成
+}
  
     displayContent = displayContent.replace(/```json[\s\S]*?```/g, '').replace(/```[\s\S]*?```/g, m => (m.includes('{') || m.includes('[')) ? '' : m).trim();
  
