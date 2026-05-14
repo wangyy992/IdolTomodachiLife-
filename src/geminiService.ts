@@ -122,7 +122,7 @@ UI触发规则
 根据剧情自然触发：
 - 有人发手机消息 → 输出 KKTMSG_START...KKTMSG_END
 - 爱豆发Weverse → 输出 WEVERSE_START...WEVERSE_END
-- 爱豆发Bubble（好感度50+）→ 输出 BUBBLE_START...BUBBLE_END
+- 爱豆发Bubble → 输出 BUBBLE_START...BUBBLE_END
 - 浏览论坛/有热帖 → 输出 THEQOO_START...THEQOO_END
 - 打歌节目出一位 → 输出 MUSICSHOW_START...MUSICSHOW_END
 
