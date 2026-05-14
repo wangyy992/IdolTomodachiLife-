@@ -34,7 +34,7 @@ export async function callGeminiAPI(messages: ChatMessage[], gameState: GameStat
 ${memory}${cardMemory}
 
 ## 语言规则
-全程中文。韩语对话必须括号内附翻译：「안녕（你好）」。禁止出现无翻译的韩语。
+全程中文。禁止出现无翻译的韩语。只有生成的截图可以韩语。
 ## 目标爱豆详细设定（生成角色卡时必须以此为准）
 ${targetMembersDetail}
 
