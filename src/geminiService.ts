@@ -38,6 +38,7 @@ ${memory}${cardMemory}
 全程只用中文，包括爱豆的对话也直接用中文写。
 禁止出现任何韩语、日语原文。
 不需要附原文，直接写中文就好。
+kkt,theqoo,wvs,fans,bubble等爱豆使用的平台可以出现韩语但必须附翻译。
 
 ## 目标爱豆详细设定（生成角色卡时必须以此为准）
 ${targetMembersDetail}
