@@ -478,15 +478,24 @@ const processAIResponse = (response: string, stateAtCall: GameState) => {
     }
 
     const options = [];
+// 1. 提取 AI 原始回复中的 A/B/C 选项
+    const rawOptions = remaining.match(/^[A-D][\.、。\s]+.+$/gm);
+    
+    // 2. 格式化选项：虚线 + 换行 + 加粗
+    // 这里我们使用 Markdown 的语法，strong 会被你的样式渲染成粉红色
+    const styledOptions = rawOptions 
+      ? "\n\n---\n\n" + rawOptions.map(opt => `**${opt.trim()}**`).join('\n\n')
+      : "";
 
-    // 清理正文
+    // 3. 清理正文并拼接美化后的选项
     const displayContent = remaining
+      .replace(/^[A-D][\.、。\s]+.+$/gm, '') // 删掉原始那行，不让它乱
       .replace(/\[必须包含.*?\]/g, '')
       .replace(/^选项[：:]\s*$/gm, '')
       .replace(/^状态快照[：:]\s*$/gm, '')
       .replace(/```[\s\S]*?```/g, '')
       .replace(/\n{3,}/g, '\n\n')
-      .trim();
+      .trim() + styledOptions;
 
     // 更新状态
     setGameState(prev => {
@@ -708,7 +717,12 @@ const processAIResponse = (response: string, stateAtCall: GameState) => {
         .markdown-container ul,.markdown-container ol { margin-left: 1.5rem; margin-bottom: 0.6rem; }
         .markdown-container ul { list-style-type: disc; } .markdown-container ol { list-style-type: decimal; }
         .markdown-container blockquote { border-left: 3px solid #FFB7C5; padding-left: 0.75rem; color: #999; margin: 0.75rem 0; }
-        .markdown-container strong { font-weight: 900; color: #FF8DA1; }
+        .markdown-container strong { 
+                font-weight: 900; 
+                color: #FF8DA1; /* 这是你的主题粉色 */
+                display: inline-block; 
+                margin-top: 4px;
+              }
         .markdown-container hr { border: none; border-top: 2px dashed #FFE4E9; margin: 1rem 0; }
         @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .animate-spin-slow { animation: spin-slow 8s linear infinite; }
