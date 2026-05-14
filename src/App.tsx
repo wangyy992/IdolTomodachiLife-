@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, RefreshCw, Info, Users, Eye, MapPin, Gamepad2, Heart, Shield, Zap, Sparkles, MessageCircle, CheckCheck } from 'lucide-react';
+import { Send, RefreshCw, Info, Users, Eye, MapPin, Gamepad2, Heart, Shield, Zap, Sparkles, MessageCircle, CheckCheck, X, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Markdown from 'react-markdown';
 import { GameState, INITIAL_MEMBERS, ChatMessage, MessageRole, Member, TheqooPost, SetupStep, GameMode, StoryPace } from './types';
@@ -224,6 +224,78 @@ const OptionsUI = ({ options, onSelect, disabled, isLatest }: { options: any[], 
   );
 };
 
+// ============================================================
+// 手机端抽屉组件
+// ============================================================
+const MobileDrawer = ({ gameState, onClose }: { gameState: GameState, onClose: () => void }) => {
+  const targetMembers = gameState.members.filter(m => gameState.targets.includes(m.id));
+  return (
+    <motion.div
+      initial={{ y: '100%' }}
+      animate={{ y: 0 }}
+      exit={{ y: '100%' }}
+      transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+      className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-[2rem] shadow-2xl border-t border-[#F3E5E8] max-h-[70vh] overflow-y-auto"
+    >
+      {/* 把手 */}
+      <div className="flex justify-center pt-3 pb-2">
+        <div className="w-10 h-1 bg-gray-200 rounded-full"></div>
+      </div>
+      {/* 头部 */}
+      <div className="flex items-center justify-between px-6 pb-4 border-b border-[#F3E5E8]">
+        <h3 className="font-black text-[#FF8DA1] text-sm uppercase tracking-widest">角色状态</h3>
+        <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-all"><X className="w-4 h-4 text-gray-400" /></button>
+      </div>
+      {/* 内容 */}
+      <div className="p-5 space-y-5">
+        {/* 攻略目标好感度 */}
+        {targetMembers.length > 0 && (
+          <section>
+            <h4 className="text-[10px] font-black text-[#FFB7C5] uppercase tracking-widest mb-3 flex items-center gap-2"><Heart className="w-3 h-3" /> 攻略目标</h4>
+            <div className="space-y-3">
+              {targetMembers.map(member => (
+                <div key={member.id} className="bg-[#FFF9FA] p-4 rounded-2xl border border-[#FFE4E9]">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-bold text-gray-800">{member.name}</span>
+                    <span className="text-[11px] text-[#FF8DA1] font-mono font-bold">{member.affection}/100</span>
+                  </div>
+                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden mb-1">
+                    <motion.div animate={{ width: `${member.affection}%` }} className="h-full bg-gradient-to-r from-[#FF8DA1] to-[#FFB7C5] rounded-full" />
+                  </div>
+                  <div className="text-[10px] text-gray-400">{member.status}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+        {/* 收集档案 */}
+        {gameState.collectedCards && gameState.collectedCards.length > 0 && (
+          <section>
+            <h4 className="text-[10px] font-black text-[#FFB7C5] uppercase tracking-widest mb-3 flex items-center gap-2"><Shield className="w-3 h-3" /> 收集档案 ({gameState.collectedCards.length})</h4>
+            <div className="grid grid-cols-2 gap-2">
+              {gameState.collectedCards.map((card: any, idx: number) => (
+                <div key={idx} className="bg-white p-3 rounded-2xl border border-[#FFE4E9]">
+                  <div className="text-[10px] font-black text-[#FFB7C5]">{card.group || '独立艺人'}</div>
+                  <div className="text-xs font-bold text-gray-700 mt-0.5">{card.name}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+        {/* 当前状态 */}
+        <section>
+          <h4 className="text-[10px] font-black text-[#FFB7C5] uppercase tracking-widest mb-3 flex items-center gap-2"><MapPin className="w-3 h-3" /> 当前状态</h4>
+          <div className="bg-[#FFF9FA] p-4 rounded-2xl border border-[#FFE4E9] space-y-2">
+            <div className="flex justify-between text-xs"><span className="text-gray-400">场景</span><span className="font-bold text-gray-700">{gameState.currentScene}</span></div>
+            <div className="flex justify-between text-xs"><span className="text-gray-400">第几周</span><span className="font-bold text-[#FF8DA1]">Week {gameState.turnCount || 1}</span></div>
+            {gameState.isComebackSetting && <div className="text-[10px] font-black text-[#FF8DA1] bg-red-50 px-2 py-1 rounded-lg">🚨 回归期进行中</div>}
+          </div>
+        </section>
+      </div>
+    </motion.div>
+  );
+};
+
 const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete: (data: any) => void, onReset: () => void, members: Member[] }) => {
   const [step, setStep] = useState(1);
   const [data, setData] = useState({ playerName: '', playerAge: 19, identity: [] as string[], gameMode: GameMode.ROMANCE, storyPace: StoryPace.STANDARD, targets: [] as string[], selectedCPs: [] as string[] });
@@ -289,11 +361,6 @@ const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete:
   );
 };
 
-// ============================================================
-// 核心解析函数
-// ============================================================
-
-// 提取块：先移除，再解析JSON（关键修复：不管JSON解析成不成功，都先从正文移除）
 function extractBlock(text: string, startTag: string, endTag: string): { content: string; remaining: string } | null {
   const start = text.indexOf(startTag);
   if (start === -1) return null;
@@ -327,9 +394,6 @@ function parseOptions(text: string): { text: string; action: string }[] {
   return [];
 }
 
-// ============================================================
-// Main App
-// ============================================================
 export default function App() {
   const getInitialGameState = (): GameState => ({
     members: INITIAL_MEMBERS, exposure: 0, relationships: [], currentScene: '首尔', history: [],
@@ -348,6 +412,7 @@ export default function App() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showConfirmReset, setShowConfirmReset] = useState(false);
+  const [showDrawer, setShowDrawer] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(gameState)); }, [gameState]);
@@ -379,116 +444,78 @@ export default function App() {
 
   const processAIResponse = (response: string, stateAtCall: GameState) => {
     let remaining = response;
-    let snapshot: any = null;
-    let theqooPost: any = null;
-    let musicResult: any = null;
-    let kktMessage: any = null;
-    let weversePost: any = null;
-    let bubbleMessage: any = null;
+    let snapshot: any = null, theqooPost: any = null, musicResult: any = null;
+    let kktMessage: any = null, weversePost: any = null, bubbleMessage: any = null;
     let cards: any[] = [];
 
-    // ============================================================
-    // 关键修复：每个块都先移除 remaining，再尝试解析 JSON
-    // 这样就算 JSON 解析失败，内容也不会显示在正文里
-    // ============================================================
-
     const snapshotBlock = extractBlock(remaining, 'SNAPSHOT_START', 'SNAPSHOT_END');
-    if (snapshotBlock) {
-      remaining = snapshotBlock.remaining; // 先移除
-      try { snapshot = JSON.parse(snapshotBlock.content); } catch(e) {}
-    }
+    if (snapshotBlock) { remaining = snapshotBlock.remaining; try { snapshot = JSON.parse(snapshotBlock.content); } catch(e) {} }
 
     const theqooBlock = extractBlock(remaining, 'THEQOO_START', 'THEQOO_END');
-    if (theqooBlock) {
-      remaining = theqooBlock.remaining;
-      try { theqooPost = JSON.parse(theqooBlock.content); } catch(e) {}
-    }
+    if (theqooBlock) { remaining = theqooBlock.remaining; try { theqooPost = JSON.parse(theqooBlock.content); } catch(e) {} }
 
     const musicBlock = extractBlock(remaining, 'MUSICSHOW_START', 'MUSICSHOW_END');
-    if (musicBlock) {
-      remaining = musicBlock.remaining;
-      try { musicResult = JSON.parse(musicBlock.content); } catch(e) {}
-    }
+    if (musicBlock) { remaining = musicBlock.remaining; try { musicResult = JSON.parse(musicBlock.content); } catch(e) {} }
 
     const kktBlock = extractBlock(remaining, 'KKTMSG_START', 'KKTMSG_END');
-    if (kktBlock) {
-      remaining = kktBlock.remaining; // 先移除，不管JSON能不能解析
-      try { kktMessage = JSON.parse(kktBlock.content); } catch(e) {}
-    }
+    if (kktBlock) { remaining = kktBlock.remaining; try { kktMessage = JSON.parse(kktBlock.content); } catch(e) {} }
 
     const weverseBlock = extractBlock(remaining, 'WEVERSE_START', 'WEVERSE_END');
-    if (weverseBlock) {
-      remaining = weverseBlock.remaining;
-      try { weversePost = JSON.parse(weverseBlock.content); } catch(e) {}
-    }
+    if (weverseBlock) { remaining = weverseBlock.remaining; try { weversePost = JSON.parse(weverseBlock.content); } catch(e) {} }
 
     const bubbleBlock = extractBlock(remaining, 'BUBBLE_START', 'BUBBLE_END');
-    if (bubbleBlock) {
-      remaining = bubbleBlock.remaining;
-      try { bubbleMessage = JSON.parse(bubbleBlock.content); } catch(e) {}
-    }
+    if (bubbleBlock) { remaining = bubbleBlock.remaining; try { bubbleMessage = JSON.parse(bubbleBlock.content); } catch(e) {} }
 
-    // 提取角色卡
     let cardBlock = extractBlock(remaining, 'CARD_START', 'CARD_END');
     while (cardBlock) {
       remaining = cardBlock.remaining;
-      try {
-        const card = JSON.parse(cardBlock.content);
-        const existingNames = (stateAtCall.collectedCards || []).map((c: any) => c.name);
-        if (card?.name && !existingNames.includes(card.name)) cards.push(card);
-      } catch(e) {}
+      try { const card = JSON.parse(cardBlock.content); const existingNames = (stateAtCall.collectedCards || []).map((c: any) => c.name); if (card?.name && !existingNames.includes(card.name)) cards.push(card); } catch(e) {}
       cardBlock = extractBlock(remaining, 'CARD_START', 'CARD_END');
     }
 
-    // 解析选项
     const options = parseOptions(remaining);
 
-    // 清理正文
+    // 清理正文：去掉选项行、系统提示、以及可能残留的标题文字
     const displayContent = remaining
       .replace(/^[A-D][\.、。\s]+.+$/gm, '')
       .replace(/\[必须包含.*?\]/g, '')
+      .replace(/^选项[：:]\s*$/gm, '')
+      .replace(/^状态快照[：:]\s*$/gm, '')
       .replace(/```[\s\S]*?```/g, '')
+      .replace(/\n{3,}/g, '\n\n')
       .trim();
 
     setGameState(prev => {
       let next = { ...prev };
       const isWeekEnd = snapshot?.isWeekEnd === true;
-
       if (snapshot) {
-        next = {
-          ...next,
+        next = { ...next,
           currentScene: snapshot.currentScene ?? next.currentScene,
           turnCount: snapshot.weekCount ?? next.turnCount,
           hiddenSummary: snapshot.hiddenSummary ?? next.hiddenSummary,
           isComebackSetting: snapshot.isComebackSetting ?? false,
           groupHeats: snapshot.groupHeats ?? next.groupHeats,
           currentMusicShow: musicResult || next.currentMusicShow,
-          members: next.members.map(m => {
-            const u = snapshot.members?.find((sm: any) => sm.id === m.id);
-            return u ? { ...m, ...u } : m;
-          })
+          members: next.members.map(m => { const u = snapshot.members?.find((sm: any) => sm.id === m.id); return u ? { ...m, ...u } : m; })
         };
       }
-
       if (musicResult) next.musicShowHistory = [...(next.musicShowHistory || []), musicResult];
       if (cards.length > 0) next.collectedCards = [...(next.collectedCards || []), ...cards];
       if (cards.length > 0 && prev.setupStep === SetupStep.CARDS) next.setupStep = SetupStep.STARTED;
-
-      const isComebackSetup = snapshot?.isComebackSetting || false;
 
       return {
         ...next,
         history: [...next.history, {
           role: MessageRole.ASSISTANT,
-          content: isComebackSetup
-            ? "🚨 回归期开始！即将开启打歌活动。"
+          content: (snapshot?.isComebackSetting && !prev.isComebackSetting)
+            ? "🚨 回归期开始！即将开启打歌活动。\n\n" + (displayContent || '')
             : ((displayContent && displayContent.trim()) || (cards.length > 0 ? "（剧情准备就绪）" : "（剧情推进中...）")),
           timestamp: Date.now(),
           theqooPost,
           cardData: cards.length > 0 ? cards : undefined,
           currentMusicShow: musicResult || undefined,
           options: options.length > 0 ? options : undefined,
-          isComebackSetup,
+          isComebackSetup: false,
           isWeekEnd,
           kktMessage,
           weversePost,
@@ -511,8 +538,12 @@ export default function App() {
 
   if (gameState.setupStep === SetupStep.CREATION) return <CharacterCreationWizard onComplete={handleCreationComplete} onReset={executeReset} members={gameState.members} />;
 
+  // 计算主要攻略目标的好感度用于头部显示
+  const primaryTarget = gameState.members.find(m => gameState.targets.includes(m.id));
+
   return (
     <div className="flex h-screen bg-[#FDF7F8] overflow-hidden relative">
+      {/* 重置确认弹窗 */}
       {showConfirmReset && (
         <div className="absolute inset-0 z-[100] bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
           <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white rounded-[3rem] p-10 max-w-sm w-full shadow-2xl text-center space-y-6">
@@ -526,6 +557,19 @@ export default function App() {
         </div>
       )}
 
+      {/* 手机抽屉遮罩 */}
+      <AnimatePresence>
+        {showDrawer && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+              onClick={() => setShowDrawer(false)} />
+            <MobileDrawer gameState={gameState} onClose={() => setShowDrawer(false)} />
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* 桌面侧边栏 */}
       <aside className="w-72 bg-white border-r border-[#F3E5E8] flex-shrink-0 flex-col hidden lg:flex">
         <div className="p-6 border-b border-[#F3E5E8] bg-gradient-to-br from-[#FFF5F6] to-white">
           <h1 className="text-base font-black text-[#FF8DA1] tracking-tighter flex items-center gap-2"><Gamepad2 className="w-5 h-5" /> 爱豆收集梦想生活</h1>
@@ -545,13 +589,8 @@ export default function App() {
             <h3 className="text-[10px] font-black text-[#FFB7C5] uppercase tracking-widest mb-3 flex items-center gap-2"><Users className="w-3 h-3" /> 角色状态</h3>
             <div className="space-y-2">{gameState.members.filter(m => gameState.targets.includes(m.id)).map(member => (
               <div key={member.id} className="bg-white p-4 rounded-2xl border border-[#FFE4E9]">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs font-bold">{member.name}</span>
-                  <span className="text-[10px] text-[#FF8DA1] font-mono font-bold">{member.affection}/100</span>
-                </div>
-                <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                  <motion.div animate={{ width: `${member.affection}%` }} className="h-full bg-gradient-to-r from-[#FF8DA1] to-[#FFB7C5] rounded-full" />
-                </div>
+                <div className="flex justify-between items-center mb-2"><span className="text-xs font-bold">{member.name}</span><span className="text-[10px] text-[#FF8DA1] font-mono font-bold">{member.affection}/100</span></div>
+                <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden"><motion.div animate={{ width: `${member.affection}%` }} className="h-full bg-gradient-to-r from-[#FF8DA1] to-[#FFB7C5] rounded-full" /></div>
                 <div className="text-[9px] text-gray-400 mt-1">{member.status}</div>
               </div>
             ))}</div>
@@ -562,8 +601,10 @@ export default function App() {
         </div>
       </aside>
 
+      {/* 主聊天区 */}
       <main className="flex-1 flex flex-col h-full bg-white lg:rounded-l-[2rem] lg:shadow-2xl overflow-hidden">
-        <header className="h-16 bg-white/90 backdrop-blur-md border-b border-[#F3E5E8] px-6 flex items-center justify-between z-10">
+        {/* 顶部导航栏 */}
+        <header className="h-16 bg-white/90 backdrop-blur-md border-b border-[#F3E5E8] px-4 flex items-center justify-between z-10 flex-shrink-0">
           <div className="flex items-center gap-3">
             <button onClick={handleReset} className="lg:hidden p-2 text-[#FFB7C5] hover:bg-[#FFF5F6] rounded-xl"><RefreshCw className="w-4 h-4" /></button>
             <div>
@@ -571,6 +612,17 @@ export default function App() {
               <h2 className="text-sm font-bold flex items-center gap-1"><MapPin className="w-3 h-3 text-[#FF8DA1]" /> {gameState.currentScene}</h2>
             </div>
           </div>
+
+          {/* 手机端中间：好感度快速预览 */}
+          {primaryTarget && (
+            <button onClick={() => setShowDrawer(true)} className="lg:hidden flex items-center gap-2 bg-[#FFF5F6] px-3 py-2 rounded-2xl border border-[#FFE4E9] active:scale-95 transition-all">
+              <Heart className="w-3 h-3 text-[#FF8DA1]" />
+              <span className="text-[11px] font-bold text-gray-700">{primaryTarget.name}</span>
+              <span className="text-[11px] font-black text-[#FF8DA1]">{primaryTarget.affection}</span>
+              <ChevronUp className="w-3 h-3 text-[#FFB7C5]" />
+            </button>
+          )}
+
           {apiKeyMissing && <div className="bg-red-50 text-red-500 text-[10px] font-black px-3 py-1 rounded-full border border-red-100 animate-pulse">API KEY MISSING</div>}
           <div className="text-right">
             <div className="text-[10px] text-gray-400 font-bold uppercase">Week</div>
@@ -578,6 +630,7 @@ export default function App() {
           </div>
         </header>
 
+        {/* 消息列表 */}
         <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 custom-scrollbar bg-white">
           <AnimatePresence initial={false}>
             {gameState.history.map((msg, i) => {
@@ -594,7 +647,7 @@ export default function App() {
                       {(msg as any).bubbleMessage && <BubbleMessageUI data={(msg as any).bubbleMessage} />}
                       {msg.theqooPost && <TheqooPostUI post={msg.theqooPost} />}
                       {msg.currentMusicShow && isLatest && <MusicShowUI result={msg.currentMusicShow} />}
-                      {msg.options && !msg.isComebackSetup && <OptionsUI options={msg.options} onSelect={(a) => handleSend(a)} disabled={isLoading} isLatest={isLatest} />}
+                      {msg.options && <OptionsUI options={msg.options} onSelect={(a) => handleSend(a)} disabled={isLoading} isLatest={isLatest} />}
                       {msg.content.includes('错误信息') && (
                         <button onClick={() => { let j = -1; for (let k = i-1; k >= 0; k--) { if (gameState.history[k].role === MessageRole.USER) { j = k; break; } } if (j !== -1) { const c = gameState.history[j].content; setGameState(prev => ({ ...prev, history: prev.history.slice(0, i) })); handleSend(c); } }}
                           className="mt-3 flex items-center gap-2 text-xs font-black text-[#FF8DA1] uppercase bg-white/50 px-3 py-2 rounded-xl border border-[#FFE4B5]"><RefreshCw className="w-3 h-3" /> 重试</button>
@@ -617,7 +670,8 @@ export default function App() {
           <div ref={chatEndRef} />
         </div>
 
-        <div className="p-4 md:p-6 bg-white border-t border-[#F3E5E8]">
+        {/* 输入框 */}
+        <div className="p-4 md:p-6 bg-white border-t border-[#F3E5E8] flex-shrink-0">
           <div className="max-w-3xl mx-auto flex gap-3">
             <div className="flex-1">
               <textarea value={input} onChange={e => setInput(e.target.value)}
