@@ -35,6 +35,8 @@ ${memory}${cardMemory}
 
 ## 语言规则
 全程中文。韩语对话必须括号内附翻译：「안녕（你好）」。禁止出现无翻译的韩语。
+## 目标爱豆详细设定（生成角色卡时必须以此为准）
+${targetMembersDetail}
 
 ## 金钱规则（每轮必须执行）
 余额：W${(gameState.playerMoney || 0).toLocaleString()}
