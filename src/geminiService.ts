@@ -4,14 +4,12 @@ export async function callGeminiAPI(
   messages: ChatMessage[],
   gameState: GameState
 ) {
-  const apiKey = process.env.DEEPSEEK_API_KEY;
+  const apiKey = import.meta.env.VITE_DEEPSEEK_API_KEY;
   
   if (!apiKey) {
     throw new Error('API Key missing. Please check Settings > Secrets.');
   }
 
-  const memberNames = gameState.members.map(m => m.stageName).join(', ');
-  const mode = gameState.gameMode;
   const targetList = gameState.targets.length > 0 ? gameState.targets.join(', ') : '无 (全景视角/旁观模式)';
   const cpList = gameState.selectedCPs ? gameState.selectedCPs.join(', ') : '无';
   const playerIdentity = gameState.identity ? gameState.identity.join(', ') : '普通人';
@@ -20,8 +18,30 @@ export async function callGeminiAPI(
     ? "当前是第二步：[生成角色卡]。请根据玩家选择的目标爱豆，生成对应的 (character_card) 档案，并给出初始剧情引导。"
     : "当前是正式剧情阶段。请推动剧情，给出选项 (options)，并在末尾包含 (state_snapshot)。";
 
+  const memorySummary = gameState.hiddenSummary
+    ? `\n ### 📌 剧情记忆摘要（重要！请严格遵守，不得与此矛盾）\n${gameState.hiddenSummary}\n`
+    : '';
+
+  const collectedCardsInfo = gameState.collectedCards && gameState.collectedCards.length > 0
+    ? `\n ### 📋 已建立档案的爱豆（请保持她们的性格与设定一致）\n${gameState.collectedCards.map(c => 
+        `- ${c.name}（${c.group}）：${c.realPersonality || ''}${c.hiddenStory ? ' / ' + c.hiddenStory : ''}`
+      ).join('\n')}\n`
+    : '';
+
+  const currentStatusInfo = `
+ ### 📊 当前游戏状态
+ - 第 ${gameState.turnCount || 1} 周
+ - 当前场景：${gameState.currentScene || '首尔'}
+ - 玩家心情：${gameState.playerMood || 80}
+ - 玩家金钱：₩ ${(gameState.playerMoney || 0).toLocaleString()}
+ - 是否处于回归期：${gameState.isComebackSetting ? '是' : '否'}
+ `;
+
   const systemPrompt = `你是《爱豆收集梦想生活》的导演兼编剧。玩家是制作人/经纪人，姓名：${gameState.playerName}，年龄：${gameState.playerAge}，身份背景：${playerIdentity}。
- 
+${memorySummary}
+${collectedCardsInfo}
+${currentStatusInfo}
+
  ### 财务与生活逻辑 (🚨重要)
  - 初始资产：如果这是第一周，请根据身份设定一个合理的起始金额 (通常在 100万-500万韩元之间)。
  - 支出逻辑：当玩家购买专辑 (30万) 或投票 (5万) 时，你【必须】在 (state_snapshot) 中扣除相应金额。
@@ -92,8 +112,8 @@ export async function callGeminiAPI(
    "playerMoney": 数值,
    "currentScene": "当前地点",
    "weekCount": 数字,
-   "hiddenSummary": "简短的剧情回顾",
-   "isComebackSetting": true/false (🚨非常重要：仅在需要玩家选择竞争对手的那一刻设为true。一旦选定，请在下一轮设为false),
+   "hiddenSummary": "用2-3句话总结到目前为止最重要的剧情进展和人物关系，必须包含玩家与爱豆之间发生的关键事件",
+   "isComebackSetting": true/false,
    "groupHeats": [{ "name": "团体名", "heat": 0-100, "isPlayerTarget": true/false }], 
    "playerImpact": { "albumImpact": 增加的分数, "voteImpact": 增加的分数 },
    "hasContributedThisWeek": true/false
@@ -128,15 +148,17 @@ export async function callGeminiAPI(
   try {
     console.log("[DeepSeek] Constructing messages, history size:", messages.length);
 
-    // 构建消息数组，role 只能是 user / assistant
-    const chatMessages: { role: 'user' | 'assistant'; content: string }[] = messages.map(m => ({
+    const chatMessages: { role: 'user' | 'assistant'; content: string }[] = messages.slice(-10).map(m => ({
       role: m.role === MessageRole.USER ? 'user' : 'assistant',
       content: m.content || ''
     }));
 
-    // 如果历史为空，补一条开场消息
     if (chatMessages.length === 0) {
       chatMessages.push({ role: 'user', content: '开始故事' });
+    }
+
+    if (chatMessages[0].role !== 'user') {
+      chatMessages.unshift({ role: 'user', content: '继续故事' });
     }
 
     const requestBody = {
@@ -145,7 +167,7 @@ export async function callGeminiAPI(
         { role: 'system', content: systemPrompt },
         ...chatMessages
       ],
-      temperature: 0.7,
+      temperature: 0.75,
       top_p: 0.95,
       max_tokens: 2048,
     };
@@ -171,9 +193,8 @@ export async function callGeminiAPI(
     if (!response.ok) {
       const errText = await response.text();
       console.error("[DeepSeek] HTTP error:", response.status, errText);
-
       if (response.status === 401) {
-        throw new Error('API Key 无效或权限不足。请在设置中配置有效的 DEEPSEEK_API_KEY。');
+        throw new Error('API Key 无效或权限不足。请检查 VITE_DEEPSEEK_API_KEY 是否正确。');
       }
       if (response.status === 429) {
         throw new Error('请求过于频繁，请稍后再试。');
@@ -195,7 +216,6 @@ export async function callGeminiAPI(
     return text;
 
   } catch (error) {
-    // AbortController 超时
     if (error instanceof Error && error.name === 'AbortError') {
       throw new Error('通讯超时 (60s)。请检查网络后重试。');
     }
