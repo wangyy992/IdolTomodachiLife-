@@ -152,12 +152,17 @@ ${currentStatusInfo}
    * 选项之间要有明显差异，代表不同的方向或态度（主动/被动/回避）。
    * 选项文字控制在15字以内，简洁有画面感。
    * 不要给出结果，只写玩家的动作或选择。
- 8. (state_snapshot){...}(/state_snapshot) → 必须包含，金钱心情必须更新
+ 8. ⚠️ 标签格式必须严格为 (state_snapshot) 开头、(/state_snapshot) 结尾，禁止写成 (end_state_snapshot) 或其他任何变体。
  
  ### 角色卡 JSON
  {"name":"中文名","stageName":"英文名","group":"团体","status":"状态","publicPersona":"公开人设","realPersonality":"私下性格","weaknesses":["特点1"],"hiddenStory":"特殊记忆"}
  
  ### 状态快照 JSON
+ ### 🚨 状态快照标签（格式绝对不能错）
+ 开始标签：(state_snapshot)
+ 结束标签：(/state_snapshot)
+ 禁止写成：(end_state_snapshot)、(state_snapshot/)、[state_snapshot] 等任何其他形式。
+ 每轮必须包含，金钱和心情每轮必须更新。
  {"members":[{"id":"英文id","affection":0-100,"careerPressure":0-100,"companyAlertness":0-100,"privacy":0-100}],"playerMood":0-100,"playerMoney":数值,"currentScene":"地点","weekCount":数字,"isWeekEnd":true或false,"hiddenSummary":"摘要","isComebackSetting":true或false,"groupHeats":[{"name":"团体","heat":0-100,"isPlayerTarget":true或false}],"playerImpact":{"albumImpact":0,"voteImpact":0},"hasContributedThisWeek":true或false}
  
  ### 打歌节目
