@@ -4,141 +4,161 @@ export async function callGeminiAPI(messages: ChatMessage[], gameState: GameStat
   const apiKey = import.meta.env.VITE_DEEPSEEK_API_KEY;
   if (!apiKey) throw new Error('API Key missing. Please check Settings > Secrets.');
 
-
   const targetMembersInfo = gameState.members
-  .filter(m => gameState.targets.includes(m.id))
-  .map(m => `${m.name}（${m.stageName}，${m.group}）`)
-  .join('、') || '无';
+    .filter(m => gameState.targets.includes(m.id))
+    .map(m => `${m.name}（${m.stageName}，${m.group}）`)
+    .join('、') || '无';
 
   const targetMembersDetail = gameState.members
     .filter(m => gameState.targets.includes(m.id))
-    .map(m => `- ${m.name}（${m.stageName}）：公开人设"${m.publicPersona}"，真实性格"${m.realPersonality}"，当前状态"${m.status}"`)
+    .map(m => `- ${m.name}（${m.stageName}）：公开人设"${m.publicPersona}"，真实性格"${m.realPersonality}"`)
     .join('\n');
 
   const playerIdentity = gameState.identity?.join(', ') || '普通人';
-
-  const setupGuidance = gameState.setupStep === SetupStep.CARDS
-    ? `现在是初始化阶段：为目标爱豆 ${targetMembersInfo} 生成角色卡，然后开启第一幕剧情。`
-    : '正式剧情阶段：推动剧情，必须给出选项和状态快照。';
-
-  const memory = gameState.hiddenSummary
-    ? `\n【剧情记忆】${gameState.hiddenSummary}\n` : '';
-
+  const memory = gameState.hiddenSummary ? `【剧情记忆】${gameState.hiddenSummary}` : '';
   const cardMemory = gameState.collectedCards?.length
-    ? `\n【已知爱豆设定】${gameState.collectedCards.map((c: any) => `${c.name}：${c.realPersonality || ''}`).join('；')}\n` : '';
+    ? `【已收录人物】${gameState.collectedCards.map((c: any) => c.name).join('、')}` : '';
 
-  const systemPrompt = `你是《爱豆收集梦想生活》的导演兼编剧。
+  const isInitialSetup = gameState.setupStep === SetupStep.CARDS;
+
+  // 当前属性状态，每轮都注入，让AI随时看到
+  const currentStats = `
+好感度：${gameState.members.filter(m => gameState.targets.includes(m.id)).map(m => `${m.name} ${m.affection}/100`).join(' | ')}
+心情值：${gameState.playerMood}/100
+金钱：W${(gameState.playerMoney || 0).toLocaleString()}
+第${gameState.turnCount || 1}周 | 场景：${gameState.currentScene || '首尔'}
+回归期：${gameState.isComebackSetting ? '是' : '否'}`;
+
+  const systemPrompt = `你是《爱豆收集梦想生活》的DM（游戏主持人）。
 玩家：${gameState.playerName}，${gameState.playerAge}岁，${playerIdentity}。
-目标爱豆：${targetMembersInfo}。
-当前状态：第${gameState.turnCount || 1}周，${gameState.currentScene || '首尔'}，心情${gameState.playerMood || 80}，余额W${(gameState.playerMoney || 0).toLocaleString()}。
-${memory}${cardMemory}
+攻略目标：${targetMembersInfo}
+${targetMembersDetail ? `\n目标爱豆详细设定：\n${targetMembersDetail}` : ''}
+${memory ? `\n${memory}` : ''}
+${cardMemory ? `\n${cardMemory}` : ''}
 
-## 语言规则
-## 语言规则
-全程只用中文，包括爱豆的对话也直接用中文写。
-禁止出现任何韩语、日语原文。
-不需要附原文，直接写中文就好。
-kkt,theqoo,wvs,fans,bubble等爱豆使用的平台可以出现韩语但必须附翻译。
+【当前属性】
+${currentStats}
 
-## 目标爱豆详细设定（生成角色卡时必须以此为准）
-${targetMembersDetail}
+═══════════════════════════════════
+核心规则
+═══════════════════════════════════
 
-## 金钱规则（每轮必须执行）
-余额：W${(gameState.playerMoney || 0).toLocaleString()}
-每次消费必须在 state_snapshot 里更新 playerMoney。参考物价：
-便利店咖啡 W1500 / 咖啡厅 W4500 / 地铁 W1500 / 打车 W10000 / 便利店餐 W6000 / 餐厅 W15000 / 礼物花束 W30000 / 购买专辑 W300000 / 投票 W50000
-余额不足时剧情描写窘迫，禁止扣款。上班族月薪约W3000000。
+【语言】全程只用中文，包括爱豆说话也用中文，禁止出现韩语或日语原文。
 
-## 好感度规则（每轮必须更新）
-根据本轮互动质量更新目标爱豆的 affection：
-- 有效正面互动（聊天、帮助、共同经历）：+2~+8
-- 负面互动或冷场：-2~-5  
-- 普通接触：+1~+2
-- 没有接触：不变
-必须在 state_snapshot 的 members 里体现出来。
+【属性更新规则】每轮必须更新以下属性：
+- 好感度：有实质互动 +2~+8，负面互动 -2~-5，普通接触 +1~+2
+- 心情值：正面事件 +3~+8，挫折/冷场 -3~-10，平淡 ±1~2
+- 金钱：每次消费必须扣除（咖啡W4500/打车W10000/餐厅W15000/礼物W30000/专辑W300000/投票W50000）
+- 周数：每周行程结束后+1
 
-## 心情规则（每轮必须变化）
-当前：${gameState.playerMood || 80}
-正面互动 +3到+8，被冷淡 -3到-8，挫折 -5到-15，平淡 ±1到2。
+【选项规则】每轮必须提供3个选项，格式固定如下：
+A. [具体行动，15字内]
+B. [具体行动，15字内]  
+C. [具体行动，15字内]
+D. 自由行动（玩家自己输入）
+禁止写"继续前进""观察周围"这类废话。
 
-## 收集档案规则
-character_card 生成条件（缺一不可）：
-① 该角色在本轮剧情中有实质性登场（有台词、有动作、有互动）
-② 该角色是第一次登场，之前从未生成过档案
-③ 该角色对剧情有一定重要性（不是路人甲）
-禁止为只被提到名字、没有实际出场的角色生成档案。
-每轮最多生成1张卡。
+【UI触发规则】根据剧情自然触发：
+- 有人发手机消息 → 触发 (kkt_message)
+- 爱豆发Weverse帖 → 触发 (weverse_post)
+- 爱豆发Bubble → 触发 (bubble_message)
+- 浏览论坛/有热帖 → 触发 (theqoo_post)
+- 打歌节目一位 → 触发 (music_show)
+- 周数+1时 → state_snapshot里 isWeekEnd=true
 
-## 状态面板
-isWeekEnd=true 仅在周结束weekCount+1时，或打歌节目出一位时。其他对话一律 isWeekEnd=false。一个事件结束即为周结束。
+【收集档案】满足以下条件时生成 (character_card)：
+- 该角色本轮有实质登场（有台词/互动）
+- 是第一次登场
+- 不是路人甲
+- 每轮最多1张
 
-## 选项规则
-3个选项必须紧扣当前场景。禁止"继续前进""观察周围""思考下一步"。每个选项是具体行动，15字内，有画面感，代表不同方向。
+═══════════════════════════════════
+${isInitialSetup ? '【初始化】为目标爱豆生成角色卡，然后开始第一幕剧情。第一幕要求：真实日常场景，偶然相遇，符合爱豆性格，禁止"四目相对心跳加速"。' : '【剧情推进】推动故事发展，属性必须变化，选项必须具体。'}
+═══════════════════════════════════
 
-## 当前任务
-${setupGuidance}
+回复格式（严格按此顺序）：
 
-## 初始剧情要求
-从玩家视角出发，具体日常场景，偶然真实的接触。爱豆出场符合性格，有动作表情台词。禁止"四目相对心跳加速"式悬浮描写。
+【第一部分：剧情正文】
+150-300字，真实生动，全程中文。
 
-## 输出格式（严格按顺序）
+【第二部分：UI组件（有则输出，无则省略）】
 
-[剧情正文] 150-300字中文叙述
-
-角色卡（仅初始化或玩家要求时）：
 (character_card)
-{"name":"中文名","stageName":"英文名","group":"团体","status":"状态","publicPersona":"公开人设","realPersonality":"私下性格","weaknesses":["特点1","特点2"],"hiddenStory":"特殊记忆"}
+{"name":"中文名","stageName":"英文名","group":"团体","status":"当前状态","publicPersona":"公开人设","realPersonality":"真实性格","weaknesses":["特点1","特点2"],"hiddenStory":"与玩家相关的特殊记忆"}
 (/character_card)
 
-有人第一次发私信时：
 (kkt_message)
-{"sender":"发信人","avatar":"emoji","messages":[{"text":"消息内容","time":"14:23","isRead":false}]}
+{"sender":"发信人姓名","avatar":"😊","messages":[{"text":"消息内容","time":"14:23","isRead":false}]}
 (/kkt_message)
 
-爱豆发Weverse帖时：
 (weverse_post)
-{"artist":"爱豆中文名","group":"团体","content":"帖子内容","imageDesc":null,"likes":12345,"comments":678,"time":"2小时前"}
+{"artist":"爱豆中文名","group":"团体名","content":"帖子内容","imageDesc":null,"likes":12800,"comments":3400,"time":"1小时前"}
 (/weverse_post)
 
-爱豆发Bubble时：
 (bubble_message)
-{"artist":"爱豆中文名","group":"团体","messages":[{"text":"消息","time":"时间","hasImage":false}]}
+{"artist":"爱豆中文名","group":"团体名","messages":[{"text":"消息内容","time":"22:15","hasImage":false}]}
 (/bubble_message)
 
-有热帖时：
 (theqoo_post)
-{"title":"帖子标题","category":"분류","viewsCount":12345,"likesCount":678,"commentsCount":89,"comments":[{"authorId":"user1","content":"韩文评论","translation":"中文翻译"},{"authorId":"user2","content":"韩文评论","translation":"中文翻译"},{"authorId":"user3","content":"韩文评论","translation":"中文翻译"}]}
+{"title":"帖子标题","category":"아이돌","viewsCount":48392,"likesCount":1823,"commentsCount":247,"comments":[{"authorId":"user1","content":"评论内容（中文）","translation":""},{"authorId":"user2","content":"评论内容（中文）","translation":""},{"authorId":"user3","content":"评论内容（中文）","translation":""}]}
 (/theqoo_post)
 
-选项（每次必须有，格式绝对不能改）：
-(options)
-["选项A的具体行动","选项B的具体行动","选项C的具体行动"]
-(/options)
-
-状态快照（每次必须有）：
-(state_snapshot)
-{"members":[{"id":"英文小写id","affection":0,"careerPressure":50,"companyAlertness":10,"privacy":100}],"playerMood":80,"playerMoney":2300000,"currentScene":"首尔","weekCount":1,"isWeekEnd":false,"hiddenSummary":"摘要","isComebackSetting":false,"groupHeats":[],"playerImpact":{"albumImpact":0,"voteImpact":0},"hasContributedThisWeek":false}
-(/state_snapshot)
-
-打歌节目一位时：
 (music_show)
-{"winner":"团体名","scores":[{"group":"团体名","digital":3000,"physical":1000,"sns":2000,"preVote":1500,"broadcast":800,"total":8300}]}
+{"winner":"团体名","scores":[{"group":"团体名","digital":3200,"physical":1100,"sns":2400,"preVote":1600,"broadcast":700,"total":9000}]}
 (/music_show)
 
-## 绝对禁止
-禁止标签写错如 (end_state_snapshot) 或 (/end_options)
-禁止正文出现裸JSON
-禁止金钱心情不变
-禁止无翻译韩语
-禁止选项写成编号列表或箭头格式`;
+【第三部分：选项（每轮必须有）】
+A. [具体行动]
+B. [具体行动]
+C. [具体行动]
+D. 自由行动
+
+【第四部分：属性快照（每轮必须有）】
+(state_snapshot)
+{"members":[{"id":"英文小写id","affection":数字,"careerPressure":数字,"companyAlertness":数字,"privacy":数字,"status":"当前状态描述"}],"playerMood":数字,"playerMoney":数字,"currentScene":"地点","weekCount":数字,"isWeekEnd":true或false,"hiddenSummary":"2-3句本轮剧情摘要","isComebackSetting":true或false,"groupHeats":[{"name":"团体名","heat":数字,"isPlayerTarget":true或false}],"playerImpact":{"albumImpact":0,"voteImpact":0},"hasContributedThisWeek":false}
+(/state_snapshot)
+
+═══════════════════════════════════
+禁止事项
+- 禁止标签用方括号[tag]或尖括号<tag>，只能用圆括号(tag)
+- 禁止正文出现裸JSON
+- 禁止选项写成JSON格式
+- 禁止属性不变化
+- 禁止出现韩语日语原文
+- 禁止省略选项或state_snapshot
+═══════════════════════════════════`;
 
   try {
-    const chatMessages: { role: 'user' | 'assistant'; content: string }[] = messages.slice(-10).map(m => ({
+    // 传给API的历史：只保留6条，且去掉JSON内容减少token
+    const cleanHistory = messages.slice(-6).map(msg => ({
+      ...msg,
+      content: msg.role === MessageRole.ASSISTANT
+        ? msg.content
+            .replace(/\(state_snapshot\)[\s\S]*?\(\/state_snapshot\)/gi, '')
+            .replace(/\(theqoo_post\)[\s\S]*?\(\/theqoo_post\)/gi, '')
+            .replace(/\(kkt_message\)[\s\S]*?\(\/kkt_message\)/gi, '')
+            .replace(/\(weverse_post\)[\s\S]*?\(\/weverse_post\)/gi, '')
+            .replace(/\(bubble_message\)[\s\S]*?\(\/bubble_message\)/gi, '')
+            .replace(/\(music_show\)[\s\S]*?\(\/music_show\)/gi, '')
+            .replace(/\(character_card\)[\s\S]*?\(\/character_card\)/gi, '')
+            .replace(/\(options\)[\s\S]*?\(\/options\)/gi, '')
+            .trim()
+        : msg.content
+    }));
+
+    const chatMessages: { role: 'user' | 'assistant'; content: string }[] = cleanHistory.map(m => ({
       role: m.role === MessageRole.USER ? 'user' : 'assistant',
       content: m.content || ''
     }));
+
     if (chatMessages.length === 0) chatMessages.push({ role: 'user', content: '开始故事' });
     if (chatMessages[0].role !== 'user') chatMessages.unshift({ role: 'user', content: '继续故事' });
+
+    // 在用户消息后面加格式提醒
+    const lastUserIdx = chatMessages.map(m => m.role).lastIndexOf('user');
+    if (lastUserIdx !== -1) {
+      chatMessages[lastUserIdx].content += '\n[请记住：回复必须包含A/B/C/D四个选项和(state_snapshot)]';
+    }
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 60000);
@@ -151,7 +171,7 @@ ${setupGuidance}
         body: JSON.stringify({
           model: 'deepseek-v4-flash',
           messages: [{ role: 'system', content: systemPrompt }, ...chatMessages],
-          temperature: 0.6,
+          temperature: 0.7,
           top_p: 0.95,
           max_tokens: 4096,
         }),
