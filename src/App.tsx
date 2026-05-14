@@ -477,7 +477,7 @@ const processAIResponse = (response: string, stateAtCall: GameState) => {
       cardBlock = extractBlock(remaining, 'CARD_START', 'CARD_END');
     }
 
-    const options = parseOptions(remaining);
+    const options = [];
 
     // 清理正文
     const displayContent = remaining
