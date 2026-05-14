@@ -113,10 +113,6 @@ B. [具体行动]
 C. [具体行动]
 D. 自由行动
 
-【第四部分：属性快照（每轮必须有）】
-(state_snapshot)
-{"members":[{"id":"英文小写id","affection":数字,"careerPressure":数字,"companyAlertness":数字,"privacy":数字,"status":"当前状态描述"}],"playerMood":数字,"playerMoney":数字,"currentScene":"地点","weekCount":数字,"isWeekEnd":true或false,"hiddenSummary":"2-3句本轮剧情摘要","isComebackSetting":true或false,"groupHeats":[{"name":"团体名","heat":数字,"isPlayerTarget":true或false}],"playerImpact":{"albumImpact":0,"voteImpact":0},"hasContributedThisWeek":false}
-(/state_snapshot)
 
 ═══════════════════════════════════
 禁止事项
