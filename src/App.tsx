@@ -547,6 +547,7 @@ export default function App() {
   const executeReset = () => { localStorage.removeItem(LOCAL_STORAGE_KEY); setShowConfirmReset(false); setGameState(getInitialGameState()); setInput(''); setIsLoading(false); };
  
   const processAIResponse = (response: string, stateAtCall: GameState) => {
+    console.log("=== AI RAW RESPONSE ===\n", response);
     let displayContent = response;
     let theqooPost: any, snapshot: any, musicResult: any = null;
     let kktMessage: any = null, weversePost: any = null, bubbleMessage: any = null;
