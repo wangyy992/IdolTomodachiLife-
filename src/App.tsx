@@ -441,55 +441,14 @@ export default function App() {
   const handleReset = () => setShowConfirmReset(true);
   const executeReset = () => { localStorage.removeItem(LOCAL_STORAGE_KEY); setShowConfirmReset(false); setGameState(getInitialGameState()); setInput(''); setIsLoading(false); };
 
-  const processAIResponse = (response: string, stateAtCall: GameState) => {
-    let remaining = response;
-    let snapshot: any = null, theqooPost: any = null, musicResult: any = null;
-    let kktMessage: any = null, weversePost: any = null, bubbleMessage: any = null;
-    let cards: any[] = [];
-
-    const snapshotBlock = extractBlock(remaining, 'SNAPSHOT_START', 'SNAPSHOT_END');
-    if (snapshotBlock) { remaining = snapshotBlock.remaining; try { snapshot = JSON.parse(snapshotBlock.content); } catch(e) {} }
-
-    const theqooBlock = extractBlock(remaining, 'THEQOO_START', 'THEQOO_END');
-    if (theqooBlock) { remaining = theqooBlock.remaining; try { theqooPost = JSON.parse(theqooBlock.content); } catch(e) {} }
-
-    const musicBlock = extractBlock(remaining, 'MUSICSHOW_START', 'MUSICSHOW_END');
-    if (musicBlock) { remaining = musicBlock.remaining; try { musicResult = JSON.parse(musicBlock.content); } catch(e) {} }
-
-    const kktBlock = extractBlock(remaining, 'KKTMSG_START', 'KKTMSG_END');
-    if (kktBlock) { remaining = kktBlock.remaining; try { kktMessage = JSON.parse(kktBlock.content); } catch(e) {} }
-
-    const weverseBlock = extractBlock(remaining, 'WEVERSE_START', 'WEVERSE_END');
-    if (weverseBlock) { remaining = weverseBlock.remaining; try { weversePost = JSON.parse(weverseBlock.content); } catch(e) {} }
-
-    const bubbleBlock = extractBlock(remaining, 'BUBBLE_START', 'BUBBLE_END');
-    if (bubbleBlock) { remaining = bubbleBlock.remaining; try { bubbleMessage = JSON.parse(bubbleBlock.content); } catch(e) {} }
-
-    let cardBlock = extractBlock(remaining, 'CARD_START', 'CARD_END');
-    while (cardBlock) {
-      remaining = cardBlock.remaining;
-      try { const card = JSON.parse(cardBlock.content); const existingNames = (stateAtCall.collectedCards || []).map((c: any) => c.name); if (card?.name && !existingNames.includes(card.name)) cards.push(card); } catch(e) {}
-      cardBlock = extractBlock(remaining, 'CARD_START', 'CARD_END');
-    }
-
-    const options = parseOptions(remaining);
-
-    // 清理正文：去掉选项行、系统提示、以及可能残留的标题文字
-    const displayContent = remaining
-      .replace(/^[A-D][\.、。\s]+.+$/gm, '')
-      .replace(/\[必须包含.*?\]/g, '')
-      .replace(/^选项[：:]\s*$/gm, '')
-      .replace(/^状态快照[：:]\s*$/gm, '')
-      .replace(/```[\s\S]*?```/g, '')
-      .replace(/\n{3,}/g, '\n\n')
-      .trim();
-
-      setGameState(prev => {
+setGameState(prev => {
       let next = { ...prev };
       
+      // 【修复位置】在这里定义 isWeekEnd，从 AI 返回的 snapshot 中提取
+      const isWeekEnd = snapshot?.isWeekEnd === true;
+
       if (snapshot) {
         // 关键逻辑：获取 AI 传回的新周数
-        // 优先使用 weekCount，如果没有则看 week，最后才保持原样
         const incomingWeek = snapshot.weekCount ?? snapshot.week ?? next.turnCount;
 
         next = { ...next,
@@ -505,8 +464,8 @@ export default function App() {
             return u ? { ...m, ...u } : m; 
           })
         };
-    
       }
+
       if (musicResult) next.musicShowHistory = [...(next.musicShowHistory || []), musicResult];
       if (cards.length > 0) next.collectedCards = [...(next.collectedCards || []), ...cards];
       if (cards.length > 0 && prev.setupStep === SetupStep.CARDS) next.setupStep = SetupStep.STARTED;
@@ -524,14 +483,13 @@ export default function App() {
           currentMusicShow: musicResult || undefined,
           options: options.length > 0 ? options : undefined,
           isComebackSetup: false,
-          isWeekEnd,
+          isWeekEnd, // 现在这里不会报错了
           kktMessage,
           weversePost,
           bubbleMessage,
         }]
       };
     });
-  };
 
   const handleSend = async (content?: any, stateUpdate?: Partial<GameState>) => {
     const textToSend = typeof content === 'string' ? content : input;
