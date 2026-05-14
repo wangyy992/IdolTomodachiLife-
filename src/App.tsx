@@ -42,7 +42,7 @@ const StatusSnapshotUI = ({ members, playerMood, playerMoney, turnCount, current
     <div className="bg-white border-2 border-[#FFB7C5] rounded-3xl p-5 my-6 shadow-sm font-sans space-y-4 max-w-lg mx-auto">
       <div className="flex justify-between items-center border-b border-[#FFF0F3] pb-3">
         <div className="text-xs font-black text-[#FF8DA1] uppercase tracking-widest">第 {turnCount} 周 | {currentScene}</div>
-        <div className="text-[10px] bg-[#FFF5F6] text-[#FFB7C5] px-2 py-0.5 rounded-full font-bold">REALITY STATS</div>
+        <div className="text-[10px] bg-[#FFF5F6] text-[#FFB7C5] px-2 py-0.5 rounded-full font-bold">WEEKLY REPORT</div>
       </div>
       
       <div className="space-y-6">
@@ -50,12 +50,8 @@ const StatusSnapshotUI = ({ members, playerMood, playerMoney, turnCount, current
           <div key={member.id} className="space-y-3 pt-2 border-t first:border-t-0 border-gray-50">
             <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 italic">Target: {member.name} ({member.status})</div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-3">
-                <AttributeBar label="好感度" value={member.affection || 0} icon={Heart} />
-              </div>
-              <div className="space-y-3">
-                <AttributeBar label="事业压力" value={member.careerPressure || 50} color="#F87171" icon={Zap} />
-              </div>
+              <AttributeBar label="好感度" value={member.affection || 0} icon={Heart} />
+              <AttributeBar label="事业压力" value={member.careerPressure || 50} color="#F87171" icon={Zap} />
             </div>
           </div>
         ))}
@@ -68,36 +64,24 @@ const StatusSnapshotUI = ({ members, playerMood, playerMoney, turnCount, current
             {groupHeats.map((gh: any, idx: number) => (
               <div key={idx} className="space-y-1">
                 <div className="flex justify-between items-center text-[10px] font-bold text-gray-500 uppercase">
-                  <span>[{gh.name}]</span>
-                  <span>{gh.heat}</span>
+                  <span>[{gh.name}]</span><span>{gh.heat}</span>
                 </div>
-                <div className="h-1.5 bg-gray-50 rounded-full overflow-hidden border border-gray-50">
-                  <motion.div 
-                    initial={{ width: 0 }}
-                    animate={{ width: `${gh.heat}%` }}
-                    className={`h-full rounded-full ${gh.isPlayerTarget ? 'bg-[#FF8DA1]' : 'bg-[#FFB7C5]'}`}
-                  />
+                <div className="h-1.5 bg-gray-50 rounded-full overflow-hidden">
+                  <motion.div initial={{ width: 0 }} animate={{ width: `${gh.heat}%` }} className={`h-full rounded-full ${gh.isPlayerTarget ? 'bg-[#FF8DA1]' : 'bg-[#FFB7C5]'}`} />
                 </div>
               </div>
             ))}
           </div>
-
           {!hasContributed && (
             <div className="grid grid-cols-2 gap-3 pb-2 pt-2">
-               <button 
-                 onClick={() => onAction('buy_album')}
-                 className="flex flex-col items-center justify-center p-3 bg-white border border-[#FFE4E9] rounded-2xl hover:bg-[#FFF5F6] transition-all group"
-               >
-                 <div className="text-[10px] font-black text-[#FF8DA1] mb-1">批量购买专辑</div>
-                 <div className="text-[8px] text-gray-400 group-hover:text-[#FFB7C5]">提高销量分 (需 ₩ 30万)</div>
-               </button>
-               <button 
-                 onClick={() => onAction('vote')}
-                 className="flex flex-col items-center justify-center p-3 bg-white border border-[#FFE4E9] rounded-2xl hover:bg-[#FFF5F6] transition-all group"
-               >
-                 <div className="text-[10px] font-black text-[#FFB7C5] mb-1">参与事前投票</div>
-                 <div className="text-[8px] text-gray-400 group-hover:text-[#FFB7C5]">提高投票分 (共花费 ₩ 5万)</div>
-               </button>
+              <button onClick={() => onAction('buy_album')} className="flex flex-col items-center justify-center p-3 bg-white border border-[#FFE4E9] rounded-2xl hover:bg-[#FFF5F6] transition-all group">
+                <div className="text-[10px] font-black text-[#FF8DA1] mb-1">批量购买专辑</div>
+                <div className="text-[8px] text-gray-400 group-hover:text-[#FFB7C5]">提高销量分 (需 ₩ 30万)</div>
+              </button>
+              <button onClick={() => onAction('vote')} className="flex flex-col items-center justify-center p-3 bg-white border border-[#FFE4E9] rounded-2xl hover:bg-[#FFF5F6] transition-all group">
+                <div className="text-[10px] font-black text-[#FFB7C5] mb-1">参与事前投票</div>
+                <div className="text-[8px] text-gray-400 group-hover:text-[#FFB7C5]">提高投票分 (共花费 ₩ 5万)</div>
+              </button>
             </div>
           )}
         </div>
@@ -124,7 +108,7 @@ const StatusSnapshotUI = ({ members, playerMood, playerMoney, turnCount, current
 };
 
 const TheqooPostUI = ({ post }: { post: TheqooPost }) => (
-  <div className="bg-[#F2F2F2] border border-gray-200 rounded-3xl overflow-hidden shadow-2xl my-8 max-w-lg mx-auto font-sans relative">
+  <div className="bg-[#F2F2F2] border border-gray-200 rounded-3xl overflow-hidden shadow-2xl my-8 max-w-lg mx-auto font-sans">
     <div className="bg-white px-4 py-3 flex items-center justify-between border-b border-gray-200">
       <div className="flex gap-1.5">
         <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F57]"></div>
@@ -152,9 +136,7 @@ const TheqooPostUI = ({ post }: { post: TheqooPost }) => (
         {post.comments.slice(0, 8).map((comment, idx) => (
           <div key={idx} className="p-5 bg-white hover:bg-[#FFFBFC] transition-colors">
             <div className="flex gap-4">
-              <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 flex-shrink-0 flex items-center justify-center text-gray-300 font-black text-xs border border-gray-100">
-                {idx + 1}
-              </div>
+              <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 flex-shrink-0 flex items-center justify-center text-gray-300 font-black text-xs border border-gray-100">{idx + 1}</div>
               <div className="flex-1 space-y-1.5">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black text-gray-400">@{comment.authorId}</span>
@@ -170,9 +152,7 @@ const TheqooPostUI = ({ post }: { post: TheqooPost }) => (
         ))}
       </div>
       <div className="p-4 bg-gray-50 text-center border-t border-gray-100">
-        <button className="text-[10px] font-black text-[#FFB7C5] uppercase tracking-widest hover:text-[#FF8DA1] transition-colors">
-          View all {post.commentsCount} comments
-        </button>
+        <button className="text-[10px] font-black text-[#FFB7C5] uppercase tracking-widest hover:text-[#FF8DA1] transition-colors">View all {post.commentsCount} comments</button>
       </div>
     </div>
   </div>
@@ -180,14 +160,14 @@ const TheqooPostUI = ({ post }: { post: TheqooPost }) => (
 
 const CharacterCardUI = ({ card }: any) => {
   if (!card || typeof card !== 'object') return null;
-  const name = card.name || card.姓名 || card.artistName || card.stageName || '未知角色';
-  const stageName = card.stageName || card.舞台名 || '';
-  const group = card.group || card.团体 || card.所属团体 || card.身份 || '未知团体';
-  const status = card.status || card.状态 || card.当前状态 || '活跃中';
-  const persona = card.publicPersona || card.公开人设 || card.人设 || '暂无信息';
-  const personality = card.realPersonality || card.私下性格 || card.性格 || card.personality || '暂无信息';
-  const traits = card.恋愛雷区 || card.weaknesses || card.弱点 || card.雷区 || card.traits || [];
-  const story = card.hiddenStory || card.story || card.背景 || card.隐藏剧情;
+  const name = card.name || card.artistName || card.stageName || '未知角色';
+  const stageName = card.stageName || '';
+  const group = card.group || card.所属团体 || '未知团体';
+  const status = card.status || card.当前状态 || '活跃中';
+  const persona = card.publicPersona || card.公开人设 || '暂无信息';
+  const personality = card.realPersonality || card.私下性格 || card.personality || '暂无信息';
+  const traits = card.weaknesses || card.雷区 || card.traits || [];
+  const story = card.hiddenStory || card.story || card.隐藏剧情;
 
   return (
     <div className="bg-white border-2 border-[#FFB7C5] rounded-3xl overflow-hidden shadow-lg my-6 max-w-md mx-auto font-sans">
@@ -238,7 +218,6 @@ const CharacterCardUI = ({ card }: any) => {
   );
 };
 
-// FIX #3: 只在最新消息上显示选项
 const OptionsUI = ({ options, onSelect, disabled, isLatest }: { options: { text: string; action: string }[] | string[], onSelect: (action: string) => void, disabled: boolean, isLatest: boolean }) => {
   if (!isLatest) return null;
   return (
@@ -247,12 +226,8 @@ const OptionsUI = ({ options, onSelect, disabled, isLatest }: { options: { text:
         const text = typeof opt === 'string' ? opt : opt.text;
         const action = typeof opt === 'string' ? opt : opt.action;
         return (
-          <button
-            key={i}
-            onClick={() => onSelect(action)}
-            disabled={disabled}
-            className="px-8 py-4 bg-[#FF8DA1] text-white font-black rounded-3xl hover:bg-[#FFB7C5] transition-all transform hover:scale-105 active:scale-95 disabled:opacity-50 text-sm shadow-xl cursor-pointer"
-          >
+          <button key={i} onClick={() => onSelect(action)} disabled={disabled}
+            className="px-8 py-4 bg-[#FF8DA1] text-white font-black rounded-3xl hover:bg-[#FFB7C5] transition-all transform hover:scale-105 active:scale-95 disabled:opacity-50 text-sm shadow-xl cursor-pointer">
             {text}
           </button>
         );
@@ -278,23 +253,17 @@ const ComebackSetupUI = ({ targetGroup, onConfirm, disabled }: { targetGroup: st
         </h3>
         <div className="grid grid-cols-2 gap-2 py-4">
           {competitors.map(c => (
-            <button
-              key={c}
-              onClick={() => setSelected(prev => prev.includes(c) ? prev.filter(x => x !== c) : [...prev, c])}
-              className={`group flex items-center justify-between p-3 rounded-2xl border-2 transition-all ${selected.includes(c) ? 'bg-[#FF8DA1] border-[#FF8DA1] text-white shadow-lg' : 'bg-white border-gray-100 text-gray-400 hover:border-[#FFB7C5] hover:text-[#FF8DA1]'}`}
-            >
+            <button key={c} onClick={() => setSelected(prev => prev.includes(c) ? prev.filter(x => x !== c) : [...prev, c])}
+              className={`group flex items-center justify-between p-3 rounded-2xl border-2 transition-all ${selected.includes(c) ? 'bg-[#FF8DA1] border-[#FF8DA1] text-white shadow-lg' : 'bg-white border-gray-100 text-gray-400 hover:border-[#FFB7C5] hover:text-[#FF8DA1]'}`}>
               <span className="text-[11px] font-black tracking-tight">{c}</span>
-              <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${selected.includes(c) ? 'border-white bg-white/20' : 'border-gray-100 group-hover:border-[#FFB7C5]'}`}>
+              <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${selected.includes(c) ? 'border-white bg-white/20' : 'border-gray-100'}`}>
                 {selected.includes(c) && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
               </div>
             </button>
           ))}
         </div>
-        <button
-          onClick={() => onConfirm(selected)}
-          disabled={disabled || selected.length === 0}
-          className="w-full bg-[#FF8DA1] text-white py-4 rounded-2xl font-black text-xs tracking-[0.2em] shadow-xl disabled:opacity-50 transform active:scale-95 transition-all uppercase"
-        >
+        <button onClick={() => onConfirm(selected)} disabled={disabled || selected.length === 0}
+          className="w-full bg-[#FF8DA1] text-white py-4 rounded-2xl font-black text-xs tracking-[0.2em] shadow-xl disabled:opacity-50 transform active:scale-95 transition-all uppercase">
           确认格局 & 开始制作
         </button>
       </div>
@@ -313,9 +282,7 @@ const MusicShowUI = ({ result }: { result: any }) => (
       <div className="flex justify-center flex-col items-center py-4 bg-[#FFF5F6] rounded-3xl border border-[#FFE4E9]">
         <div className="text-[10px] font-black text-[#FFB7C5] uppercase mb-1">本次优胜 / Winner</div>
         <div className="text-2xl font-black text-gray-800 tracking-tighter">{result.winner}</div>
-        <div className="mt-2 flex gap-1">
-          {[1,2,3].map(i => <Sparkles key={i} className="w-4 h-4 text-[#FF8DA1] animate-pulse" />)}
-        </div>
+        <div className="mt-2 flex gap-1">{[1,2,3].map(i => <Sparkles key={i} className="w-4 h-4 text-[#FF8DA1] animate-pulse" />)}</div>
       </div>
       <div className="space-y-4">
         {result.scores.map((score: any, idx: number) => (
@@ -357,19 +324,13 @@ const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete:
     { id: GameMode.MIXED, name: '混合模式', desc: '既可以自己攻略，也可以促成团内 CP（磕糖）。' },
     { id: GameMode.OBSERVER, name: '纯旁观模式', desc: '既不攻略也不磕 CP，以路人/工作人员视角看圈内起伏。' }
   ];
-  const availableCPs = [
-    "Yunah x Minju (玧柱)", "Wonhee x Iroha (沅羽)", "Moka x Minju (萌柱)",
-    "Karina x Winter (柚冬)", "Chaewon x Sakura (采樱)", "Kazuha x Yunjin (叶真)",
-    "Wonyoung x Yujin (双塔)", "Yeji x Ryujin (礼真)"
-  ];
+  const availableCPs = ["Yunah x Minju (玧柱)", "Wonhee x Iroha (沅羽)", "Moka x Minju (萌柱)", "Karina x Winter (柚冬)", "Chaewon x Sakura (采樱)", "Kazuha x Yunjin (叶真)", "Wonyoung x Yujin (双塔)", "Yeji x Ryujin (礼真)"];
 
   return (
     <div className="min-h-screen bg-[#FDF7F8] flex items-center justify-center p-4 py-12">
       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white border-2 border-[#FFB7C5] rounded-[2.5rem] shadow-2xl w-full max-w-xl overflow-hidden flex flex-col">
         <div className="bg-[#FFB7C5] p-8 text-white text-center relative">
-          <button onClick={onReset} className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/40 rounded-full transition-all" title="Reset">
-            <RefreshCw className="w-4 h-4" />
-          </button>
+          <button onClick={onReset} className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/40 rounded-full transition-all"><RefreshCw className="w-4 h-4" /></button>
           <h2 className="text-2xl font-bold tracking-widest mb-1">追星现实 · 角色创建</h2>
           <p className="text-xs opacity-80 font-medium">Step {step} of 4</p>
         </div>
@@ -398,14 +359,7 @@ const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete:
                 </div>
                 <div className="pt-2">
                   <input type="text" placeholder="或者手动输入你的自定义身份..." className="w-full bg-gray-50 border border-gray-100 rounded-xl p-3 text-[11px] focus:ring-1 focus:ring-[#FFB7C5] outline-none"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        const val = (e.target as HTMLInputElement).value.trim();
-                        if (val && !data.identity.includes(val)) { setData({...data, identity: [...data.identity, val]}); (e.target as HTMLInputElement).value = ''; }
-                        e.preventDefault();
-                      }
-                    }}
-                  />
+                    onKeyDown={(e) => { if (e.key === 'Enter') { const val = (e.target as HTMLInputElement).value.trim(); if (val && !data.identity.includes(val)) { setData({...data, identity: [...data.identity, val]}); (e.target as HTMLInputElement).value = ''; } e.preventDefault(); } }} />
                   <p className="text-[9px] text-gray-400 mt-1 pl-1">输入后按回车添加自定义身份</p>
                 </div>
                 <button onClick={() => setStep(3)} disabled={data.identity.length === 0} className="w-full bg-[#FF8DA1] text-white py-4 rounded-2xl font-bold shadow-xl disabled:opacity-50">继续</button>
@@ -437,7 +391,6 @@ const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete:
                     <label className="text-xs font-black text-[#FFB7C5] uppercase">关注/攻略对象 (可多选)</label>
                     <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-1 custom-scrollbar">
                       {members.map(m => (
-                        // FIX #8: 统一用 m.id
                         <button key={m.id} onClick={() => setData({...data, targets: data.targets.includes(m.id) ? data.targets.filter(x => x !== m.id) : [...data.targets, m.id]})} className={`p-4 rounded-2xl border text-[11px] transition-all flex flex-col items-center justify-center gap-1 ${data.targets.includes(m.id) ? 'bg-[#FFF5F6] border-[#FFB7C5] text-[#FF8DA1] font-bold shadow-sm' : 'bg-white border-gray-100 text-gray-500 hover:border-[#FFB7C5]'}`}>
                           <div className="font-black text-xs">{m.name}</div>
                           <div className="text-[8px] opacity-60 font-medium uppercase tracking-tighter">{m.group}</div>
@@ -509,20 +462,9 @@ export default function App() {
   const [showConfirmReset, setShowConfirmReset] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  // FIX #6: 三个独立 useEffect
-  useEffect(() => {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(gameState));
-  }, [gameState]);
-
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [gameState.history]);
-
-  useEffect(() => {
-    // FIX: 改用 VITE_DEEPSEEK_API_KEY
-    const key = import.meta.env.VITE_DEEPSEEK_API_KEY;
-    setApiKeyMissing(!key);
-  }, []);
+  useEffect(() => { localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(gameState)); }, [gameState]);
+  useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [gameState.history]);
+  useEffect(() => { const key = import.meta.env.VITE_DEEPSEEK_API_KEY; setApiKeyMissing(!key); }, []);
 
   const handleCreationComplete = (data: any) => {
     const targetMembers = gameState.members.filter(m => data.targets.includes(m.id));
@@ -533,9 +475,7 @@ export default function App() {
     handleAIStep(summary, newState);
   };
 
-  // FIX #1 #2: handleAIStep 只负责 API 调用，不自己添加消息
   const handleAIStep = async (userContent: string, stateToUse: GameState) => {
-    console.log("[App] handleAIStep started for:", userContent.substring(0, 30));
     try {
       const apiHistory = stateToUse.history.slice(-10);
       const responsePromise = callGeminiAPI(apiHistory, stateToUse);
@@ -543,26 +483,14 @@ export default function App() {
       const response = await Promise.race([responsePromise, timeoutPromise]) as string;
       processAIResponse(response, stateToUse);
     } catch (e) {
-      console.error("[App] AI Step Error:", e);
-      setGameState(prev => ({
-        ...prev,
-        history: [...prev.history, { role: MessageRole.ASSISTANT, content: `抱歉，连接通讯终端时出现错误。请检查网络或刷新重试。\n错误信息: ${e instanceof Error ? e.message : String(e)}`, timestamp: Date.now() }]
-      }));
+      setGameState(prev => ({ ...prev, history: [...prev.history, { role: MessageRole.ASSISTANT, content: `抱歉，连接通讯终端时出现错误。\n错误信息: ${e instanceof Error ? e.message : String(e)}`, timestamp: Date.now() }] }));
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleReset = () => setShowConfirmReset(true);
-
-  // FIX #9: 状态重置代替页面重载
-  const executeReset = () => {
-    localStorage.removeItem(LOCAL_STORAGE_KEY);
-    setShowConfirmReset(false);
-    setGameState(getInitialGameState());
-    setInput('');
-    setIsLoading(false);
-  };
+  const executeReset = () => { localStorage.removeItem(LOCAL_STORAGE_KEY); setShowConfirmReset(false); setGameState(getInitialGameState()); setInput(''); setIsLoading(false); };
 
   const processAIResponse = (response: string, stateAtCall: GameState) => {
     let displayContent = response;
@@ -570,9 +498,12 @@ export default function App() {
     let snapshot: any;
     let cards: any[] = [];
     let options: any[] = [];
-
-    // FIX #5: 直接用传入的 stateAtCall.setupStep
     const currentStep = stateAtCall.setupStep;
+
+    // 获取目标爱豆的名字列表，用于过滤角色卡
+    const targetMemberNames = stateAtCall.members
+      .filter(m => stateAtCall.targets.includes(m.id))
+      .map(m => m.name.toLowerCase());
 
     const extractTag = (tagName: string) => {
       const patterns = [
@@ -587,8 +518,6 @@ export default function App() {
       const loosePattern = new RegExp(`${tagName}\\s*[:：]\\s*(\\{[\\s\\S]*?\\})`, 'i');
       const looseMatch = response.match(loosePattern);
       if (looseMatch) { displayContent = displayContent.replace(looseMatch[0], ''); return looseMatch[1]; }
-
-      // FIX #7: 括号深度计数提取完整 JSON
       if (['state_snapshot', 'theqoo_post', 'character_card'].includes(tagName)) {
         const tagIndex = response.toLowerCase().indexOf(tagName.toLowerCase());
         if (tagIndex !== -1) {
@@ -599,11 +528,7 @@ export default function App() {
               if (response[i] === '{') depth++;
               else if (response[i] === '}') { depth--; if (depth === 0) { end = i; break; } }
             }
-            if (end !== -1) {
-              const jsonStr = response.slice(firstBrace, end + 1);
-              displayContent = displayContent.replace(jsonStr, '');
-              return jsonStr;
-            }
+            if (end !== -1) { const jsonStr = response.slice(firstBrace, end + 1); displayContent = displayContent.replace(jsonStr, ''); return jsonStr; }
           }
         }
       }
@@ -629,19 +554,36 @@ export default function App() {
       try {
         const parsed = JSON.parse(optionsStr);
         if (Array.isArray(parsed)) options = parsed.map(opt => typeof opt === 'string' ? { text: opt, action: opt } : opt);
-      } catch(e) { console.error("Options JSON error", e); }
+      } catch(e) {}
     }
 
+    // 提取角色卡，但只保留目标爱豆的卡
     const cardPatterns = [/<character_card>([\s\S]*?)<\/character_card>/gi, /\(character_card\)([\s\S]*?)\(\/character_card\)/gi];
     for (const pattern of cardPatterns) {
       let match;
       while ((match = pattern.exec(response)) !== null) {
-        try { const card = JSON.parse(match[1]); cards.push(card); displayContent = displayContent.replace(match[0], ''); } catch(e) {}
+        try {
+          const card = JSON.parse(match[1]);
+          // 只收录目标爱豆的角色卡
+          const cardName = (card.name || card.stageName || '').toLowerCase();
+          const isTargetIdol = currentStep === SetupStep.CARDS || 
+            targetMemberNames.some(n => cardName.includes(n) || n.includes(cardName));
+          if (isTargetIdol) cards.push(card);
+          displayContent = displayContent.replace(match[0], '');
+        } catch(e) {}
       }
     }
     if (cards.length === 0) {
       const cardStr = extractTag('character_card');
-      if (cardStr) { try { const card = JSON.parse(cardStr); cards.push(card); } catch(e) {} }
+      if (cardStr) {
+        try {
+          const card = JSON.parse(cardStr);
+          const cardName = (card.name || card.stageName || '').toLowerCase();
+          const isTargetIdol = currentStep === SetupStep.CARDS ||
+            targetMemberNames.some(n => cardName.includes(n) || n.includes(cardName));
+          if (isTargetIdol) cards.push(card);
+        } catch(e) {}
+      }
     }
 
     if (options.length === 0 && currentStep !== SetupStep.CREATION) {
@@ -654,6 +596,10 @@ export default function App() {
 
     setGameState(prev => {
       let nextState = { ...prev };
+      
+      // isWeekEnd 从 snapshot 读取，控制状态面板显示
+      const isWeekEnd = snapshot?.isWeekEnd === true;
+
       if (snapshot) {
         nextState = {
           ...nextState,
@@ -670,32 +616,38 @@ export default function App() {
           members: nextState.members.map(m => { const u = snapshot.members?.find((sm: any) => sm.id === m.id); return u ? { ...m, ...u } : m; })
         };
       }
+
       if (musicResult) nextState.musicShowHistory = [...(nextState.musicShowHistory || []), musicResult];
+
+      // 只收录目标爱豆的卡，且去重
       if (cards.length > 0) {
         const existingNames = nextState.collectedCards?.map((c: any) => c.name) || [];
         nextState.collectedCards = [...(nextState.collectedCards || []), ...cards.filter(c => c?.name && !existingNames.includes(c.name))];
       }
-      // FIX #5: 用 prev.setupStep
+
       if (cards.length > 0 && prev.setupStep === SetupStep.CARDS) nextState.setupStep = SetupStep.STARTED;
 
       const isComebackSetup = snapshot?.isComebackSetting || false;
+
       return {
         ...nextState,
         history: [...nextState.history, {
           role: MessageRole.ASSISTANT,
-          content: isComebackSetup ? "🚨 回归期确认！监测到团体即将开启新一轮打歌活动。在正式开始前，我们需要先确定本期的竞争格局。" : ((displayContent && displayContent.trim()) || (cards.length > 0 ? "（剧情准备就绪）" : "（剧情推进中...）")),
+          content: isComebackSetup
+            ? "🚨 回归期确认！监测到团体即将开启新一轮打歌活动。在正式开始前，我们需要先确定本期的竞争格局。"
+            : ((displayContent && displayContent.trim()) || (cards.length > 0 ? "（剧情准备就绪）" : "（剧情推进中...）")),
           timestamp: Date.now(),
           theqooPost,
           cardData: cards.length > 0 ? cards : undefined,
           currentMusicShow: musicResult || undefined,
           options: options.length > 0 ? options : undefined,
-          isComebackSetup
+          isComebackSetup,
+          isWeekEnd, // 传给消息，控制状态面板
         }]
       };
     });
   };
 
-  // FIX #1 #2: handleSend 统一管理消息添加和 loading
   const handleSend = async (content?: any, stateUpdate?: Partial<GameState>) => {
     let textToSend = typeof content === 'string' ? content : input;
     if ((!textToSend || !textToSend.trim()) && !stateUpdate) return;
@@ -720,9 +672,7 @@ export default function App() {
         <div className="absolute inset-0 z-[100] bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
           <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white rounded-[3rem] p-12 max-w-sm w-full shadow-2xl text-center space-y-8 relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-2 bg-red-500"></div>
-            <div className="w-24 h-24 bg-red-50 rounded-full flex items-center justify-center mx-auto text-red-500">
-              <RefreshCw className="w-12 h-12 animate-spin-slow" />
-            </div>
+            <div className="w-24 h-24 bg-red-50 rounded-full flex items-center justify-center mx-auto text-red-500"><RefreshCw className="w-12 h-12 animate-spin-slow" /></div>
             <div>
               <h3 className="text-2xl font-black text-gray-900 tracking-tight">确定重置吗？</h3>
               <p className="text-sm text-gray-500 mt-4 leading-relaxed font-medium">这将永久删除您的所有进度、好感度和剧情存档。此操作无法恢复。</p>
@@ -737,9 +687,7 @@ export default function App() {
 
       <aside className="w-80 bg-white border-r border-[#F3E5E8] flex-shrink-0 flex flex-col hidden lg:flex">
         <div className="p-8 border-b border-[#F3E5E8] bg-gradient-to-br from-[#FFF5F6] to-white">
-          <h1 className="text-xl font-black text-[#FF8DA1] tracking-tighter flex items-center gap-2">
-            <Gamepad2 className="w-7 h-7" /> STAR REALITY
-          </h1>
+          <h1 className="text-xl font-black text-[#FF8DA1] tracking-tighter flex items-center gap-2"><Gamepad2 className="w-7 h-7" /> STAR REALITY</h1>
           <div className="flex items-center gap-2 mt-2">
             <span className="text-[9px] bg-[#FF8DA1] text-white px-2 py-0.5 rounded-full font-black uppercase tracking-widest">
               {gameState.gameMode === GameMode.ROMANCE ? '攻略' : gameState.gameMode === GameMode.OBSERVER ? '旁观' : '混合'}
@@ -772,7 +720,6 @@ export default function App() {
           <section>
             <h3 className="text-[10px] font-black text-[#FFB7C5] uppercase tracking-widest mb-4 flex items-center gap-2"><Users className="w-3 h-3" /> 角色状态</h3>
             <div className="space-y-2">
-              {/* FIX #8: 用 m.id 匹配 */}
               {gameState.members.filter(m => gameState.targets.includes(m.id)).map(member => (
                 <div key={member.id} className="bg-white p-4 rounded-2xl border border-[#FFE4E9] hover:border-[#FFB7C5] transition-all">
                   <div className="flex justify-between items-center mb-1">
@@ -827,18 +774,13 @@ export default function App() {
                         <button onClick={() => {
                           let lastUserIdx = -1;
                           for (let j = i - 1; j >= 0; j--) { if (gameState.history[j].role === MessageRole.USER) { lastUserIdx = j; break; } }
-                          if (lastUserIdx !== -1) {
-                            const lastUserContent = gameState.history[lastUserIdx].content;
-                            setGameState(prev => ({ ...prev, history: prev.history.slice(0, i) }));
-                            handleSend(lastUserContent);
-                          }
+                          if (lastUserIdx !== -1) { const c = gameState.history[lastUserIdx].content; setGameState(prev => ({ ...prev, history: prev.history.slice(0, i) })); handleSend(c); }
                         }} className="mt-4 flex items-center gap-2 text-xs font-black text-[#FF8DA1] hover:text-[#FFB7C5] transition-colors uppercase tracking-widest bg-white/50 px-3 py-2 rounded-xl border border-[#FFE4B5]">
                           <RefreshCw className="w-3 h-3" /> 重试上一步操作
                         </button>
                       )}
                       {msg.theqooPost && <TheqooPostUI post={msg.theqooPost} />}
                       {msg.currentMusicShow && isLatest && <MusicShowUI result={msg.currentMusicShow} />}
-                      {/* FIX #4: 只依赖 msg.isComebackSetup */}
                       {msg.isComebackSetup && isLatest && (
                         <ComebackSetupUI
                           targetGroup={gameState.members.find(m => gameState.targets.includes(m.id))?.group || '该团'}
@@ -846,11 +788,11 @@ export default function App() {
                           disabled={isLoading}
                         />
                       )}
-                      {/* FIX #3: isLatest 控制 options 显示 */}
                       {msg.options && !msg.isComebackSetup && (
                         <OptionsUI options={msg.options} onSelect={(action) => handleSend(action)} disabled={isLoading} isLatest={isLatest} />
                       )}
-                      {msg.role === MessageRole.ASSISTANT && isLatest && gameState.setupStep === SetupStep.STARTED && (
+                      {/* 状态面板只在 isWeekEnd=true 时显示，且只在最新消息 */}
+                      {msg.role === MessageRole.ASSISTANT && isLatest && gameState.setupStep === SetupStep.STARTED && msg.isWeekEnd && (
                         <StatusSnapshotUI
                           members={gameState.members.filter(m => gameState.targets.includes(m.id))}
                           playerMood={gameState.playerMood}
@@ -861,10 +803,10 @@ export default function App() {
                           hasContributed={gameState.hasContributedThisWeek}
                           onAction={(type: string) => {
                             if (type === 'buy_album') {
-                              if (gameState.playerMoney >= 300000) handleSend("批量购买专辑。支付 30万韩元，希望能帮到她们的销量分。", { playerMoney: gameState.playerMoney - 300000, hasContributedThisWeek: true });
+                              if (gameState.playerMoney >= 300000) handleSend("批量购买专辑。支付 30万韩元。", { playerMoney: gameState.playerMoney - 300000, hasContributedThisWeek: true });
                               else alert(`金钱不足。当前余额: ₩ ${gameState.playerMoney.toLocaleString()}`);
                             } else if (type === 'vote') {
-                              if (gameState.playerMoney >= 50000) handleSend("参与事前投票。花费 5万韩元进行投票。", { playerMoney: gameState.playerMoney - 50000, hasContributedThisWeek: true });
+                              if (gameState.playerMoney >= 50000) handleSend("参与事前投票。花费 5万韩元。", { playerMoney: gameState.playerMoney - 50000, hasContributedThisWeek: true });
                               else alert(`金钱不足。当前余额: ₩ ${gameState.playerMoney.toLocaleString()}`);
                             }
                           }}
@@ -891,14 +833,11 @@ export default function App() {
         <div className="p-6 md:p-8 bg-white border-t border-[#F3E5E8]">
           <div className="max-w-4xl mx-auto flex gap-4">
             <div className="flex-1">
-              <textarea
-                value={input}
-                onChange={e => setInput(e.target.value)}
+              <textarea value={input} onChange={e => setInput(e.target.value)}
                 onKeyDown={e => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
-                placeholder="输入你的行动：例如 '送咖啡去剧场门口'、'在We或者theqoo发帖'..."
+                placeholder="输入你的行动：例如 '送咖啡去剧场门口'、'在theqoo发帖'..."
                 className="w-full bg-gray-50 border-none rounded-3xl px-8 py-5 text-sm md:text-base focus:ring-2 focus:ring-[#FFB7C5] transition-all resize-none h-16 custom-scrollbar"
-                disabled={isLoading}
-              />
+                disabled={isLoading} />
             </div>
             <button onClick={() => handleSend()} disabled={isLoading || !input.trim()} className="bg-[#FF8DA1] text-white p-5 rounded-3xl shadow-xl hover:shadow-[#FF8DA1]/30 transition-all active:scale-95 disabled:opacity-50">
               <Send className="w-6 h-6" />
@@ -917,8 +856,9 @@ export default function App() {
         .markdown-container h2 { font-size: 1.1rem; }
         .markdown-container p { margin-bottom: 0.75rem; }
         .markdown-container p:last-child { margin-bottom: 0; }
-        .markdown-container ul, .markdown-container ol { margin-left: 1.5rem; margin-bottom: 0.75rem; list-style-type: decimal; }
+        .markdown-container ul, .markdown-container ol { margin-left: 1.5rem; margin-bottom: 0.75rem; }
         .markdown-container ul { list-style-type: disc; }
+        .markdown-container ol { list-style-type: decimal; }
         .markdown-container blockquote { border-left: 4px solid #FFB7C5; padding-left: 1rem; color: #999; margin: 1rem 0; }
         .markdown-container strong { font-weight: 900; color: #FF8DA1; }
         .markdown-container hr { border: none; border-top: 2px dashed #FFE4E9; margin: 1.5rem 0; }
