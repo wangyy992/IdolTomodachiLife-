@@ -1,17 +1,14 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { ChatMessage, MessageRole, GameState, SetupStep } from './types';
 
 export async function callGeminiAPI(
   messages: ChatMessage[],
   gameState: GameState
 ) {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.DEEPSEEK_API_KEY;
   
   if (!apiKey) {
     throw new Error('API Key missing. Please check Settings > Secrets.');
   }
-
-  const ai = new GoogleGenerativeAI(apiKey);
 
   const memberNames = gameState.members.map(m => m.stageName).join(', ');
   const mode = gameState.gameMode;
@@ -37,7 +34,7 @@ export async function callGeminiAPI(
  ### 成员与目标管理
  - 目标爱豆：${targetList} (这些是玩家 pick 的爱豆，状态栏只会显示这些人的数据)。
  - ID 规范：在 (state_snapshot) 的 members 数组中，请务必使用成员的原始 id (小写 stageName，如 'wonhee', 'karina')。不要使用中文名作为 id。
- - 旁观模式：如果目标爱豆为“无”，说明玩家处于旁观视角。此时请围绕圈内大事件展开剧情，但在 (state_snapshot) 的 members 中保持为空数组 []，除非剧情极其紧密地关联到某位成员且需要显示其数值。
+ - 旁观模式：如果目标爱豆为"无"，说明玩家处于旁观视角。此时请围绕圈内大事件展开剧情，但在 (state_snapshot) 的 members 中保持为空数组 []，除非剧情极其紧密地关联到某位成员且需要显示其数值。
  - 严禁乱入：除非剧情需要引入新角色，否则不要在 (state_snapshot) 的 members 或 targets 中随意添加其他爱豆。
  
  ### 节奏与时间管理
@@ -46,7 +43,7 @@ export async function callGeminiAPI(
  
  ### 回归与竞争周期管理 (🚨核心逻辑)
  - 启动逻辑：当剧情需要开启回归期时，将 isComebackSetting 设为 true。
- - 终结逻辑：一旦玩家在对话历史中确认了竞争对手（即你看到“确认同期竞争团体：...”的回复），你在【下一次】回复出的 (state_snapshot) 中【必须立即】将 isComebackSetting 设为 false。严禁连续多轮保持 isComebackSetting 为 true。
+ - 终结逻辑：一旦玩家在对话历史中确认了竞争对手（即你看到"确认同期竞争团体：..."的回复），你在【下一次】回复出的 (state_snapshot) 中【必须立即】将 isComebackSetting 设为 false。严禁连续多轮保持 isComebackSetting 为 true。
  - 对手维护：只要 isComebackSetting 为 false 且处于回归期，请在 groupHeats 中维护竞争对手的数据。回归期结束后，清空 groupHeats。
  
  ### 核心设定
@@ -123,70 +120,86 @@ export async function callGeminiAPI(
  
  ### 竞争规则：
  - 比较红的团（如 aespa, IVE）基础分数（音源/销量）通常较高。
- - 如果玩家执行了“批量购买专辑”或“事前投票”，请务必在 scores 中大幅提升玩家所属偶像的 physical 或 preVote 分数。
- - 一位通常属于总分最高者。如果分差极小，可以使用“微弱优势险胜”等字眼。
+ - 如果玩家执行了"批量购买专辑"或"事前投票"，请务必在 scores 中大幅提升玩家所属偶像的 physical 或 preVote 分数。
+ - 一位通常属于总分最高者。如果分差极小，可以使用"微弱优势险胜"等字眼。
  - 只有触发回归期间且设定了竞争对手后，才会在剧情中频繁出现一位竞争。
  `;
 
   try {
-    console.log("[Gemini] Constructing contents for history size:", messages.length);
-    const contents = messages.map(m => ({
-      role: m.role === MessageRole.USER ? 'user' : 'model',
-      parts: [{ text: m.content || '' }]
+    console.log("[DeepSeek] Constructing messages, history size:", messages.length);
+
+    // 构建消息数组，role 只能是 user / assistant
+    const chatMessages: { role: 'user' | 'assistant'; content: string }[] = messages.map(m => ({
+      role: m.role === MessageRole.USER ? 'user' : 'assistant',
+      content: m.content || ''
     }));
 
-    if (contents.length === 0) {
-      contents.push({ role: 'user', parts: [{ text: '开始故事' }] });
+    // 如果历史为空，补一条开场消息
+    if (chatMessages.length === 0) {
+      chatMessages.push({ role: 'user', content: '开始故事' });
     }
 
-    const tryGenerate = async (modelName: string) => {
-      console.log(`[Gemini] Requesting ${modelName}...`);
-      
-      const model = ai.getGenerativeModel({ 
-        model: modelName,
-        systemInstruction: systemPrompt,
-      });
-
-      const genPromise = model.generateContent({
-        contents,
-        generationConfig: {
-          temperature: 0.7,
-          topP: 0.95,
-        },
-      });
-
-      const localTimeout = new Promise<never>((_, reject) => 
-        setTimeout(() => reject(new Error(`Model ${modelName} request timed out (35s)`)), 35000)
-      );
-
-      const result = (await Promise.race([genPromise, localTimeout])) as any;
-
-      if (!result || !result.response) {
-        throw new Error('AI 返回内容为空。');
-      }
-
-      const text = result.response.text();
-
-      if (!text || text.trim() === '') {
-         throw new Error('AI 返回文本内容为空。');
-      }
-      return text;
+    const requestBody = {
+      model: 'deepseek-chat',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        ...chatMessages
+      ],
+      temperature: 0.7,
+      top_p: 0.95,
+      max_tokens: 2048,
     };
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+    let response: Response;
     try {
-      // Use Gemini 3 Flash as the primary model
-      return await tryGenerate("gemini-3-flash-preview");
-    } catch (e) {
-      console.warn("[Gemini] gemini-3-flash-preview failed, retrying with gemini-2.0-flash...", e);
-      return await tryGenerate("gemini-2.0-flash");
+      response = await fetch('https://api.deepseek.com/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify(requestBody),
+        signal: controller.signal,
+      });
+    } finally {
+      clearTimeout(timeoutId);
     }
-  } catch (error) {
-    console.error("[Gemini] Service Exception:", error);
-    if (error instanceof Error) {
-      if (error.message.includes('API_KEY_INVALID') || error.message.includes('PERMISSION_DENIED')) {
-        throw new Error('API Key 无效或权限不足。请在设置中配置有效的 GEMINI_API_KEY。');
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error("[DeepSeek] HTTP error:", response.status, errText);
+
+      if (response.status === 401) {
+        throw new Error('API Key 无效或权限不足。请在设置中配置有效的 DEEPSEEK_API_KEY。');
       }
+      if (response.status === 429) {
+        throw new Error('请求过于频繁，请稍后再试。');
+      }
+      if (response.status === 402) {
+        throw new Error('DeepSeek 账户余额不足，请充值后继续。');
+      }
+      throw new Error(`DeepSeek API 错误 (${response.status})：${errText}`);
     }
+
+    const data = await response.json();
+    const text = data?.choices?.[0]?.message?.content;
+
+    if (!text || text.trim() === '') {
+      throw new Error('AI 返回内容为空。');
+    }
+
+    console.log("[DeepSeek] Response received successfully");
+    return text;
+
+  } catch (error) {
+    // AbortController 超时
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new Error('通讯超时 (60s)。请检查网络后重试。');
+    }
+    console.error("[DeepSeek] Service Exception:", error);
     throw error;
   }
 }
