@@ -146,7 +146,12 @@ ${currentStatusInfo}
  4. (bubble_message){...}(/bubble_message) → 爱豆发 Bubble 时
  5. (theqoo_post){...}(/theqoo_post) → 有热帖时
  6. (character_card){...}(/character_card) → 仅初始化或玩家明确要求
- 7. (options)["A","B","C"](/options) → 必须3个
+ 7. (options)["选项A","选项B","选项C"](/options) → 必须3个，且必须遵守以下规则：
+   * 选项必须紧扣当前剧情场景，不能是"继续前进""观察周围""思考下一步"这类万能废话选项。
+   * 每个选项都是一个具体的行动或回应，比如"跟着她走进走廊""按下自己要去的楼层按钮""开口问她队里喜欢喝什么"。
+   * 选项之间要有明显差异，代表不同的方向或态度（主动/被动/回避）。
+   * 选项文字控制在15字以内，简洁有画面感。
+   * 不要给出结果，只写玩家的动作或选择。
  8. (state_snapshot){...}(/state_snapshot) → 必须包含，金钱心情必须更新
  
  ### 角色卡 JSON
