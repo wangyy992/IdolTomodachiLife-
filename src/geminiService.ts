@@ -13,14 +13,13 @@ export async function callGeminiAPI(
   const targetList = gameState.targets.length > 0 ? gameState.targets.join(', ') : '无 (全景视角/旁观模式)';
   const playerIdentity = gameState.identity ? gameState.identity.join(', ') : '普通人';
  
-  // 获取目标爱豆的完整信息用于 prompt
   const targetMembersInfo = gameState.members
     .filter(m => gameState.targets.includes(m.id))
     .map(m => `${m.name}（${m.stageName}，${m.group}）`)
     .join('、');
  
   const setupGuidance = gameState.setupStep === SetupStep.CARDS 
-    ? `当前是第二步：[生成角色卡]。请为以下目标爱豆生成角色卡：${targetMembersInfo}。只生成这些人的卡，不要生成其他人的。`
+    ? `当前是第二步：[生成角色卡]。请为以下目标爱豆生成角色卡：${targetMembersInfo}。只生成这些人的卡，不要生成其他人的。卡片生成完后，立即开启第一幕剧情。`
     : "当前是正式剧情阶段。请推动剧情，给出选项 (options)，并在末尾包含 (state_snapshot)。";
  
   const memorySummary = gameState.hiddenSummary
@@ -34,11 +33,11 @@ export async function callGeminiAPI(
     : '';
  
   const currentStatusInfo = `
- ### 📊 当前游戏状态
+ ### 📊 当前游戏状态（必须在每轮 state_snapshot 中如实更新）
  - 第 ${gameState.turnCount || 1} 周
  - 当前场景：${gameState.currentScene || '首尔'}
- - 玩家心情：${gameState.playerMood || 80}
- - 玩家金钱：₩ ${(gameState.playerMoney || 0).toLocaleString()}
+ - 玩家心情：${gameState.playerMood || 80}（满分100，会随剧情起伏变化）
+ - 玩家金钱：₩ ${(gameState.playerMoney || 0).toLocaleString()}（每次消费必须扣除）
  - 是否处于回归期：${gameState.isComebackSetting ? '是' : '否'}
  `;
  
@@ -49,58 +48,90 @@ ${memorySummary}
 ${collectedCardsInfo}
 ${currentStatusInfo}
  
- ### 财务与生活逻辑 (🚨重要)
- - 初始资产：如果这是第一周，请根据身份设定一个合理的起始金额 (通常在 100万-500万韩元之间)。
- - 支出逻辑：当玩家购买专辑 (30万) 或投票 (5万) 时，你【必须】在 (state_snapshot) 中扣除相应金额。
- - 收入逻辑：
-   - 上班族：每月 25-30 号左右发放月薪 (约 250万-400万韩元)。
-   - 学生：每周一发放生活费 (约 10万-20万韩元)。
-   - 财阀/特殊背景：根据逻辑设定高额或不定的收入。
- - 现实感：如果玩家余额不足，请在剧情中描写窘迫，并禁止该操作在 (state_snapshot) 中生效。
+ ### 🚨 语言规则（最高优先级）
+ - 所有正文必须使用中文。
+ - 如果剧情中出现韩语对话（如爱豆说话），必须在括号内立即附上中文翻译。
+   格式：「오늘 날씨 좋다（今天天气真好）」
+ - 禁止出现任何没有翻译的韩语、日语句子。
+ - 可以只用中文，不用韩语也完全没问题。
+ 
+ ### 🚨 金钱系统（必须严格执行，每轮都要检查）
+ - 当前余额：₩ ${(gameState.playerMoney || 0).toLocaleString()}
+ - 【每次】玩家发生以下消费时，必须在 state_snapshot 中更新 playerMoney：
+   - 购买专辑一次：-₩ 300,00
+   - 事前投票一次：-₩ 500,0
+   - 其他消费（买咖啡、打车、买礼物等）：根据实际金额扣除，韩国物价参考：
+     * 便利店咖啡：₩ 1,500-2,000
+     * 咖啡厅美式：₩ 4,000-5,000
+     * 地铁/公交：₩ 1,500
+     * 打车（市内）：₩ 8,000-15,000
+     * 便利店一餐：₩ 5,000-8,000
+     * 餐厅一餐：₩ 10,000-20,000
+     * 礼物（花束）：₩ 20,000-50,000
+ - 【余额不足时】在剧情中描写窘迫，并禁止该消费在 state_snapshot 中生效。
+ - 收入也必须更新：上班族月薪 ₩ 2,500,000-4,000,000，学生每周生活费 ₩ 100,000-200,000。
+ 
+ ### 🚨 心情系统（必须随剧情变化）
+ - 当前心情：${gameState.playerMood || 80}
+ - 心情值必须随每轮剧情真实变化，不能一直不动：
+   - 和爱豆有正面互动：+3~+8
+   - 被爱豆冷淡/忽视：-3~-8
+   - 完成了一件事：+2~+5
+   - 遭遇意外/挫折：-5~-15
+   - 普通平淡的一天：±1~2的小幅波动
+ - 心情低于30时，剧情中必须有所体现（玩家状态不好）。
+ - 心情高于85时，可以描写玩家状态极佳。
+ 
+ ### 收集档案说明
+ - 收集档案是玩家解锁的爱豆"深度了解"卡片。
+ - 只在以下情况生成：① 游戏初始化时为目标爱豆生成；② 玩家与某爱豆发生了重要转折事件后更新。
+ - 档案内容随好感度提升而丰富，好感度越高隐藏故事越多。
+ - 绝对禁止为非目标爱豆生成档案卡。
  
  ### 成员与目标管理
- - 目标爱豆：${targetMembersInfo || '无'}。状态栏只显示这些人的数据。
- - ID 规范：在 (state_snapshot) 的 members 中，必须使用小写英文 id（如 'moka', 'wonhee', 'karina'）。
- - 严禁乱入：不要在 members 或 targets 中随意添加非目标爱豆。
+ - 目标爱豆：${targetMembersInfo || '无'}。
+ - ID 规范：state_snapshot 的 members 中必须使用小写英文 id（如 'moka', 'wonhee'）。
+ - 严禁在 members 中添加非目标爱豆。
  
- ### 🚨🚨🚨 角色卡生成规则（最高优先级，必须绝对遵守）
- - 【绝对禁止】在正式剧情推进过程中生成任何 (character_card)。
- - 【绝对禁止】为非目标爱豆生成角色卡。
- - 【仅允许】以下两种情况生成角色卡：
-   ① 游戏刚开始（第一次生成档案）时，只为目标爱豆 ${targetMembersInfo || '无'} 生成。
-   ② 玩家明确输入"查看档案"、"显示角色卡"等指令时。
- - 如果你在剧情中提到了其他爱豆（比如摩卡、沅禧等），只能在【正文叙述】中提到她们的名字，绝对不能生成她们的 (character_card)。
- - 违反此规则会破坏游戏体验，请严格执行。
+ ### 🚨🚨🚨 角色卡生成规则（绝对禁止违反）
+ - 正式剧情推进中禁止生成任何 (character_card)。
+ - 只允许：① 游戏初始化时为目标爱豆生成；② 玩家明确说"查看档案"时。
+ - 禁止为非目标爱豆生成角色卡。目标爱豆是：${targetMembersInfo || '无'}。
  
  ### 状态面板触发规则
- - 在 (state_snapshot) 中新增字段 "isWeekEnd": true 或 false。
- - 只在以下情况设为 true：① 一周结束 weekCount +1 时；② 打歌节目一位结果出来时。
+ - isWeekEnd 只在一周结束（weekCount +1）或打歌节目一位结果出来时设为 true。
  - 其他普通对话一律设为 false。
  
  ### 节奏与时间管理
- - 周次跨越：一周行程总结后，weekCount +1，isWeekEnd 设为 true。
- - 场景变换：currentScene 反映当前地理位置。
+ - 一周行程总结后，weekCount +1，isWeekEnd 设为 true。
+ - currentScene 反映当前地理位置。
  
  ### 回归与竞争周期管理
- - 启动：需要开启回归期时，将 isComebackSetting 设为 true。
- - 终结：玩家确认竞争对手后，下一次回复立即将 isComebackSetting 设为 false。
- - 对手维护：回归期内在 groupHeats 维护竞争对手数据，结束后清空。
+ - 需要开启回归期时，将 isComebackSetting 设为 true。
+ - 玩家确认竞争对手后，下一次回复立即将 isComebackSetting 设为 false。
  
  ### 核心设定
- - 背景：现代韩国娱乐圈（纪实向、生活化）。
+ - 背景：现代韩国娱乐圈（纪实向、生活化、充满质感）。
  - 当前阶段：${setupGuidance}
  
+ ### 初始剧情要求（第一幕必须遵守）
+ - 开场从玩家视角出发，描写一个具体的日常场景（便利店、地铁、录音棚走廊、节目现场后台）。
+ - 第一次和爱豆的接触必须偶然、真实，有具体时间地点和细节。
+ - 爱豆的出场要符合她的性格，有具体动作、表情或台词，让人感受到她是真实的人。
+ - 禁止"四目相对心跳加速"式的悬浮描写。
+ - 第一幕结束后给出3个接地气的行动选项。
+ 
  ### 回复格式（必须严格遵守）
- 1. 语言：必须使用中文。
- 2. 结构顺序：
-    [剧情描写] 200-500字文学描写
-    (character_card){JSON}(/character_card) → 仅初始化或玩家明确要求时，且只能是目标爱豆的卡
-    (options)["选项A","选项B","选项C"](/options) → 必须提供3个选项
-    (state_snapshot){JSON}(/state_snapshot) → 必须包含
+ 1. 语言：中文为主，韩语必须附翻译。
+ 2. 结构：
+    [剧情描写] 200-500字，生动真实
+    (character_card){JSON}(/character_card) → 仅初始化或玩家明确要求时
+    (options)["选项A","选项B","选项C"](/options) → 必须3个
+    (state_snapshot){JSON}(/state_snapshot) → 必须包含，金钱和心情必须更新
  3. 禁忌：
     - 禁止正文出现裸 JSON
-    - 禁止在剧情推进中生成 character_card
-    - 禁止为非目标爱豆生成 character_card
+    - 禁止未翻译的韩语/日语
+    - 禁止金钱和心情一直不变
  
  ### 角色卡 JSON 格式
  {
@@ -114,15 +145,15 @@ ${currentStatusInfo}
    "hiddenStory": "与玩家相关的特殊记忆"
  }
  
- ### 状态快照 JSON 格式
+ ### 状态快照 JSON 格式（每个字段都必须填写，不能省略）
  {
    "members": [{"id": "英文小写id", "affection": 0-100, "careerPressure": 0-100, "companyAlertness": 0-100, "privacy": 0-100}],
    "playerMood": 0-100,
-   "playerMoney": 数值,
-   "currentScene": "地点",
+   "playerMoney": 具体数值（必须反映本轮消费后的余额）,
+   "currentScene": "具体地点",
    "weekCount": 数字,
    "isWeekEnd": true或false,
-   "hiddenSummary": "2-3句话的剧情摘要",
+   "hiddenSummary": "2-3句话的剧情摘要，包含关键事件和金钱变化",
    "isComebackSetting": true或false,
    "groupHeats": [{"name": "团体名", "heat": 0-100, "isPlayerTarget": true或false}],
    "playerImpact": {"albumImpact": 0, "voteImpact": 0},
@@ -133,6 +164,11 @@ ${currentStatusInfo}
  (music_show)
  {"winner": "团体名", "scores": [{"group": "团体名", "digital": 数字, "physical": 数字, "sns": 数字, "preVote": 数字, "broadcast": 数字, "total": 数字}]}
  (/music_show)
+ 
+ ### 竞争规则
+ - 比较红的团（aespa, IVE）基础分通常较高。
+ - 玩家购买专辑或投票后，大幅提升对应爱豆的分数。
+ - 只有触发回归期且设定竞争对手后，才频繁出现一位竞争。
  `;
  
   try {
