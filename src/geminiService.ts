@@ -34,7 +34,7 @@ export async function callGeminiAPI(messages: ChatMessage[], gameState: GameStat
 ${memory}${cardMemory}
 
 ## 语言规则
-全程中文。禁止出现无翻译的韩语。只有生成的截图可以韩语。
+全程中文。禁止出现无翻译的韩语。只有生成的截图可以韩语，但是必须附翻译。
 ## 目标爱豆详细设定（生成角色卡时必须以此为准）
 ${targetMembersDetail}
 
@@ -52,7 +52,7 @@ ${targetMembersDetail}
 只在初始化或玩家说"查看档案"时生成。只能为目标爱豆 ${targetMembersInfo} 生成，禁止其他人。
 
 ## 状态面板
-isWeekEnd=true 仅在周结束weekCount+1时，或打歌节目出一位时。其他对话一律 isWeekEnd=false。
+isWeekEnd=true 仅在周结束weekCount+1时，或打歌节目出一位时。其他对话一律 isWeekEnd=false。一个事件结束即为周结束。
 
 ## 选项规则
 3个选项必须紧扣当前场景。禁止"继续前进""观察周围""思考下一步"。每个选项是具体行动，15字内，有画面感，代表不同方向。
