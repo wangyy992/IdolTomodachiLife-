@@ -246,13 +246,13 @@ const MusicShowUI = ({ result }: { result: any }) => (
 const OptionsUI = ({ options, isLatest }: { options: any[], isLatest: boolean }) => {
   if (!isLatest || !options?.length) return null;
   return (
-    <div className="mt-5 pt-4 border-t border-[#EAE0D5]">
+    <div className="mt-5 rounded-2xl bg-[#FAF7F2] border border-[#EAE0D5] p-4">
       <div className="text-[9px] font-black text-[#A0663A] uppercase tracking-widest mb-3">可选行动</div>
-      <div className="space-y-2">
+      <div className="space-y-2.5">
         {options.map((opt: any, i) => {
           const text = typeof opt === 'string' ? opt : opt.text;
           return (
-            <div key={i} className="text-[13px] text-[#A0663A] leading-relaxed">
+            <div key={i} className="text-[13px] text-[#C4936A] font-bold leading-relaxed">
               {text}
             </div>
           );
