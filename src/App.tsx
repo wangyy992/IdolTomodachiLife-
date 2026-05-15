@@ -269,20 +269,7 @@ const MobileDrawer = ({ gameState, onClose }: { gameState: GameState, onClose: (
             </div>
           </section>
         )}
-        {/* 收集档案 */}
-        {gameState.collectedCards && gameState.collectedCards.length > 0 && (
-          <section>
-            <h4 className="text-[10px] font-black text-[#FFB7C5] uppercase tracking-widest mb-3 flex items-center gap-2"><Shield className="w-3 h-3" /> 收集档案 ({gameState.collectedCards.length})</h4>
-            <div className="grid grid-cols-2 gap-2">
-              {gameState.collectedCards.map((card: any, idx: number) => (
-                <div key={idx} className="bg-white p-3 rounded-2xl border border-[#FFE4E9]">
-                  <div className="text-[10px] font-black text-[#FFB7C5]">{card.group || '独立艺人'}</div>
-                  <div className="text-xs font-bold text-gray-700 mt-0.5">{card.name}</div>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
+
         {/* 当前状态 */}
         <section>
           <h4 className="text-[10px] font-black text-[#FFB7C5] uppercase tracking-widest mb-3 flex items-center gap-2"><MapPin className="w-3 h-3" /> 当前状态</h4>
@@ -598,12 +585,6 @@ const processAIResponse = (response: string, stateAtCall: GameState) => {
           </div>
         </div>
         <div className="flex-1 overflow-y-auto p-5 space-y-6 custom-scrollbar">
-          {gameState.collectedCards && gameState.collectedCards.length > 0 && (
-            <section>
-              <h3 className="text-[10px] font-black text-[#FFB7C5] uppercase tracking-widest mb-3 flex items-center gap-2"><Shield className="w-3 h-3" /> 收集档案 ({gameState.collectedCards.length})</h3>
-              <div className="space-y-2">{gameState.collectedCards.map((card: any, idx: number) => <div key={idx} className="bg-white p-3 rounded-2xl border border-[#FFE4E9] hover:border-[#FFB7C5] transition-all"><div className="text-[10px] font-black text-[#FFB7C5]">{card.group || '独立艺人'}</div><div className="text-xs font-bold text-gray-700">{card.name}</div></div>)}</div>
-            </section>
-          )}
           <section>
             <h3 className="text-[10px] font-black text-[#FFB7C5] uppercase tracking-widest mb-3 flex items-center gap-2"><Users className="w-3 h-3" /> 角色状态</h3>
             <div className="space-y-2">{gameState.members.filter(m => gameState.targets.includes(m.id)).map(member => (
