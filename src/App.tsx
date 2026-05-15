@@ -313,9 +313,9 @@ const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete:
   
   const ids = ["韩国留学生","便利店/咖啡厅打工人","娱乐公司实习生","音乐节目工作人员","妆造师/发型助理","翻译/海外商务助理","娱乐记者/博主","普通粉丝","资深粉丝","公寓同栋住户"];
   const modes = [
-    { id: GameMode.ROMANCE, name: '攻略模式', desc: '和自担谈恋爱' },
-    { id: GameMode.MIXED, name: '助攻模式', desc: '给家产拉红线' },
-    { id: GameMode.OBSERVER, name: '宝妈模式', desc: '把宝宝养大' }
+    { id: GameMode.ROMANCE, name: '攻略模式', desc: '爱豆失德中' },
+    { id: GameMode.MIXED, name: '助攻模式', desc: '红线拉起来' },
+    { id: GameMode.OBSERVER, name: '宝妈模式', desc: '养成系养一下' }
   ];
 
   // 按团体分组
