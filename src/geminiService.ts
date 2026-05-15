@@ -13,6 +13,13 @@ export async function callGeminiAPI(messages: ChatMessage[], gameState: GameStat
     .filter(m => gameState.targets.includes(m.id))
     .map(m => `- ${m.name}：公开人设"${m.publicPersona}"，真实性格"${m.realPersonality}"`)
     .join('\n');
+  const teammateInfo = gameState.members
+  .filter(m => {
+    const target = gameState.members.find(t => gameState.targets.includes(t.id));
+    return target && m.group === target.group && !gameState.targets.includes(m.id);
+  })
+  .map(m => `- ${m.name}（${m.stageName}）：${m.realPersonality}`)
+  .join('\n');
 
   const playerIdentity = gameState.identity?.join(', ') || '普通人';
   const memory = gameState.hiddenSummary ? `\n【剧情记忆】${gameState.hiddenSummary}` : '';
@@ -77,6 +84,30 @@ ${memory}${cardMemory}
   * 暧昧未明：才开始有模糊的私下联系，但双方都在克制
 - 禁止跳过暧昧过程直接进入恋爱
 
+════════════════════════
+队友系统
+════════════════════════
+目标爱豆的队友们会随剧情自然介入，有各自的立场：
+
+【阻碍型行为】（担心影响团队，不是恶意）
+- 在练习室或行程中打断你们的独处
+- 私下提醒爱豆"回归期要专心"
+- 对你的出现表示微妙的警惕
+- 在群体场合故意转移爱豆注意力
+- 向经纪人透露察觉到异常
+
+【助攻型行为】（支持但低调）
+- 借口离开给你们制造独处机会
+- 帮爱豆打掩护，对外撒谎行程
+- 偷偷给你传递爱豆的状态信息
+- 在群体场合自然地把话题引向你们
+
+【触发规则】
+- 队友介入必须有具体理由，不能无缘无故阻碍或助攻
+- 同一个队友的立场可以随剧情发展改变
+- 阻碍和助攻都要符合该队友的真实性格
+- 队友第一次实质介入时生成角色卡
+- 禁止把队友写成纯恶毒阻碍者或无脑助攻机器
 ════════════════════════
 节奏规则
 ════════════════════════
