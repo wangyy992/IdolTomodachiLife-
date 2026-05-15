@@ -406,8 +406,13 @@ const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete:
                 <label className="text-xs font-black text-[#A0663A] uppercase">选择你的身份 (可多选)</label>
                 <div className="grid grid-cols-2 gap-2">{ids.map(i => <button key={i} onClick={() => setData({...data, identity: data.identity.includes(i) ? data.identity.filter(x => x !== i) : [...data.identity, i]})} className={`p-3 rounded-xl border text-[11px] transition-all ${data.identity.includes(i) ? 'bg-[#F5E6D0] border-[#C4936A] text-[#A0663A] font-bold' : 'bg-white border-[#EAE0D5] text-[#3D2B1F]'}`}>{i}</button>)}</div>
                 <div><input type="text" placeholder="或手动输入自定义身份..." className="w-full bg-white border border-[#EAE0D5] rounded-xl p-3 text-[11px] focus:ring-1 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" onKeyDown={(e) => { if (e.key === 'Enter') { const val = (e.target as HTMLInputElement).value.trim(); if (val && !data.identity.includes(val)) { setData({...data, identity: [...data.identity, val]}); (e.target as HTMLInputElement).value = ''; } e.preventDefault(); } }} /></div>
-                <button onClick={() => setStep(3)} disabled={data.identity.length === 0} className="w-full bg-[#C4936A] text-white py-4 rounded-2xl font-bold disabled:opacity-50 hover:bg-[#A0663A] transition-all">继续</button>
-              </motion.div>
+                <button onClick={() => {
+                  const inputEl = document.querySelector('input[placeholder="或手动输入自定义身份..."]') as HTMLInputElement;
+                  if (inputEl?.value.trim() && !data.identity.includes(inputEl.value.trim())) {
+                    setData(d => ({...d, identity: [...d.identity, inputEl.value.trim()]}));
+                  }
+                  setStep(3);
+                }} disabled={data.identity.length === 0 && !(document.querySelector('input[placeholder="或手动输入自定义身份..."]') as HTMLInputElement)?.value.trim()} ...>继续</button>              </motion.div>
             )}
             {step === 3 && (
               <motion.div key="s3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
