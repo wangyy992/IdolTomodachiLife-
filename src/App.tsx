@@ -309,7 +309,8 @@ const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete:
   const [step, setStep] = useState(1);
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [data, setData] = useState({ playerName: '', playerAge: 19, identity: [] as string[], gameMode: GameMode.ROMANCE, targets: [] as string[], selectedCPs: [] as string[] });
-
+  const [customIdentity, setCustomIdentity] = useState('');
+  
   const ids = ["韩国留学生","便利店/咖啡厅打工人","娱乐公司实习生","音乐节目工作人员","妆造师/发型助理","翻译/海外商务助理","娱乐记者/博主","普通粉丝","资深粉丝","公寓同栋住户"];
   const modes = [
     { id: GameMode.ROMANCE, name: '攻略模式', desc: '和自担谈恋爱' },
@@ -405,16 +406,25 @@ const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete:
               <motion.div key="s2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
                 <label className="text-xs font-black text-[#A0663A] uppercase">选择你的身份 (可多选)</label>
                 <div className="grid grid-cols-2 gap-2">{ids.map(i => <button key={i} onClick={() => setData({...data, identity: data.identity.includes(i) ? data.identity.filter(x => x !== i) : [...data.identity, i]})} className={`p-3 rounded-xl border text-[11px] transition-all ${data.identity.includes(i) ? 'bg-[#F5E6D0] border-[#C4936A] text-[#A0663A] font-bold' : 'bg-white border-[#EAE0D5] text-[#3D2B1F]'}`}>{i}</button>)}</div>
-                <div><input type="text" placeholder="或手动输入自定义身份..." className="w-full bg-white border border-[#EAE0D5] rounded-xl p-3 text-[11px] focus:ring-1 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" onKeyDown={(e) => { if (e.key === 'Enter') { const val = (e.target as HTMLInputElement).value.trim(); if (val && !data.identity.includes(val)) { setData({...data, identity: [...data.identity, val]}); (e.target as HTMLInputElement).value = ''; } e.preventDefault(); } }} /></div>
+                <div><input type="text" value={customIdentity} onChange={e => setCustomIdentity(e.target.value)} placeholder="或手动输入自定义身份..." className="w-full bg-white border border-[#EAE0D5] rounded-xl p-3 text-[11px] focus:ring-1 focus:ring-[#C4936A] outline-none text-[#3D2B1F]"onKeyDown={(e) => { 
+                  if (e.key === 'Enter') { 
+                    const val = customIdentity.trim(); 
+                    if (val && !data.identity.includes(val)) { 
+                      setData({...data, identity: [...data.identity, val]}); 
+                      setCustomIdentity('');
+                    } 
+                    e.preventDefault(); 
+                  } 
+                }} 
+              /></div>
                 <button onClick={() => {
-                  const inputEl = document.querySelector('input[placeholder="或手动输入自定义身份..."]') as HTMLInputElement;
-                  const val = inputEl?.value.trim();
+                  const val = customIdentity.trim();
                   const newIdentity = val && !data.identity.includes(val)
                     ? [...data.identity, val]
                     : data.identity;
                   setData({...data, identity: newIdentity});
                   if (newIdentity.length > 0) setStep(3);
-                }} disabled={data.identity.length === 0 && !document.querySelector('input[placeholder="或手动输入自定义身份..."]')?.value?.trim()} className="w-full bg-[#C4936A] text-white py-4 rounded-2xl font-bold disabled:opacity-50 hover:bg-[#A0663A] transition-all">继续</button>            </motion.div>
+                }} disabled={data.identity.length === 0 && !customIdentity.trim()} className="w-full bg-[#C4936A] text-white py-4 rounded-2xl font-bold disabled:opacity-50 hover:bg-[#A0663A] transition-all">继续</button>           </motion.div>
                             )}
             {step === 3 && (
               <motion.div key="s3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
