@@ -243,16 +243,21 @@ const MusicShowUI = ({ result }: { result: any }) => (
   </div>
 );
 
-const OptionsUI = ({ options, onSelect, disabled, isLatest }: { options: any[], onSelect: (a: string) => void, disabled: boolean, isLatest: boolean }) => {
+const OptionsUI = ({ options, isLatest }: { options: any[], isLatest: boolean }) => {
   if (!isLatest || !options?.length) return null;
   return (
-    <div className="flex flex-wrap gap-3 mt-6">
-      {options.map((opt: any, i) => {
-        const text = typeof opt === 'string' ? opt : opt.text;
-        const action = typeof opt === 'string' ? opt : opt.action;
-        return <button key={i} onClick={() => onSelect(action)} disabled={disabled}
-          className="px-6 py-3 bg-[#C4936A] text-white font-bold rounded-3xl hover:bg-[#A0663A] transition-all hover:scale-105 active:scale-95 disabled:opacity-50 text-sm shadow-sm">{text}</button>;
-      })}
+    <div className="mt-5 pt-4 border-t border-[#EAE0D5]">
+      <div className="text-[9px] font-black text-[#A0663A] uppercase tracking-widest mb-3">可选行动</div>
+      <div className="space-y-2">
+        {options.map((opt: any, i) => {
+          const text = typeof opt === 'string' ? opt : opt.text;
+          return (
+            <div key={i} className="text-[13px] text-[#A0663A] leading-relaxed">
+              {text}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };
