@@ -13,13 +13,14 @@ export async function callGeminiAPI(messages: ChatMessage[], gameState: GameStat
     .filter(m => gameState.targets.includes(m.id))
     .map(m => `- ${m.name}：公开人设"${m.publicPersona}"，真实性格"${m.realPersonality}"`)
     .join('\n');
+
   const teammateInfo = gameState.members
-  .filter(m => {
-    const target = gameState.members.find(t => gameState.targets.includes(t.id));
-    return target && m.group === target.group && !gameState.targets.includes(m.id);
-  })
-  .map(m => `- ${m.name}（${m.stageName}）：${m.realPersonality}`)
-  .join('\n');
+    .filter(m => {
+      const target = gameState.members.find(t => gameState.targets.includes(t.id));
+      return target && m.group === target.group && !gameState.targets.includes(m.id);
+    })
+    .map(m => `- ${m.name}（${m.stageName}）：${m.realPersonality}`)
+    .join('\n');
 
   const playerIdentity = gameState.identity?.join(', ') || '普通人';
   const memory = gameState.hiddenSummary ? `\n【剧情记忆】${gameState.hiddenSummary}` : '';
@@ -52,6 +53,7 @@ export async function callGeminiAPI(messages: ChatMessage[], gameState: GameStat
 攻略目标：${targetMembersInfo}
 目标爱豆性格：
 ${targetMembersDetail}
+${teammateInfo ? `\n目标爱豆队友：\n${teammateInfo}` : ''}
 ${memory}${cardMemory}
 
 【当前状态】
@@ -93,21 +95,18 @@ ${memory}${cardMemory}
 - 在练习室或行程中打断你们的独处
 - 私下提醒爱豆"回归期要专心"
 - 对你的出现表示微妙的警惕
-- 在群体场合故意转移爱豆注意力
 - 向经纪人透露察觉到异常
 
 【助攻型行为】（支持但低调）
 - 借口离开给你们制造独处机会
 - 帮爱豆打掩护，对外撒谎行程
 - 偷偷给你传递爱豆的状态信息
-- 在群体场合自然地把话题引向你们
 
 【触发规则】
-- 队友介入必须有具体理由，不能无缘无故阻碍或助攻
+- 队友介入必须有具体理由
 - 同一个队友的立场可以随剧情发展改变
-- 阻碍和助攻都要符合该队友的真实性格
-- 队友第一次实质介入时生成角色卡
 - 禁止把队友写成纯恶毒阻碍者或无脑助攻机器
+
 ════════════════════════
 节奏规则
 ════════════════════════
@@ -219,8 +218,8 @@ SNAPSHOT_END
 - 禁止省略A/B/C选项
 - 禁止省略SNAPSHOT_START...SNAPSHOT_END
 - 禁止出现韩语日语原文
-- THEQOO_START/THEQOO_END、BUBBLE_START/BUBBLE_END、KKTMSG_START/KKTMSG_END 标签名不能写错，不能用括号或其他符号替代
-- 所有标签必须单独成行，前后不能有其他文字
+- THEQOO_START/THEQOO_END、BUBBLE_START/BUBBLE_END、KKTMSG_START/KKTMSG_END 标签名不能写错
+- 所有标签必须单独成行，前后不能有其他文字`;
 
   try {
     const cleanHistory = messages.slice(-6).map(msg => ({
@@ -248,27 +247,19 @@ SNAPSHOT_END
 
     const lastUserIdx = chatMessages.map(m => m.role).lastIndexOf('user');
     if (lastUserIdx !== -1) {
-      // 1. 计算当前场景已进行的轮数（利用历史记录中回复的数量）
-      // 逻辑：每 2 轮 Assistant 回复代表一个场景结束
-      const assistantMessagesCount = gameState.history.filter(h => h.role === MessageRole.ASSISTANT).length;
-      const turnsInCurrentScene = assistantMessagesCount % 2; 
-      
-      // 2. 预计算下一周的数字
+      // 计算当前场景轮数，每2轮强制推进
+      const assistantCount = gameState.history.filter(h => h.role === MessageRole.ASSISTANT).length;
+      const turnsInCurrentScene = assistantCount % 2;
       const nextWeek = (gameState.turnCount || 1) + 1;
 
-      let transitionPrompt = "";
-      
-      // 3. 判断是否到了第 2 轮（即 turnsInCurrentScene 为 1 时）
+      let extraPrompt = '';
       if (turnsInCurrentScene >= 1) {
-        // 强行注入转场和跳周指令
-        transitionPrompt = '\n\n[系统强制指令：本轮必须结束当前场景剧情！请在正文中描述“转眼到了第二天”或“回到宿舍/公司”。请务必在 SNAPSHOT 中将 weekCount 更新为 ${nextWeek}，并切换 currentScene 为新地点，以开启新一周。]';
+        extraPrompt = `\n[系统指令：本轮必须结束当前场景！正文描述时间跳跃，SNAPSHOT中weekCount更新为${nextWeek}，切换currentScene为新地点]`;
       } else {
-        // 第一轮时提醒保持当前周数
-        transitionPrompt = '\n\n[系统提示：当前为本场景第 1 轮，请细腻展开剧情，SNAPSHOT 的 weekCount 保持不变。]';
+        extraPrompt = `\n[系统提示：当前场景第1轮，细腻展开剧情，SNAPSHOT的weekCount保持${gameState.turnCount || 1}不变]`;
       }
 
-      // 4. 将指令缝合到最后一条消息
-      chatMessages[lastUserIdx].content += '\n[必须包含：①A/B/C三个选项 ②SNAPSHOT_START...SNAPSHOT_END。如有消息/帖子必须用对应标签：KKTMSG_START/END、THEQOO_START/END、BUBBLE_START/END、WEVERSE_START/END，标签单独成行]';
+      chatMessages[lastUserIdx].content += extraPrompt + '\n[必须包含：①A/B/C三个选项 ②SNAPSHOT_START...SNAPSHOT_END。如有消息/帖子必须用对应标签：KKTMSG_START/END、THEQOO_START/END、BUBBLE_START/END、WEVERSE_START/END，标签单独成行]';
     }
 
     const controller = new AbortController();
