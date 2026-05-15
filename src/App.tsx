@@ -337,7 +337,7 @@ const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete:
                   </div>
                 )}
                 {data.gameMode === GameMode.OBSERVER && (<div className="p-6 text-center bg-gray-50 rounded-[2rem]"><Info className="w-8 h-8 text-gray-300 mx-auto mb-2" /><p className="text-xs text-gray-400">旁观模式，以全景视角展开。</p></div>)}
-                <button onClick={() => onComplete(data)} className="w-full bg-[#FF8DA1] text-white py-4 rounded-2xl font-bold shadow-xl">开启追星之旅</button>
+                <button onClick={() => onComplete(data)} className="w-full bg-[#FF8DA1] text-white py-4 rounded-2xl font-bold shadow-xl">start</button>
               </motion.div>
             )}
           </AnimatePresence>
