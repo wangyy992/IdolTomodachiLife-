@@ -500,6 +500,14 @@ function parseOptions(text: string): { text: string; action: string }[] {
       }
     } catch(e) {}
   }
+  // 兜底：匹配"1. 2. 3."编号格式
+  const numberedPattern = /^\d+[\.、]\s*(.+)$/gm;
+  const numbered: { text: string; action: string }[] = [];
+  while ((match = numberedPattern.exec(text)) !== null) {
+    const content = match[1].trim();
+    if (content.length > 2) numbered.push({ text: content, action: content });
+  }
+  if (numbered.length >= 2) return numbered;
   return [];
 }
 
