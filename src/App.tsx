@@ -394,7 +394,6 @@ const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete:
     <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center p-4 py-12">
       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white border border-[#EAE0D5] rounded-[2.5rem] shadow-sm w-full max-w-xl overflow-hidden flex flex-col">
         <div className="bg-[#C4936A] p-8 text-white text-center relative">
-          <button onClick={onReset} className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/40 rounded-full"><RefreshCw className="w-4 h-4" /></button>
           <h2 className="text-2xl font-bold tracking-widest mb-1">爱豆收集梦想生活</h2>
           <p className="text-xs opacity-80">Step {step} of 4</p>
         </div>
@@ -404,6 +403,7 @@ const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete:
               <motion.div key="s1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
                 <div className="space-y-2"><label className="text-xs font-black text-[#A0663A] uppercase">你的名字</label><input type="text" value={data.playerName} onChange={e => setData({...data, playerName: e.target.value})} className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-sm focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" placeholder="请输入角色昵称..." /></div>
                 <div className="space-y-2"><label className="text-xs font-black text-[#A0663A] uppercase">年龄</label><input type="number" value={data.playerAge} onChange={e => setData({...data, playerAge: parseInt(e.target.value)})} className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-sm focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" /></div>
+                <button onClick={() => setStep(1)} className="w-full py-3 bg-white text-[#A0663A] rounded-2xl text-sm font-bold border border-[#EAE0D5] hover:bg-[#F5E6D0] transition-all mb-2">← 上一步</button>
                 <button onClick={() => setStep(2)} disabled={!data.playerName} className="w-full bg-[#C4936A] text-white py-4 rounded-2xl font-bold disabled:opacity-50 hover:bg-[#A0663A] transition-all">继续</button>
               </motion.div>
             )}
@@ -422,6 +422,7 @@ const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete:
                   } 
                 }} 
               /></div>
+                <button onClick={() => setStep(2)} className="w-full py-3 bg-white text-[#A0663A] rounded-2xl text-sm font-bold border border-[#EAE0D5] hover:bg-[#F5E6D0] transition-all mb-2">← 上一步</button>
                 <button onClick={() => {
                   const val = customIdentity.trim();
                   const newIdentity = val && !data.identity.includes(val)
@@ -455,7 +456,7 @@ const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete:
                   <MemberPicker label="选两个人来拉郎" max={2} />
                 )}
                 {data.gameMode === GameMode.OBSERVER && (
-                  <MemberPicker label="选择你的宝宝" />
+                  <MemberPicker label="选择你的孩子" />
                 )}
                 <button onClick={() => { setStep(3); setSelectedGroup(null); setData({...data, targets: []}); }} className="w-full py-3 bg-white text-[#A0663A] rounded-2xl text-sm font-bold border border-[#EAE0D5] hover:bg-[#F5E6D0] transition-all mb-2">← 上一步</button>
                 <button onClick={() => onComplete(data)} disabled={!canProceedStep4()} className="w-full bg-[#C4936A] text-white py-4 rounded-2xl font-bold hover:bg-[#A0663A] transition-all disabled:opacity-50">Start!</button>
