@@ -408,12 +408,14 @@ const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete:
                 <div><input type="text" placeholder="或手动输入自定义身份..." className="w-full bg-white border border-[#EAE0D5] rounded-xl p-3 text-[11px] focus:ring-1 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" onKeyDown={(e) => { if (e.key === 'Enter') { const val = (e.target as HTMLInputElement).value.trim(); if (val && !data.identity.includes(val)) { setData({...data, identity: [...data.identity, val]}); (e.target as HTMLInputElement).value = ''; } e.preventDefault(); } }} /></div>
                 <button onClick={() => {
                   const inputEl = document.querySelector('input[placeholder="或手动输入自定义身份..."]') as HTMLInputElement;
-                  if (inputEl?.value.trim() && !data.identity.includes(inputEl.value.trim())) {
-                    setData(d => ({...d, identity: [...d.identity, inputEl.value.trim()]}));
-                  }
-                  setStep(3);
-                }} disabled={data.identity.length === 0 && !(document.querySelector('input[placeholder="或手动输入自定义身份..."]') as HTMLInputElement)?.value.trim()} ...>继续</button>              </motion.div>
-            )}
+                  const val = inputEl?.value.trim();
+                  const newIdentity = val && !data.identity.includes(val)
+                    ? [...data.identity, val]
+                    : data.identity;
+                  setData({...data, identity: newIdentity});
+                  if (newIdentity.length > 0) setStep(3);
+                }} disabled={data.identity.length === 0 && !document.querySelector('input[placeholder="或手动输入自定义身份..."]')?.value?.trim()} className="w-full bg-[#C4936A] text-white py-4 rounded-2xl font-bold disabled:opacity-50 hover:bg-[#A0663A] transition-all">继续</button>            </motion.div>
+                            )}
             {step === 3 && (
               <motion.div key="s3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
                 <label className="text-xs font-black text-[#A0663A] uppercase">选择模式</label>
