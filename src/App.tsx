@@ -737,7 +737,13 @@ export default function App() {
                   <div className={`max-w-[92%] md:max-w-2xl ${msg.role === MessageRole.USER ? 'ml-8' : 'mr-8'}`}>
                     {msg.role === MessageRole.ASSISTANT && <div className="text-[9px] font-black text-[#A0663A] uppercase tracking-widest ml-3 mb-2 flex items-center gap-1"><Zap className="w-3 h-3" /> NARRATIVE</div>}
                     <div className={`p-5 md:p-6 rounded-[1.5rem] text-sm leading-relaxed markdown-container ${msg.role === MessageRole.USER ? 'bg-[#C4936A] text-white rounded-tr-none' : 'bg-[#FAF7F2] border border-[#EAE0D5] text-[#3D2B1F] rounded-tl-none'}`}>
-                      <Markdown>{msg.content}</Markdown>
+                      <Markdown components={{
+                        p: ({children}) => {
+                          const text = String(children);
+                          const isOption = /^[A-C][\.、。]/.test(text);
+                          return <p className={isOption ? 'text-[#C4936A] font-bold' : ''}>{children}</p>;
+                        }
+                      }}>{msg.content}</Markdown>
                       {msg.cardData?.map((card: any, idx: number) => <CharacterCardUI key={idx} card={card} />)}
                       {(msg as any).kktMessage && <KKTMessageUI data={(msg as any).kktMessage} />}
                       {(msg as any).weversePost && <WeversePostUI data={(msg as any).weversePost} />}
