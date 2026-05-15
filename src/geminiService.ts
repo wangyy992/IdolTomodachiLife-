@@ -218,7 +218,9 @@ SNAPSHOT_END
 - 禁止SNAPSHOT写成文字描述，必须是JSON
 - 禁止省略A/B/C选项
 - 禁止省略SNAPSHOT_START...SNAPSHOT_END
-- 禁止出现韩语日语原文`;
+- 禁止出现韩语日语原文
+- THEQOO_START/THEQOO_END、BUBBLE_START/BUBBLE_END、KKTMSG_START/KKTMSG_END 标签名不能写错，不能用括号或其他符号替代
+- 所有标签必须单独成行，前后不能有其他文字
 
   try {
     const cleanHistory = messages.slice(-6).map(msg => ({
@@ -266,7 +268,7 @@ SNAPSHOT_END
       }
 
       // 4. 将指令缝合到最后一条消息
-      chatMessages[lastUserIdx].content += `\n[必须包含A/B/C三个选项和SNAPSHOT_START...SNAPSHOT_END，禁止写"选项："或"状态快照："标题]${transitionPrompt}`;
+      chatMessages[lastUserIdx].content += '\n[必须包含：①A/B/C三个选项 ②SNAPSHOT_START...SNAPSHOT_END。如有消息/帖子必须用对应标签：KKTMSG_START/END、THEQOO_START/END、BUBBLE_START/END、WEVERSE_START/END，标签单独成行]';
     }
 
     const controller = new AbortController();
