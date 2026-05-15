@@ -261,10 +261,10 @@ SNAPSHOT_END
       // 3. 判断是否到了第 2 轮（即 turnsInCurrentScene 为 1 时）
       if (turnsInCurrentScene >= 1) {
         // 强行注入转场和跳周指令
-        transitionPrompt = `\n\n【系统强制指令：本轮必须结束当前场景剧情！请在正文中描述“转眼到了第二天”或“回到宿舍/公司”。请务必在 SNAPSHOT 中将 weekCount 更新为 ${nextWeek}，并切换 currentScene 为新地点，以开启新一周。】`;
+        transitionPrompt = '\n\n[系统强制指令：本轮必须结束当前场景剧情！请在正文中描述“转眼到了第二天”或“回到宿舍/公司”。请务必在 SNAPSHOT 中将 weekCount 更新为 ${nextWeek}，并切换 currentScene 为新地点，以开启新一周。]';
       } else {
         // 第一轮时提醒保持当前周数
-        transitionPrompt = `\n\n【系统提示：当前为本场景第 1 轮，请细腻展开剧情，SNAPSHOT 的 weekCount 保持不变。】`;
+        transitionPrompt = '\n\n[系统提示：当前为本场景第 1 轮，请细腻展开剧情，SNAPSHOT 的 weekCount 保持不变。]';
       }
 
       // 4. 将指令缝合到最后一条消息
