@@ -30,6 +30,7 @@ const KKTMessageUI = ({ data }: { data: any }) => (
               <div className="flex flex-col gap-0.5 max-w-[75%]">
                 <div className="bg-white rounded-2xl rounded-tl-none px-3 py-2 shadow-sm">
                   <p className="text-[12px] text-gray-800 leading-relaxed font-medium">{msg.text}</p>
+                  {msg.translation && <p className="text-[11px] text-[#A0663A] mt-0.5 leading-relaxed">{msg.translation}</p>}
                 </div>
                 <div className="flex items-center gap-1 pl-1">
                   <span className="text-[9px] text-gray-400">{msg.time}</span>
@@ -482,7 +483,8 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
                   </div>
                 )}
                 <button onClick={() => { setStep(data.gameMode === 'mom' ? 2 : 3); setSelectedGroup(null); setData({...data, targets: []}); }} className="w-full py-3 bg-white text-[#A0663A] rounded-2xl text-sm font-bold border border-[#EAE0D5] hover:bg-[#F5E6D0] transition-all">← 上一步</button>
-                <button onClick={() => onComplete(data)} disabled={!canProceedStep4()} className="w-full bg-[#C4936A] text-white py-4 rounded-2xl font-bold hover:bg-[#A0663A] transition-all disabled:opacity-50">Start!</button>
+                <button onClick={() => on
+                Complete(data)} disabled={!canProceedStep4()} className="w-full bg-[#C4936A] text-white py-4 rounded-2xl font-bold hover:bg-[#A0663A] transition-all disabled:opacity-50">Start!</button>
               </motion.div>
             )}
           </AnimatePresence>
@@ -724,7 +726,10 @@ export default function App() {
         ...next,
         history: [...next.history, {
           role: MessageRole.ASSISTANT,
-          content: '',
+          content: contentBlocks
+            .filter((b: any) => b.type === 'text')
+            .map((b: any) => b.content)
+            .join('\n'),
           timestamp: Date.now(),
           contentBlocks,
           currentMusicShow: musicResult || undefined,
