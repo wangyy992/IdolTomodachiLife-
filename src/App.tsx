@@ -522,13 +522,13 @@ function parseContentBlocks(text: string): ContentBlock[] {
     }
 
     if (earliest.tag === null) {
-      const cleaned = remaining.replace(/^[A-D][\.、。\s].+$/gm, '').replace(/\[.*?\]/g, '').replace(/^---+$/gm, '').replace(/\n{3,}/g, '\n\n').trim();
+      const cleaned = remaining.replace(/^\*{0,2}[A-D]\.\*{0,2}.+$/gm, '').replace(/^[A-D][\.、。\s].+$/gm, '').replace(/\[.*?\]/g, '').replace(/^---+$/gm, '').replace(/\n{3,}/g, '\n\n').trim();
       if (cleaned) blocks.push({ type: 'text', content: cleaned });
       break;
     }
 
     if (earliest.index > 0) {
-      const textBefore = remaining.slice(0, earliest.index).replace(/^[A-D][\.、。\s].+$/gm, '').replace(/\[.*?\]/g, '').replace(/^---+$/gm, '').replace(/\n{3,}/g, '\n\n').trim();
+      const textBefore = remaining.slice(0, earliest.index).replace(/^\*{0,2}[A-D]\.\*{0,2}.+$/gm, '').replace(/^[A-D][\.、。\s].+$/gm, '').replace(/\[.*?\]/g, '').replace(/^---+$/gm, '').replace(/\n{3,}/g, '\n\n').trim();
       if (textBefore) blocks.push({ type: 'text', content: textBefore });
     }
 
