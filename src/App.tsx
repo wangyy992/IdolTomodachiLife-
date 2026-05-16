@@ -461,6 +461,13 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
                       </div>
                     </div>
                     <div className="space-y-2">
+                      <label className="text-xs font-black text-[#A0663A] uppercase">女儿的名字（选填，不填由AI生成）</label>
+                      <input type="text" value={data.daughterName || ''} 
+                        onChange={e => setData({...data, daughterName: e.target.value})}
+                        className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-sm focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]"
+                        placeholder="给女儿起个名字..." />
+                    </div>
+                    <div className="space-y-2">
                       <label className="text-xs font-black text-[#A0663A] uppercase">家庭背景</label>
                       <div className="grid grid-cols-3 gap-2">
                         {backgrounds.map(b => (
@@ -661,6 +668,7 @@ export default function App() {
     let remaining = response;
     // 清理AI乱加的加粗标记
     remaining = remaining.replace(/\*\*([A-Z_]+(?:START|END))\*\*/g, '$1');
+    remaining = remaining.replace(/---+\s*\n(SNAPSHOT_START)/g, '$1');
 
     // 先提取 SNAPSHOT 和 MUSICSHOW（不参与交织）
     let snapshot: any = null;
