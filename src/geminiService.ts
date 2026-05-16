@@ -47,15 +47,19 @@ export async function callGeminiAPI(messages: ChatMessage[], gameState: GameStat
 
   const targetAffections = gameState.members.filter(m => gameState.targets.includes(m.id));
   const relationStages = targetAffections.map(m => `${m.name}：${getRelationStage(m.affection)}`).join('、');
-  const romanceSnapshotHint = `SNAPSHOT_START
-  {"members":[${targetAffections.map(m => `{"id":"${m.id}","affection":好感度数字,"careerPressure":数字,"status":"当前状态"}`).join(',')}],"currentScene":"地点","weekCount":数字,"isWeekEnd":true或false,"hiddenSummary":"2-3句摘要","isComebackSetting":true或false,"groupHeats":[]}
-  SNAPSHOT_END`;
   const isInitialSetup = gameState.setupStep === SetupStep.CARDS;
+
+  // 攻略线 SNAPSHOT 格式（硬编码成员id，防止AI写错）
+  const romanceSnapshotHint = `SNAPSHOT_START
+{"members":[${targetAffections.map(m => `{"id":"${m.id}","affection":好感度数字,"careerPressure":数字,"status":"当前状态"}`).join(',')}],"currentScene":"地点","weekCount":数字,"isWeekEnd":true或false,"hiddenSummary":"2-3句摘要","isComebackSetting":true或false,"groupHeats":[]}
+SNAPSHOT_END`;
 
   // CP模式相关
   const cpMember1 = gameState.members.find(m => m.id === gameState.targets[0]);
   const cpMember2 = gameState.members.find(m => m.id === gameState.targets[1]);
   const cpAffection = cpMember1?.affection || 0;
+
+  // CP线 SNAPSHOT 格式（硬编码成员id）
   const cpSnapshotHint = `SNAPSHOT_START
 {"members":[{"id":"${cpMember1?.id}","affection":CP亲密度数字,"careerPressure":数字,"status":"状态"},{"id":"${cpMember2?.id}","affection":CP亲密度数字,"careerPressure":数字,"status":"状态"}],"currentScene":"地点","weekCount":数字,"isWeekEnd":false,"hiddenSummary":"摘要","isComebackSetting":false,"groupHeats":[]}
 SNAPSHOT_END`;
@@ -90,7 +94,7 @@ SNAPSHOT_END`;
     return '彼此确认心意，只差一步';
   };
 
-  // 宝妈线相关 — 从 daughterProfile 读取虚构女儿设定
+  // 宝妈线相关
   const daughterProfile = (gameState as any).daughterProfile;
   const momTrustLevel = (gameState as any).momTrustLevel ?? 50;
   const daughterNationality = daughterProfile?.nationality || '韩国';
@@ -98,14 +102,13 @@ SNAPSHOT_END`;
   const daughterBackground = daughterProfile?.background || '';
   const daughterName = daughterProfile?.name || '';
 
-  // 根据国籍决定地点和赴韩时间线
   const nationalityTimeline = daughterNationality === '韩国'
-    ? `地点从家乡城市或首尔开始。语言无障碍，但面临最激烈的内卷和升学压力。直接在国内接触韩国练习生制度。`
+    ? '地点从家乡城市或首尔开始。语言无障碍，但面临最激烈的内卷和升学压力。直接在国内接触韩国练习生制度。'
     : daughterNationality === '中国'
-    ? `启蒙期在中国国内（北京/上海/广州等城市），先在国内学舞/声乐。签证和赴韩问题是核心现实压力之一。通常13-15岁才有机会赴韩面试，或通过在华海选才踏上韩国土地。赴韩之前的几轮故事都发生在国内。`
+    ? '启蒙期在中国国内（北京/上海/广州等城市），先在国内学舞/声乐。签证和赴韩问题是核心现实压力之一。通常13-15岁才有机会赴韩面试，或通过在华海选才踏上韩国土地。赴韩之前的几轮故事都发生在国内。'
     : daughterNationality === '日本'
-    ? `启蒙期在日本国内（东京/大阪等城市），先在国内接受舞蹈/声乐训练。日本有一定的韩娱训练机构，但正式赴韩通常在14-16岁，通过日本选拔或海外面试。语言关（韩语）是重要的成长弧度。`
-    : `启蒙期在本国，对韩国偶像文化的接触可能通过网络或当地韩流社群开始。赴韩时间最晚，通常16-18岁通过选秀节目的海外选拔才有机会，或者根本不去首尔而是通过网络曝光被发现。`;
+    ? '启蒙期在日本国内（东京/大阪等城市），先在国内接受舞蹈/声乐训练。正式赴韩通常在14-16岁，通过日本选拔或海外面试。语言关（韩语）是重要的成长弧度。'
+    : '启蒙期在本国，对韩国偶像文化的接触可能通过网络或当地韩流社群开始。赴韩时间最晚，通常16-18岁通过选秀节目的海外选拔才有机会。';
 
   const getTrustStage = (t: number) => {
     if (t < 20) return '女儿开始有秘密不告诉你';
@@ -163,7 +166,8 @@ SNAPSHOT_END`;
 THEQOO_END
 注意：评论必须有分歧——至少一条路人评价、一条粉丝护航、一条争议评论`;
 
-  const outputFormat = `
+  // 攻略线专用输出格式（含正确的SNAPSHOT）
+  const romanceOutputFormat = `
 【输出格式】
 
 第一部分：剧情正文
@@ -201,20 +205,19 @@ B. [具体行动]
 C. [具体行动]
 
 第四部分：
-SNAPSHOT_START
-{"members":[{"id":"daughter","affection":母女信任度数字,"careerPressure":数字,"status":"女儿当前状态"}],"currentScene":"地点","weekCount":数字,"isWeekEnd":true或false,"hiddenSummary":"2-3句摘要","isComebackSetting":true或false,"groupHeats":[]}
-SNAPSHOT_END
+${romanceSnapshotHint}
 
 【格式禁止】
-- SNAPSHOT必须是JSON，禁止写成文字
+- SNAPSHOT必须是JSON，禁止写成文字，id必须用上方示例中的英文id
 - 禁止省略A/B/C选项
 - 禁止省略SNAPSHOT
 - 禁止韩语日语原文出现在剧情正文里
 - 禁止用"你现在有三个选择："或"可选行动："等标题引出选项
 - 选项必须是回复的最后三行，格式严格为 A./B./C. 开头
+- SNAPSHOT的members只能包含攻略目标成员，禁止写入队友或其他成员
 - 所有标签单独成行`;
 
-  // 宝妈线prompt — 使用虚构女儿设定
+  // 宝妈线prompt
   const momPrompt = `你是《爱豆收集梦想生活·星妈之路》的DM。
 本游戏为韩娱向平行世界虚构文游，所有剧情均为虚构创作。
 
@@ -225,12 +228,12 @@ SNAPSHOT_END
 国籍：${daughterNationality}
 性格类型：${daughterPersonality}
 家庭背景：${daughterBackground}（${
-  daughterBackground === '贫困' 
+  daughterBackground === '贫困'
     ? '每一笔培训费都是压力，妈妈可能要兼职甚至借钱支撑女儿的梦想，经济危机随时会成为故事转折点'
     : daughterBackground === '小资'
     ? '生活质量还不错，能负担基本的培训费用，但顶级资源仍然需要取舍，偶尔会有经济压力'
     : '钱不是问题，但家庭期望值更高，可能有更复杂的家族关系和压力'
-})
+}）
 ${daughterName ? `已确定名字：${daughterName}` : ''}
 
 【国籍决定的地点与时间线】
@@ -358,7 +361,7 @@ ${daughterPersonality === '完美主义型'
 
 ════════════════════════
 ${isInitialSetup
-    ? `【初始化】根据女儿的国籍（${daughterNationality}）、性格（${daughterPersonality}）、家庭背景（${daughterBackground}），先生成一个完整的虚构女儿角色：给她起一个符合国籍的名字、设定外貌特征、细化性格表现。然后从她8岁第一次在电视/网络前看到韩国爱豆的那个场景开始第一轮。写出那个具体的傍晚：妈妈在做什么，女儿在做什么，那一刻发生了什么让妈妈第一次意识到女儿可能认真的。场景在${daughterNationality === '韩国' ? '韩国家里' : daughterNationality === '中国' ? '中国家里' : daughterNationality === '日本' ? '日本家里' : '当地家里'}。`
+    ? `【初始化】根据女儿的国籍（${daughterNationality}）、性格（${daughterPersonality}）、家庭背景（${daughterBackground}）${daughterName ? `、名字（${daughterName}）` : ''}，先生成一个完整的虚构女儿角色：${daughterName ? `名字已确定为${daughterName}，` : '给她起一个符合国籍的名字，'}设定外貌特征、细化性格表现。然后从她8岁第一次在电视/网络前看到韩国爱豆的那个场景开始第一轮。写出那个具体的傍晚：妈妈在做什么，女儿在做什么，那一刻发生了什么让妈妈第一次意识到女儿可能认真的。场景在${daughterNationality === '韩国' ? '韩国家里' : daughterNationality === '中国' ? '中国家里' : daughterNationality === '日本' ? '日本家里' : '当地家里'}。`
     : '【剧情推进】推动养成故事，信任度变化要有理由，每轮包含2-3个事件，注意当前阶段女儿应该在哪个城市/国家。'}
 ════════════════════════
 
@@ -366,7 +369,7 @@ ${isInitialSetup
 
 第一部分：剧情正文（200-400字，有镜头感）
 
-第二部分：UI组件（有则输出，无则省略，宝妈线通常不需要Weverse/Bubble，但可以有KKT和Theqoo）
+第二部分：UI组件（有则输出，无则省略）
 
 KKTMSG_START
 {"sender":"发信人","avatar":"😊","messages":[{"text":"消息内容","time":"14:23","isRead":false}]}
@@ -435,27 +438,27 @@ ${koreanDetails}
 根据身份严格限制玩家能看到什么、能做什么：
 
 【局内人——能直接接触】
-- 娱乐公司实习生/工作人员：能出现在后台、待机室、行程车，能直接观察两人互动，但受职业约束不能随便开口，助攻行动多为安排行程、传递信息
-- 音乐节目工作人员：能在打歌现场后台观察，知道当天行程安排，但只在录制日才有机会接触
-- 妆造师/发型助理：和成员有近距离接触，能观察到她们的状态和情绪，但职业要求保持沉默
-- 翻译/海外商务助理：在特定的海外活动或跨团合作场合才能接触到，信息有限但偶尔能成为中间人
-- 娱乐记者/博主：有职业渠道接触公开信息，能采访但不能越界，报道还是隐瞒是持续的选择
+- 娱乐公司实习生/工作人员：能出现在后台、待机室、行程车，能直接观察两人互动，但受职业约束不能随便开口
+- 音乐节目工作人员：能在打歌现场后台观察，只在录制日才有机会接触
+- 妆造师/发型助理：和成员有近距离接触，但职业要求保持沉默
+- 翻译/海外商务助理：在特定的海外活动或跨团合作场合才能接触到
+- 娱乐记者/博主：有职业渠道接触公开信息，能采访但不能越界
 
 【粉丝——只能通过公开渠道】
-- 普通粉丝：只能从直播、官方物料、theqoo帖子、站姐照片拼凑两人关系，大部分时候是间接推断，助攻行动多为发帖、控评、解读
+- 普通粉丝：只能从直播、官方物料、theqoo帖子、站姐照片拼凑两人关系，助攻行动多为发帖、控评、解读
 - 资深粉丝：有半公开的粉圈人脉，偶尔能得到非官方信息，但真假难辨
 
 【首尔生活者——偶遇视角】
-- 韩国留学生：偶尔在咖啡厅或街头偶遇便装出行的爱豆，接触机会极少，主要靠社交媒体了解动态
-- 便利店/咖啡厅打工人：爱豆是常客，能观察到她们私下的状态，但接触仅限于收银台前的几句话
-- 公寓同栋住户：偶尔在电梯或楼道里遇见，知道她们几点回家，但没有主动接触的理由
+- 韩国留学生：偶尔在咖啡厅或街头偶遇便装出行的爱豆，接触机会极少
+- 便利店/咖啡厅打工人：爱豆是常客，接触仅限于收银台前的几句话
+- 公寓同栋住户：偶尔在电梯或楼道里遇见，没有主动接触的理由
 
 【禁止事项】
 - 禁止玩家出现在自己身份触及不到的场合
-- 禁止直接呈现两人的私下对话和心理活动——玩家只能看到自己视角能看到的
+- 禁止直接呈现两人的私下对话和心理活动
 - 禁止所有身份的选项都一样，选项必须符合玩家当前身份能做到的事
-- 粉丝类身份的选项应该是：发帖、截图分析、在评论区留言、联系粉圈人脉
-- 工作人员类身份的选项应该是：安排行程、传递信息、制造偶遇机会、打掩护
+- 粉丝类身份的选项：发帖、截图分析、联系粉圈人脉
+- 工作人员类身份的选项：安排行程、传递信息、制造偶遇、打掩护
 
 ════════════════════════
 语言规则
@@ -465,16 +468,13 @@ ${koreanDetails}
 ════════════════════════
 关系数值使用规则
 ════════════════════════
-初始亲密度和张力值决定两人互动的基调：
 - 亲密度高（>70）：两人有默契，非公开场合会自然靠近，有只有彼此懂的梗
-- 张力高（>50）：互动时有明显的紧绷感或压抑的情绪，可能是相杀相爱
+- 张力高（>50）：互动时有明显的紧绷感或压抑的情绪
 - 特殊关系（如前任）：同场必须表现出"完美的礼貌"与"紧绷的下颌线"，禁止直视
-- 这些数值会随剧情事件自然浮动，不是固定的
 
 ════════════════════════
 CP亲密度规则
 ════════════════════════
-CP亲密度代表两人之间的感情进展：
 - 玩家成功制造两人互动机会：+3~+8
 - 两人自然发生化学反应：+2~+5
 - 玩家行动造成误会或阻碍：-3~-8
@@ -513,12 +513,7 @@ CP营业：直播里微妙互动被截图、综艺节目刻意安排同组
 ════════════════════════
 玩家助攻行动类型
 ════════════════════════
-- 制造独处机会（安排行程、制造借口）
-- 传话（把A说的话委婉告诉B）
-- 打掩护（帮两人瞒住经纪人或其他成员）
-- 提供情报（告诉A，B今天在哪里）
-- 出谋划策（帮A想怎么表达心意）
-- 静静观察，什么都不做
+- 制造独处机会、传话、打掩护、提供情报、出谋划策、静静观察
 
 ════════════════════════
 节奏规则
@@ -578,7 +573,7 @@ C. 静静观察，什么都不做
 ${cpSnapshotHint}
 
 【格式禁止】
-- SNAPSHOT必须是JSON，禁止写成文字
+- SNAPSHOT必须是JSON，禁止写成文字，id必须用上方示例中的英文id
 - 禁止省略A/B/C选项
 - 禁止省略SNAPSHOT
 - 禁止韩语日语原文出现在剧情正文里
@@ -660,6 +655,9 @@ ${koreanDetails}
 ════════════════════════
 每轮必须在SNAPSHOT里更新affection：
 - 有实质互动：+2~+5 / 负面互动：-3~-8 / 普通接触：+0~+2 / 重大突破：+6~+10
+- 单轮好感度变化不超过±10，禁止大幅跳变
+- 没有明显负面事件时禁止降低好感度
+- SNAPSHOT里的affection必须基于上一轮的数值调整，禁止凭空重置
 
 ════════════════════════
 UI触发规则
@@ -684,7 +682,7 @@ ${isInitialSetup
     ? '【初始化】为目标爱豆生成角色卡，然后开启第一幕。场景真实日常，初遇偶然，爱豆反应符合陌生人阶段。'
     : '【剧情推进】推动故事，好感度变化要有理由，同一场景2轮必须推进。'}
 ════════════════════════
-${outputFormat}`;
+${romanceOutputFormat}`;
 
   const systemPrompt = isCPMode ? cpPrompt : isMomMode ? momPrompt : romancePrompt;
 
