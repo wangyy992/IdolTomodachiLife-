@@ -324,7 +324,10 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
   groups.forEach(g => { groupedMembers[g] = members.filter(m => m.group === g); });
   groupedMembers['Solo'] = members.filter(m => soloIds.includes(m.id));
   const allGroups = [...groups, 'Solo'];
-
+  const groups = Array.from(new Set(members.map(m => m.group)));
+  const groupedMembers: Record<string, Member[]> = {};
+  groups.forEach(g => { groupedMembers[g] = members.filter(m => m.group === g); });
+  const allGroups = groups;
   const toggleTarget = (id: string, max?: number) => {
     if (data.targets.includes(id)) {
       setData({...data, targets: data.targets.filter(x => x !== id)});
