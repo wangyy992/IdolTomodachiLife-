@@ -160,11 +160,7 @@ SNAPSHOT_END`;
 - 宿舍：外卖盒、游戏手柄、各种颜色的充电宝、凌晨亮着的电视
 - 行程永远在赶，打歌节目彩排和正录是两件事
 - 经纪人会突然出现打断对话`;
-  
-  const bubbleRule = `重要区分——禁止混用：
-  - Bubble：爱豆发给所有付费粉丝的群发，内容是深夜碎碎念/吃东西/练习感慨，没有特定对象，禁止出现收信人名字
-  - KKT：私下一对一联系，有具体收信人
-  - 两个人私下联系、传递信息、约见面 → 必须用KKT，禁止用Bubble`;
+
   const theqooFormat = `THEQOO_START
 {"title":"帖子标题","category":"아이돌","viewsCount":48392,"likesCount":1823,"commentsCount":247,"comments":[{"authorId":"글릿조아_민주야","content":"韩文评论（中文翻译）","translation":""},{"authorId":"페어낫_사랑해","content":"韩文评论","translation":""},{"authorId":"냉정한_로드리뷰어","content":"争议评论","translation":""}]}
 THEQOO_END
@@ -193,8 +189,7 @@ WEVERSE_END
 BUBBLE_START
 {"artist":"爱豆中文名","group":"团体","messages":[{"text":"消息内容","translation":"中文翻译（如原文是中文则留空）","time":"22:15"}]}
 BUBBLE_END
-注意：Bubble是爱豆发给所有付费订阅粉
-丝的群发消息，不是私聊。
+注意：Bubble是爱豆发给所有付费订阅粉丝的群发消息，不是私聊。
 内容只能是：深夜碎碎念、吃东西的感慨、练习累了的随口一句、对粉丝的集体撒娇。
 禁止：叫玩家名字、约玩家见面、说只有两人知道的事、表达对玩家的特殊感情。
 
@@ -219,11 +214,7 @@ ${romanceSnapshotHint}
 - 禁止韩语日语原文出现在剧情正文里
 - 禁止用"你现在有三个选择："或"可选行动："等标题引出选项
 - 选项必须是回复的最后三行，格式严格为 A./B./C. 开头
-- SNAPSHOT的members只能包含攻略目标成员，禁止写入队友或其他成员
-- 禁止在正文里用 [人名] 格式模拟消息，所有消息必须用对应标签输出
-- 禁止在正文里描述消息内容，只描述"收到消息"这个动作，消息内容放进标签里
 - 所有标签单独成行`;
-  
 
   // 宝妈线prompt
   const momPrompt = `你是《爱豆收集梦想生活·星妈之路》的DM。
@@ -251,9 +242,19 @@ ${memory}${cardMemory}
 
 【当前状态】
 游戏阶段：${getMomStage()}
-第${gameState.turnCount || 1}轮 | 场景：${gameState.currentScene || (daughterNationality === '韩国' ? '首尔' : daughterNationality === '中国' ? '北京' : daughterNationality === '日本' ? '东京' : '当地城市')}
+当前轮数：第${gameState.turnCount || 1}轮（此数字是唯一时间锚点，禁止无视）
+场景：${gameState.currentScene || (daughterNationality === '韩国' ? '首尔' : daughterNationality === '中国' ? '北京' : daughterNationality === '日本' ? '东京' : '当地城市')}
 母女信任度：${momTrustLevel}/100（${getTrustStage(momTrustLevel)}）
 选秀期：${gameState.isComebackSetting ? '是' : '否'}
+上一轮剧情记忆：${gameState.hiddenSummary || '无（第一轮，从头开始）'}
+
+════════════════════════
+时间线铁律（违反即格式错误）
+════════════════════════
+- 必须严格从上一轮记忆的状态继续推进，禁止重置或跳过
+- 禁止写"两年后""七个月后"等跳跃，除非上一轮记忆里明确有此时间跨度
+- hiddenSummary必须包含：女儿当前年龄、所在城市/国家、本轮核心事件
+- 每轮只推进数周至数月，不得一轮跨越数年
 ${writingStyle}
 
 ════════════════════════
@@ -401,12 +402,7 @@ SNAPSHOT_END
 - 禁止省略A/B/C选项
 - 禁止省略SNAPSHOT
 - 禁止韩语日语原文出现在剧情正文里
-- 禁止用"你现在有三个选择："或"可选行动："等标题引出选项
-- 选项必须是回复的最后三行，格式严格为 A./B./C. 开头
-- 禁止在正文里用 [人名] 格式模拟消息，所有消息必须用对应标签输出
-- 禁止在正文里描述消息内容，只描述"收到消息"这个动作，消息内容放进标签里
 - 所有标签单独成行`;
-
 
   // CP线prompt
   const cpPrompt = `你是《爱豆收集梦想生活》助攻模式的DM。
@@ -429,9 +425,13 @@ ${crossRelations ? `\n【相关跨团关系】\n${crossRelations}` : ''}
 【当前CP状态】
 CP亲密度：${cpAffection}/100
 当前阶段：${getCPStage(cpAffection)}
-第${gameState.turnCount || 1}周 | 场景：${gameState.currentScene || '首尔'}
+当前轮数：第${gameState.turnCount || 1}轮（唯一时间锚点，禁止无视）
+场景：${gameState.currentScene || '首尔'}
 回归期：${gameState.isComebackSetting ? '是' : '否'}
-${memory}${cardMemory}
+上一轮剧情记忆：${gameState.hiddenSummary || '无（第一轮，从头开始）'}
+${cardMemory}
+
+注意：必须严格从上一轮记忆继续推进，禁止重置或无故跳跃时间线。hiddenSummary必须写明本轮CP关系核心进展。
 ${writingStyle}
 ${koreanDetails}
 
@@ -590,30 +590,28 @@ ${cpSnapshotHint}
 - 禁止省略A/B/C选项
 - 禁止省略SNAPSHOT
 - 禁止韩语日语原文出现在剧情正文里
-- 禁止在正文里用 [人名] 格式模拟消息，所有消息必须用对应标签输出
-- 禁止用"你现在有三个选择："或"可选行动："等标题引出选项
-- 选项必须是回复的最后三行，格式严格为 A./B./C. 开头
-- 禁止在正文里描述消息内容，只描述"收到消息"这个动作，消息内容放进标签里
 - 所有标签单独成行`;
-
 
   // 攻略线prompt
   const romancePrompt = `你是《爱豆收集梦想生活》的DM。
 本游戏为韩娱向平行世界虚构文游，所有剧情均为虚构创作。
 
 玩家：${gameState.playerName}，${gameState.playerAge}岁，${playerIdentity}。
-玩家身份对剧情有决定性影响：如果身份包含特殊关系（前任/现任/青梅竹马/发小等），剧情必须从这段关系出发，不能当成陌生人处理。身份决定玩家能出现在什么场合、能做什么、和爱豆的互动方式，每一轮的选项和场景都必须符合玩家的身份逻辑。
 攻略目标：${targetMembersInfo}
 目标爱豆性格：
 ${targetMembersDetail}
 ${teammateInfo ? `\n目标爱豆队友：\n${teammateInfo}` : ''}
-${memory}${cardMemory}
+${cardMemory}
 
 【当前状态】
 好感度：${currentAffection}
 当前关系阶段：${relationStages}
-第${gameState.turnCount || 1}周 | 场景：${gameState.currentScene || '首尔'}
+当前轮数：第${gameState.turnCount || 1}轮（唯一时间锚点，禁止无视）
+场景：${gameState.currentScene || '首尔'}
 回归期：${gameState.isComebackSetting ? '是' : '否'}
+上一轮剧情记忆：${gameState.hiddenSummary || '无（第一轮，从头开始）'}
+
+注意：必须严格从上一轮记忆继续推进，禁止重置或无故跳跃时间线。hiddenSummary必须写明本轮好感度变化原因和关键事件。
 ${writingStyle}
 ${koreanDetails}
 
@@ -674,9 +672,6 @@ ${koreanDetails}
 ════════════════════════
 每轮必须在SNAPSHOT里更新affection：
 - 有实质互动：+2~+5 / 负面互动：-3~-8 / 普通接触：+0~+2 / 重大突破：+6~+10
-- 单轮好感度变化不超过±10，禁止大幅跳变
-- 没有明显负面事件时禁止降低好感度
-- SNAPSHOT里的affection必须基于上一轮的数值调整，禁止凭空重置
 
 ════════════════════════
 UI触发规则
