@@ -725,7 +725,7 @@ export const INITIAL_MEMBERS: Member[] = [
   },
   {
     id: 'yujin_ive',
-    name: '安兪真',
+    name: '安俞真',
     stageName: 'ANYUJIN',
     group: 'IVE',
     age: 2003,
