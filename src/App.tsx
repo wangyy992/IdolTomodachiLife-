@@ -1,19 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, RefreshCw, Info, Users, Eye, MapPin, Gamepad2, Heart, Zap, Sparkles, MessageCircle, CheckCheck, X, ChevronUp } from 'lucide-react';
+import { Send, RefreshCw, Users, Eye, MapPin, Gamepad2, Heart, Zap, Sparkles, CheckCheck, X, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Markdown from 'react-markdown';
 import { GameState, INITIAL_MEMBERS, ChatMessage, MessageRole, Member, TheqooPost, SetupStep, GameMode } from './types';
 import { callGeminiAPI } from './geminiService';
 
 const LOCAL_STORAGE_KEY = 'star_reality_kpop_game_state';
-
-// 杏色主题色板
-// 背景: #FAF7F2 奶油白
-// 强调: #C4936A 杏色
-// 浅强调: #F5E6D0
-// 边框: #EAE0D5
-// 深文字: #3D2B1F
-// 次要文字: #A0663A
 
 const KKTMessageUI = ({ data }: { data: any }) => (
   <div className="my-6 max-w-xs mx-auto font-sans">
@@ -87,9 +79,7 @@ const WeversePostUI = ({ data }: { data: any }) => (
     </div>
     {data.imageDesc && (
       <div className="w-full bg-[#F5E6D0] aspect-[4/3] flex flex-col items-center justify-center gap-2">
-        <div className="w-10 h-10 rounded-full bg-[#EAE0D5] flex items-center justify-center">
-          <span className="text-[#A0663A] text-xl">🖼</span>
-        </div>
+        <span className="text-[#A0663A] text-xl">🖼</span>
         <p className="text-[11px] text-[#A0663A]">图片</p>
       </div>
     )}
@@ -251,11 +241,7 @@ const OptionsUI = ({ options, isLatest }: { options: any[], isLatest: boolean })
       <div className="space-y-2.5">
         {options.map((opt: any, i) => {
           const text = typeof opt === 'string' ? opt : opt.text;
-          return (
-            <div key={i} className="text-[13px] text-[#C4936A] font-bold leading-relaxed">
-              {text}
-            </div>
-          );
+          return <div key={i} className="text-[13px] text-[#C4936A] font-bold leading-relaxed">{text}</div>;
         })}
       </div>
     </div>
@@ -263,42 +249,52 @@ const OptionsUI = ({ options, isLatest }: { options: any[], isLatest: boolean })
 };
 
 const MobileDrawer = ({ gameState, onClose }: { gameState: GameState, onClose: () => void }) => {
+  const isCPMode = gameState.gameMode === 'CPCP';
+  const isMomMode = gameState.gameMode === 'mom';
   const targetMembers = gameState.members.filter(m => gameState.targets.includes(m.id));
+  const cpAffection = targetMembers[0]?.affection || 0;
+
   return (
     <motion.div
       initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
       transition={{ type: 'spring', damping: 30, stiffness: 300 }}
       className="fixed inset-x-0 bottom-0 z-50 bg-[#FAF7F2] rounded-t-[2rem] shadow-2xl border-t border-[#EAE0D5] max-h-[70vh] overflow-y-auto"
     >
-      <div className="flex justify-center pt-3 pb-2">
-        <div className="w-10 h-1 bg-[#EAE0D5] rounded-full"></div>
-      </div>
+      <div className="flex justify-center pt-3 pb-2"><div className="w-10 h-1 bg-[#EAE0D5] rounded-full"></div></div>
       <div className="flex items-center justify-between px-6 pb-4 border-b border-[#EAE0D5]">
-        <h3 className="font-black text-[#C4936A] text-sm uppercase tracking-widest">角色状态</h3>
+        <h3 className="font-black text-[#C4936A] text-sm uppercase tracking-widest">
+          {isMomMode ? '母女信任度' : isCPMode ? 'CP 羁绊值' : '角色状态'}
+        </h3>
         <button onClick={onClose} className="p-2 hover:bg-[#F5E6D0] rounded-full transition-all"><X className="w-4 h-4 text-[#A0663A]" /></button>
       </div>
       <div className="p-5 space-y-5">
-        {targetMembers.length > 0 && (
-          <section>
-            <h4 className="text-[10px] font-black text-[#A0663A] uppercase tracking-widest mb-3 flex items-center gap-2"><Heart className="w-3 h-3" /> 攻略目标</h4>
-            <div className="space-y-3">
-              {targetMembers.map(member => (
-                <div key={member.id} className="bg-white p-4 rounded-2xl border border-[#EAE0D5]">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-bold text-[#3D2B1F]">{member.name}</span>
-                    <span className="text-[11px] text-[#C4936A] font-mono font-bold">{member.affection}/100</span>
-                  </div>
-                  <div className="h-2 bg-[#F5E6D0] rounded-full overflow-hidden mb-1">
-                    <motion.div animate={{ width: `${member.affection}%` }} className="h-full bg-[#C4936A] rounded-full" />
-                  </div>
-                  <div className="text-[10px] text-[#A0663A]">{member.status}</div>
-                </div>
-              ))}
+        {isCPMode ? (
+          <div className="bg-white p-4 rounded-2xl border border-[#C4936A]">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-bold text-[#3D2B1F]">{targetMembers.map(m => m.name).join(' ♡ ')}</span>
+              <span className="text-[11px] text-[#C4936A] font-black">{cpAffection}/100</span>
             </div>
-          </section>
+            <div className="h-2 bg-[#F5E6D0] rounded-full overflow-hidden">
+              <motion.div animate={{ width: `${cpAffection}%` }} className="h-full bg-gradient-to-r from-[#C4936A] to-[#A0663A] rounded-full" />
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {targetMembers.map(member => (
+              <div key={member.id} className="bg-white p-4 rounded-2xl border border-[#EAE0D5]">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-bold text-[#3D2B1F]">{member.name}</span>
+                  <span className="text-[11px] text-[#C4936A] font-mono font-bold">{member.affection}/100</span>
+                </div>
+                <div className="h-2 bg-[#F5E6D0] rounded-full overflow-hidden mb-1">
+                  <motion.div animate={{ width: `${member.affection}%` }} className="h-full bg-[#C4936A] rounded-full" />
+                </div>
+                <div className="text-[10px] text-[#A0663A]">{isMomMode ? `信任度 ${member.affection}/100` : member.status}</div>
+              </div>
+            ))}
+          </div>
         )}
         <section>
-          <h4 className="text-[10px] font-black text-[#A0663A] uppercase tracking-widest mb-3 flex items-center gap-2"><MapPin className="w-3 h-3" /> 当前状态</h4>
           <div className="bg-white p-4 rounded-2xl border border-[#EAE0D5] space-y-2">
             <div className="flex justify-between text-xs"><span className="text-[#A0663A]">场景</span><span className="font-bold text-[#3D2B1F]">{gameState.currentScene}</span></div>
             <div className="flex justify-between text-xs"><span className="text-[#A0663A]">第几周</span><span className="font-bold text-[#C4936A]">Week {gameState.turnCount || 1}</span></div>
@@ -313,17 +309,17 @@ const MobileDrawer = ({ gameState, onClose }: { gameState: GameState, onClose: (
 const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete: (data: any) => void, onReset: () => void, members: Member[] }) => {
   const [step, setStep] = useState(1);
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
-  const [data, setData] = useState({ playerName: '', playerAge: 19, identity: [] as string[], gameMode: GameMode.ROMANCE, targets: [] as string[], selectedCPs: [] as string[] });
+  const [data, setData] = useState({ playerName: '', playerAge: 19, identity: [] as string[], gameMode: 'romance' as string, targets: [] as string[], selectedCPs: [] as string[] });
   const [customIdentity, setCustomIdentity] = useState('');
-  
+
   const ids = ["韩国留学生","便利店/咖啡厅打工人","娱乐公司实习生","音乐节目工作人员","妆造师/发型助理","翻译/海外商务助理","娱乐记者/博主","普通粉丝","资深粉丝","公寓同栋住户"];
+  const momIds = ["全职妈妈","上班族妈妈","单亲妈妈","富裕家庭","工薪阶层","异地陪读妈妈","娱乐圈相关从业者"];
   const modes = [
-    { id: GameMode.ROMANCE, name: '攻略模式', desc: '爱豆失德中' },
-    { id: GameMode.MIXED, name: '助攻模式', desc: '红线拉起来' },
-    { id: GameMode.OBSERVER, name: '宝妈模式', desc: '养成系养一下' }
+    { id: 'romance', name: '攻略模式', desc: '爱豆失德中' },
+    { id: 'CPCP', name: '助攻模式', desc: '红线拉起来' },
+    { id: 'mom', name: '宝妈模式', desc: '养成系养一下' }
   ];
 
-  // 按团体分组
   const soloIds = ['yena', 'eunbi'];
   const groups = Array.from(new Set(members.filter(m => !soloIds.includes(m.id)).map(m => m.group)));
   const groupedMembers: Record<string, Member[]> = {};
@@ -340,11 +336,9 @@ const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete:
     }
   };
 
-  // 选人面板（带团体二级目录）
   const MemberPicker = ({ max, label }: { max?: number, label: string }) => (
     <div className="space-y-3">
-      <label className="text-xs font-black text-[#A0663A] uppercase">{label}{max ? `（选${max}人）` : '（可多选）'}</label>
-      {/* 团体标签 */}
+      <label className="text-xs font-black text-[#A0663A] uppercase">{label}{max === 1 ? '（选1人）' : max ? `（选${max}人）` : '（可多选）'}</label>
       <div className="flex flex-wrap gap-2">
         {allGroups.map(g => (
           <button key={g} onClick={() => setSelectedGroup(selectedGroup === g ? null : g)}
@@ -353,7 +347,6 @@ const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete:
           </button>
         ))}
       </div>
-      {/* 成员列表 */}
       {selectedGroup && (
         <div className="grid grid-cols-2 gap-2 max-h-44 overflow-y-auto p-1 custom-scrollbar">
           {(groupedMembers[selectedGroup] || []).map(m => {
@@ -386,16 +379,18 @@ const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete:
   );
 
   const canProceedStep4 = () => {
-    if (data.gameMode === GameMode.MIXED) return data.targets.length === 2;
+    if (data.gameMode === 'CPCP') return data.targets.length === 2;
     return data.targets.length >= 1;
   };
+
+  const currentIds = data.gameMode === 'mom' ? momIds : ids;
 
   return (
     <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center p-4 py-12">
       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white border border-[#EAE0D5] rounded-[2.5rem] shadow-sm w-full max-w-xl overflow-hidden flex flex-col">
-        <div className="bg-[#C4936A] p-8 text-white text-center relative">
+        <div className="bg-[#C4936A] p-8 text-white text-center">
           <h2 className="text-2xl font-bold tracking-widest mb-1">爱豆收集梦想生活</h2>
-          <p className="text-xs opacity-80">Step {step} of 4</p>
+          <p className="text-xs opacity-80">Step {step} of {data.gameMode === 'mom' ? '3' : '4'}</p>
         </div>
         <div className="p-8 flex-1 overflow-y-auto max-h-[65vh] custom-scrollbar bg-[#FAF7F2]">
           <AnimatePresence mode="wait">
@@ -408,58 +403,42 @@ const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete:
             )}
             {step === 2 && (
               <motion.div key="s2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
-                <label className="text-xs font-black text-[#A0663A] uppercase">选择你的身份 (可多选)</label>
-                <div className="grid grid-cols-2 gap-2">{ids.map(i => <button key={i} onClick={() => setData({...data, identity: data.identity.includes(i) ? data.identity.filter(x => x !== i) : [...data.identity, i]})} className={`p-3 rounded-xl border text-[11px] transition-all ${data.identity.includes(i) ? 'bg-[#F5E6D0] border-[#C4936A] text-[#A0663A] font-bold' : 'bg-white border-[#EAE0D5] text-[#3D2B1F]'}`}>{i}</button>)}</div>
-                <div><input type="text" value={customIdentity} onChange={e => setCustomIdentity(e.target.value)} placeholder="或手动输入自定义身份..." className="w-full bg-white border border-[#EAE0D5] rounded-xl p-3 text-[11px] focus:ring-1 focus:ring-[#C4936A] outline-none text-[#3D2B1F]"onKeyDown={(e) => { 
-                  if (e.key === 'Enter') { 
-                    const val = customIdentity.trim(); 
-                    if (val && !data.identity.includes(val)) { 
-                      setData({...data, identity: [...data.identity, val]}); 
-                      setCustomIdentity('');
-                    } 
-                    e.preventDefault(); 
-                  } 
-                }} 
-              /></div>
-                <button onClick={() => setStep(1)} className="w-full py-3 bg-white text-[#A0663A] rounded-2xl text-sm font-bold border border-[#EAE0D5] hover:bg-[#F5E6D0] transition-all mb-2">← 上一步</button>
-
-                <button onClick={() => {
-                  const val = customIdentity.trim();
-                  const newIdentity = val && !data.identity.includes(val)
-                    ? [...data.identity, val]
-                    : data.identity;
-                  setData({...data, identity: newIdentity});
-                  if (newIdentity.length > 0) setStep(3);
-                }} disabled={data.identity.length === 0 && !customIdentity.trim()} className="w-full bg-[#C4936A] text-white py-4 rounded-2xl font-bold disabled:opacity-50 hover:bg-[#A0663A] transition-all">继续</button>           </motion.div>
-                            )}
-            {step === 3 && (
-              <motion.div key="s3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
                 <label className="text-xs font-black text-[#A0663A] uppercase">选择模式</label>
                 <div className="space-y-3">{modes.map(m => (
-                  <button key={m.id} onClick={() => {
-                    setData({...data, gameMode: m.id as GameMode, targets: []});
-                    setSelectedGroup(null);
-                  }} className={`w-full p-4 rounded-2xl border text-left transition-all ${data.gameMode === m.id ? 'bg-[#F5E6D0] border-[#C4936A] text-[#A0663A]' : 'bg-white border-[#EAE0D5] text-[#3D2B1F]'}`}>
+                  <button key={m.id} onClick={() => { setData({...data, gameMode: m.id, targets: [], identity: []}); setSelectedGroup(null); }}
+                    className={`w-full p-4 rounded-2xl border text-left transition-all ${data.gameMode === m.id ? 'bg-[#F5E6D0] border-[#C4936A] text-[#A0663A]' : 'bg-white border-[#EAE0D5] text-[#3D2B1F]'}`}>
                     <div className="font-bold text-sm">{m.name}</div>
                     <div className="text-[10px] opacity-60 mt-1">{m.desc}</div>
                   </button>
                 ))}</div>
-                <button onClick={() => setStep(2)} className="w-full py-3 bg-white text-[#A0663A] rounded-2xl text-sm font-bold border border-[#EAE0D5] hover:bg-[#F5E6D0] transition-all mb-2">← 上一步</button>
-                <button onClick={() => setStep(4)} className="w-full bg-[#C4936A] text-white py-4 rounded-2xl font-bold hover:bg-[#A0663A] transition-all">下一步</button>
+                <button onClick={() => setStep(1)} className="w-full py-3 bg-white text-[#A0663A] rounded-2xl text-sm font-bold border border-[#EAE0D5] hover:bg-[#F5E6D0] transition-all">← 上一步</button>
+                <button onClick={() => data.gameMode === 'mom' ? setStep(4) : setStep(3)} className="w-full bg-[#C4936A] text-white py-4 rounded-2xl font-bold hover:bg-[#A0663A] transition-all">下一步</button>
+              </motion.div>
+            )}
+            {step === 3 && (
+              <motion.div key="s3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
+                <label className="text-xs font-black text-[#A0663A] uppercase">选择你的身份 (可多选)</label>
+                <div className="grid grid-cols-2 gap-2">{currentIds.map(i => (
+                  <button key={i} onClick={() => setData({...data, identity: data.identity.includes(i) ? data.identity.filter(x => x !== i) : [...data.identity, i]})}
+                    className={`p-3 rounded-xl border text-[11px] transition-all ${data.identity.includes(i) ? 'bg-[#F5E6D0] border-[#C4936A] text-[#A0663A] font-bold' : 'bg-white border-[#EAE0D5] text-[#3D2B1F]'}`}>
+                    {i}
+                  </button>
+                ))}</div>
+                <input type="text" value={customIdentity} onChange={e => setCustomIdentity(e.target.value)}
+                  placeholder="或手动输入自定义身份..."
+                  className="w-full bg-white border border-[#EAE0D5] rounded-xl p-3 text-[11px] focus:ring-1 focus:ring-[#C4936A] outline-none text-[#3D2B1F]"
+                  onKeyDown={(e) => { if (e.key === 'Enter') { const val = customIdentity.trim(); if (val && !data.identity.includes(val)) { setData({...data, identity: [...data.identity, val]}); setCustomIdentity(''); } e.preventDefault(); } }} />
+                <button onClick={() => setStep(2)} className="w-full py-3 bg-white text-[#A0663A] rounded-2xl text-sm font-bold border border-[#EAE0D5] hover:bg-[#F5E6D0] transition-all">← 上一步</button>
+                <button onClick={() => { const val = customIdentity.trim(); const newIdentity = val && !data.identity.includes(val) ? [...data.identity, val] : data.identity; setData({...data, identity: newIdentity}); if (newIdentity.length > 0) setStep(4); }}
+                  disabled={data.identity.length === 0 && !customIdentity.trim()} className="w-full bg-[#C4936A] text-white py-4 rounded-2xl font-bold disabled:opacity-50 hover:bg-[#A0663A] transition-all">继续</button>
               </motion.div>
             )}
             {step === 4 && (
               <motion.div key="s4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
-                {data.gameMode === GameMode.ROMANCE && (
-                  <MemberPicker label="选择你的自担" />
-                )}
-                {data.gameMode === GameMode.MIXED && (
-                  <MemberPicker label="选两个人来拉郎" max={2} />
-                )}
-                {data.gameMode === GameMode.OBSERVER && (
-                  <MemberPicker label="选择你的孩子" />
-                )}
-                <button onClick={() => { setStep(3); setSelectedGroup(null); setData({...data, targets: []}); }} className="w-full py-3 bg-white text-[#A0663A] rounded-2xl text-sm font-bold border border-[#EAE0D5] hover:bg-[#F5E6D0] transition-all mb-2">← 上一步</button>
+                {data.gameMode === 'romance' && <MemberPicker label="选择你的自担" />}
+                {data.gameMode === 'CPCP' && <MemberPicker label="选两个人来拉郎" max={2} />}
+                {data.gameMode === 'mom' && <MemberPicker label="选择你的孩子" max={1} />}
+                <button onClick={() => { setStep(data.gameMode === 'mom' ? 2 : 3); setSelectedGroup(null); setData({...data, targets: []}); }} className="w-full py-3 bg-white text-[#A0663A] rounded-2xl text-sm font-bold border border-[#EAE0D5] hover:bg-[#F5E6D0] transition-all">← 上一步</button>
                 <button onClick={() => onComplete(data)} disabled={!canProceedStep4()} className="w-full bg-[#C4936A] text-white py-4 rounded-2xl font-bold hover:bg-[#A0663A] transition-all disabled:opacity-50">Start!</button>
               </motion.div>
             )}
@@ -491,16 +470,6 @@ function parseOptions(text: string): { text: string; action: string }[] {
     }
   }
   if (options.length >= 2) return options;
-  const jsonMatch = text.match(/\[[\s\S]*?\]/);
-  if (jsonMatch) {
-    try {
-      const parsed = JSON.parse(jsonMatch[0]);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed.map((o: any) => typeof o === 'string' ? { text: o, action: o } : o);
-      }
-    } catch(e) {}
-  }
-  // 兜底：匹配"1. 2. 3."编号格式
   const numberedPattern = /^\d+[\.、]\s*(.+)$/gm;
   const numbered: { text: string; action: string }[] = [];
   while ((match = numberedPattern.exec(text)) !== null) {
@@ -538,8 +507,8 @@ export default function App() {
 
   const handleCreationComplete = (data: any) => {
     const targetNames = INITIAL_MEMBERS.filter(m => data.targets.includes(m.id)).map(m => m.name);
-    const summary = `我的名字是 ${data.playerName}，身份是 ${data.identity.join(', ')}。我想关注 ${targetNames.join(', ')}。游戏模式：${data.gameMode}。故事开始。`;
-    const newState: GameState = { ...gameState, ...data, setupStep: SetupStep.CARDS, history: [] };
+    const summary = `我的名字是 ${data.playerName}，身份是 ${(data.identity || []).join(', ') || '普通人'}。${data.gameMode === 'CPCP' ? `我想撮合 ${targetNames.join(' 和 ')}。` : `我想关注 ${targetNames.join(', ')}。`}游戏模式：${data.gameMode}。故事开始。`;
+    const newState: GameState = { ...gameState, ...data, members: INITIAL_MEMBERS, setupStep: SetupStep.CARDS, history: [] };
     setGameState(newState);
     handleAIStep(summary, newState);
   };
@@ -567,38 +536,32 @@ export default function App() {
 
     const snapshotBlock = extractBlock(remaining, 'SNAPSHOT_START', 'SNAPSHOT_END');
     if (snapshotBlock) { remaining = snapshotBlock.remaining; try { snapshot = JSON.parse(snapshotBlock.content); } catch(e) {} }
-
     const theqooBlock = extractBlock(remaining, 'THEQOO_START', 'THEQOO_END');
     if (theqooBlock) { remaining = theqooBlock.remaining; try { theqooPost = JSON.parse(theqooBlock.content); } catch(e) {} }
-
     const musicBlock = extractBlock(remaining, 'MUSICSHOW_START', 'MUSICSHOW_END');
     if (musicBlock) { remaining = musicBlock.remaining; try { musicResult = JSON.parse(musicBlock.content); } catch(e) {} }
-
     const kktBlock = extractBlock(remaining, 'KKTMSG_START', 'KKTMSG_END');
     if (kktBlock) { remaining = kktBlock.remaining; try { kktMessage = JSON.parse(kktBlock.content); } catch(e) {} }
-
     const weverseBlock = extractBlock(remaining, 'WEVERSE_START', 'WEVERSE_END');
     if (weverseBlock) { remaining = weverseBlock.remaining; try { weversePost = JSON.parse(weverseBlock.content); } catch(e) {} }
-
     const bubbleBlock = extractBlock(remaining, 'BUBBLE_START', 'BUBBLE_END');
     if (bubbleBlock) { remaining = bubbleBlock.remaining; try { bubbleMessage = JSON.parse(bubbleBlock.content); } catch(e) {} }
 
     let cardBlock = extractBlock(remaining, 'CARD_START', 'CARD_END');
     while (cardBlock) {
       remaining = cardBlock.remaining;
-      try {
-        const card = JSON.parse(cardBlock.content);
-        const existingNames = (stateAtCall.collectedCards || []).map((c: any) => c.name);
-        if (card?.name && !existingNames.includes(card.name)) cards.push(card);
-      } catch(e) {}
+      try { const card = JSON.parse(cardBlock.content); const existingNames = (stateAtCall.collectedCards || []).map((c: any) => c.name); if (card?.name && !existingNames.includes(card.name)) cards.push(card); } catch(e) {}
       cardBlock = extractBlock(remaining, 'CARD_START', 'CARD_END');
     }
 
     const options = parseOptions(remaining);
-
     const displayContent = remaining
       .replace(/^[A-D][\.、。\s]+.+$/gm, '')
       .replace(/\[必须包含.*?\]/g, '')
+      .replace(/\[系统.*?\]/g, '')
+      .replace(/\[本轮.*?\]/g, '')
+      .replace(/\[CP模式.*?\]/g, '')
+      .replace(/\[宝妈模式.*?\]/g, '')
       .replace(/^选项[：:]\s*$/gm, '')
       .replace(/^状态快照[：:]\s*$/gm, '')
       .replace(/```[\s\S]*?```/g, '')
@@ -609,6 +572,10 @@ export default function App() {
       let next = { ...prev };
       const isWeekEnd = snapshot?.isWeekEnd === true;
       if (snapshot) {
+        // CP模式：两个目标成员都同步CP亲密度
+        const cpNewAffection = prev.gameMode === 'CPCP' && snapshot.members?.length > 0
+          ? snapshot.members[0].affection : null;
+
         next = { ...next,
           currentScene: snapshot.currentScene ?? next.currentScene,
           turnCount: snapshot.weekCount ?? snapshot.week ?? next.turnCount,
@@ -616,7 +583,13 @@ export default function App() {
           isComebackSetting: snapshot.isComebackSetting ?? false,
           groupHeats: snapshot.groupHeats ?? next.groupHeats,
           currentMusicShow: musicResult || next.currentMusicShow,
-          members: next.members.map(m => { const u = snapshot.members?.find((sm: any) => sm.id === m.id); return u ? { ...m, ...u } : m; })
+          members: next.members.map(m => {
+            if (prev.gameMode === 'CPCP' && prev.targets.includes(m.id) && cpNewAffection !== null) {
+              return { ...m, affection: cpNewAffection };
+            }
+            const u = snapshot.members?.find((sm: any) => sm.id === m.id);
+            return u ? { ...m, ...u } : m;
+          })
         };
       }
       if (musicResult) next.musicShowHistory = [...(next.musicShowHistory || []), musicResult];
@@ -627,9 +600,7 @@ export default function App() {
         ...next,
         history: [...next.history, {
           role: MessageRole.ASSISTANT,
-          content: (snapshot?.isComebackSetting && !prev.isComebackSetting)
-            ? "回归期开始！即将开启打歌活动。\n\n" + (displayContent || '')
-            : ((displayContent && displayContent.trim()) || (cards.length > 0 ? "（剧情准备就绪）" : "（剧情推进中...）")),
+          content: (displayContent && displayContent.trim()) || (cards.length > 0 ? "（剧情准备就绪）" : "（剧情推进中...）"),
           timestamp: Date.now(),
           theqooPost,
           cardData: cards.length > 0 ? cards : undefined,
@@ -645,20 +616,27 @@ export default function App() {
     });
   };
 
-  const handleSend = async (content?: any, stateUpdate?: Partial<GameState>) => {
+  const handleSend = async (content?: any) => {
     const textToSend = typeof content === 'string' ? content : input;
-    if ((!textToSend || !textToSend.trim()) && !stateUpdate) return;
+    if (!textToSend || !textToSend.trim()) return;
     if (isLoading) return;
     setInput(''); setIsLoading(true);
-    let nextState: GameState = { ...gameState, ...(stateUpdate || {}) };
-    if (textToSend?.trim()) nextState.history = [...nextState.history, { role: MessageRole.USER, content: textToSend, timestamp: Date.now() }];
+    let nextState: GameState = { ...gameState };
+    nextState.history = [...nextState.history, { role: MessageRole.USER, content: textToSend, timestamp: Date.now() }];
     setGameState(nextState);
     await handleAIStep(textToSend, nextState);
   };
 
   if (gameState.setupStep === SetupStep.CREATION) return <CharacterCreationWizard onComplete={handleCreationComplete} onReset={executeReset} members={gameState.members} />;
 
-  const primaryTarget = gameState.members.find(m => gameState.targets.includes(m.id));
+  const isCPMode = gameState.gameMode === 'CPCP';
+  const isMomMode = gameState.gameMode === 'mom';
+  const targetMembers = gameState.members.filter(m => gameState.targets.includes(m.id));
+  const primaryTarget = targetMembers[0];
+  const cpAffection = primaryTarget?.affection || 0;
+
+  const sidebarLabel = isMomMode ? '母女信任度' : isCPMode ? 'CP 羁绊值' : '角色状态';
+  const modeLabel = isMomMode ? '宝妈' : isCPMode ? '助攻' : '攻略';
 
   return (
     <div className="flex h-screen bg-[#FAF7F2] overflow-hidden relative">
@@ -678,9 +656,7 @@ export default function App() {
       <AnimatePresence>
         {showDrawer && (
           <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 z-40 bg-black/40 lg:hidden"
-              onClick={() => setShowDrawer(false)} />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-40 bg-black/40 lg:hidden" onClick={() => setShowDrawer(false)} />
             <MobileDrawer gameState={gameState} onClose={() => setShowDrawer(false)} />
           </>
         )}
@@ -691,20 +667,37 @@ export default function App() {
         <div className="p-6 border-b border-[#EAE0D5]">
           <h1 className="text-base font-black text-[#C4936A] tracking-tighter flex items-center gap-2"><Gamepad2 className="w-5 h-5" /> 爱豆收集梦想生活</h1>
           <div className="flex items-center gap-2 mt-2">
-            <span className="text-[9px] bg-[#C4936A] text-white px-2 py-0.5 rounded-full font-black uppercase">{gameState.gameMode === GameMode.ROMANCE ? '攻略' : gameState.gameMode === GameMode.OBSERVER ? '宝妈' : '助攻'}</span>
+            <span className="text-[9px] bg-[#C4936A] text-white px-2 py-0.5 rounded-full font-black uppercase">{modeLabel}</span>
             <span className="text-[10px] text-[#A0663A] font-bold">Idol Tomodachi Life</span>
           </div>
         </div>
         <div className="flex-1 overflow-y-auto p-5 space-y-6 custom-scrollbar">
           <section>
-            <h3 className="text-[10px] font-black text-[#A0663A] uppercase tracking-widest mb-3 flex items-center gap-2"><Users className="w-3 h-3" /> 角色状态</h3>
-            <div className="space-y-2">{gameState.members.filter(m => gameState.targets.includes(m.id)).map(member => (
-              <div key={member.id} className="bg-white p-4 rounded-2xl border border-[#EAE0D5]">
-                <div className="flex justify-between items-center mb-2"><span className="text-xs font-bold text-[#3D2B1F]">{member.name}</span><span className="text-[10px] text-[#C4936A] font-mono font-bold">{member.affection}/100</span></div>
-                <div className="h-1.5 bg-[#F5E6D0] rounded-full overflow-hidden"><motion.div animate={{ width: `${member.affection}%` }} className="h-full bg-[#C4936A] rounded-full" /></div>
-                <div className="text-[9px] text-[#A0663A] mt-1">{member.status}</div>
+            <h3 className="text-[10px] font-black text-[#A0663A] uppercase tracking-widest mb-3 flex items-center gap-2"><Users className="w-3 h-3" /> {sidebarLabel}</h3>
+            {isCPMode ? (
+              // CP模式：合并显示
+              <div className="bg-white p-4 rounded-2xl border border-[#C4936A]">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xs font-bold text-[#3D2B1F]">{targetMembers.map(m => m.name).join(' ♡ ')}</span>
+                  <span className="text-[10px] text-[#C4936A] font-black">{cpAffection}/100</span>
+                </div>
+                <div className="h-1.5 bg-[#F5E6D0] rounded-full overflow-hidden">
+                  <motion.div animate={{ width: `${cpAffection}%` }} className="h-full bg-gradient-to-r from-[#C4936A] to-[#A0663A] rounded-full" />
+                </div>
+                <div className="text-[9px] text-[#A0663A] mt-2 italic">
+                  {cpAffection < 15 ? '互相不熟，公事公办' : cpAffection < 30 ? '有些微妙的默契' : cpAffection < 50 ? '暧昧模糊，互相试探' : cpAffection < 70 ? '明显的特殊感' : cpAffection < 85 ? '没有说破，但都知道了' : '只差最后一步'}
+                </div>
               </div>
-            ))}</div>
+            ) : (
+              // 攻略/宝妈模式：列表显示
+              <div className="space-y-2">{targetMembers.map(member => (
+                <div key={member.id} className="bg-white p-4 rounded-2xl border border-[#EAE0D5]">
+                  <div className="flex justify-between items-center mb-2"><span className="text-xs font-bold text-[#3D2B1F]">{member.name}</span><span className="text-[10px] text-[#C4936A] font-mono font-bold">{member.affection}/100</span></div>
+                  <div className="h-1.5 bg-[#F5E6D0] rounded-full overflow-hidden"><motion.div animate={{ width: `${member.affection}%` }} className="h-full bg-[#C4936A] rounded-full" /></div>
+                  <div className="text-[9px] text-[#A0663A] mt-1">{isMomMode ? `信任度 ${member.affection}/100` : member.status}</div>
+                </div>
+              ))}</div>
+            )}
           </section>
         </div>
         <div className="p-5 border-t border-[#EAE0D5]">
@@ -724,7 +717,7 @@ export default function App() {
           {primaryTarget && (
             <button onClick={() => setShowDrawer(true)} className="lg:hidden flex items-center gap-2 bg-[#FAF7F2] px-3 py-2 rounded-2xl border border-[#EAE0D5] active:scale-95 transition-all">
               <Heart className="w-3 h-3 text-[#C4936A]" />
-              <span className="text-[11px] font-bold text-[#3D2B1F]">{primaryTarget.name}</span>
+              <span className="text-[11px] font-bold text-[#3D2B1F]">{isCPMode ? targetMembers.map(m => m.name).join(' ♡ ') : primaryTarget.name}</span>
               <span className="text-[11px] font-black text-[#C4936A]">{primaryTarget.affection}</span>
               <ChevronUp className="w-3 h-3 text-[#A0663A]" />
             </button>
@@ -758,7 +751,7 @@ export default function App() {
                       {(msg as any).bubbleMessage && <BubbleMessageUI data={(msg as any).bubbleMessage} />}
                       {msg.theqooPost && <TheqooPostUI post={msg.theqooPost} />}
                       {msg.currentMusicShow && isLatest && <MusicShowUI result={msg.currentMusicShow} />}
-                      {msg.options && <OptionsUI options={msg.options} onSelect={(a) => handleSend(a)} disabled={isLoading} isLatest={isLatest} />}
+                      {msg.options && <OptionsUI options={msg.options} isLatest={isLatest} />}
                       {msg.content.includes('错误信息') && (
                         <button onClick={() => { let j = -1; for (let k = i-1; k >= 0; k--) { if (gameState.history[k].role === MessageRole.USER) { j = k; break; } } if (j !== -1) { const c = gameState.history[j].content; setGameState(prev => ({ ...prev, history: prev.history.slice(0, i) })); handleSend(c); } }}
                           className="mt-3 flex items-center gap-2 text-xs font-black text-[#C4936A] uppercase bg-white/50 px-3 py-2 rounded-xl border border-[#EAE0D5]"><RefreshCw className="w-3 h-3" /> 重试</button>
@@ -783,13 +776,11 @@ export default function App() {
 
         <div className="p-4 md:p-6 bg-white border-t border-[#EAE0D5] flex-shrink-0">
           <div className="max-w-3xl mx-auto flex gap-3">
-            <div className="flex-1">
-              <textarea value={input} onChange={e => setInput(e.target.value)}
-                onKeyDown={e => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
-                placeholder="输入你的行动，或选择上方选项..."
-                className="w-full bg-[#FAF7F2] border border-[#EAE0D5] rounded-3xl px-6 py-4 text-sm focus:ring-2 focus:ring-[#C4936A] resize-none h-14 custom-scrollbar outline-none text-[#3D2B1F]"
-                disabled={isLoading} />
-            </div>
+            <textarea value={input} onChange={e => setInput(e.target.value)}
+              onKeyDown={e => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
+              placeholder="输入你的行动..."
+              className="flex-1 bg-[#FAF7F2] border border-[#EAE0D5] rounded-3xl px-6 py-4 text-sm focus:ring-2 focus:ring-[#C4936A] resize-none h-14 custom-scrollbar outline-none text-[#3D2B1F]"
+              disabled={isLoading} />
             <button onClick={() => handleSend()} disabled={isLoading || !input.trim()} className="bg-[#C4936A] text-white px-5 rounded-3xl active:scale-95 disabled:opacity-50 flex-shrink-0 hover:bg-[#A0663A] transition-all"><Send className="w-5 h-5" /></button>
           </div>
         </div>
@@ -802,8 +793,6 @@ export default function App() {
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #EAE0D5; border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #C4936A; }
-        .markdown-container h1,.markdown-container h2,.markdown-container h3 { font-weight: 800; margin-bottom: 0.5rem; color: inherit; }
-        .markdown-container h1 { font-size: 1.2rem; } .markdown-container h2 { font-size: 1.05rem; }
         .markdown-container p { margin-bottom: 0.6rem; } .markdown-container p:last-child { margin-bottom: 0; }
         .markdown-container ul,.markdown-container ol { margin-left: 1.5rem; margin-bottom: 0.6rem; }
         .markdown-container ul { list-style-type: disc; } .markdown-container ol { list-style-type: decimal; }
