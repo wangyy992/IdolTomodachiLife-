@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, RefreshCw, Users, Eye, MapPin, Gamepad2, Heart, Zap, Sparkles, CheckCheck, X, ChevronUp } from 'lucide-react';
+import { Send, RefreshCw, Users, Eye, MapPin, Gamepad2, Heart, Zap, Sparkles, X, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Markdown from 'react-markdown';
-import { GameState, INITIAL_MEMBERS, ChatMessage, MessageRole, Member, TheqooPost, SetupStep, GameMode } from './types';
+import { GameState, INITIAL_MEMBERS, ChatMessage, MessageRole, Member, TheqooPost, SetupStep } from './types';
 import { callGeminiAPI } from './geminiService';
 
 const LOCAL_STORAGE_KEY = 'star_reality_kpop_game_state';
@@ -15,9 +15,7 @@ const KKTMessageUI = ({ data }: { data: any }) => (
         <div className="w-3 h-3 rounded-full bg-[#2a2a2a] border border-[#444]"></div>
       </div>
       <div className="bg-[#F5F0EA] rounded-[2rem] overflow-hidden mt-4">
-        <div className="bg-[#F5F0EA] px-5 pt-3 pb-1 flex justify-between items-center">
-          <span className="text-[10px] font-bold text-gray-500">9:41</span>
-        </div>
+        <div className="bg-[#F5F0EA] px-5 pt-3 pb-1"><span className="text-[10px] font-bold text-gray-500">9:41</span></div>
         <div className="bg-[#FAE100] px-4 py-3 flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-white/30 flex items-center justify-center text-lg">{data.avatar || '👤'}</div>
           <div>
@@ -53,10 +51,7 @@ const WeversePostUI = ({ data }: { data: any }) => (
     <div className="px-4 py-3 flex items-center justify-between border-b border-[#EAE0D5]">
       <div className="flex items-center gap-3">
         <span className="text-[#A0663A] text-lg">{'<'}</span>
-        <div className="text-center">
-          <div className="text-[14px] font-bold text-[#3D2B1F]">帖子</div>
-          <div className="text-[10px] text-[#C4936A]">前往社区 {'>'}</div>
-        </div>
+        <div><div className="text-[14px] font-bold text-[#3D2B1F]">帖子</div><div className="text-[10px] text-[#C4936A]">前往社区 {'>'}</div></div>
       </div>
       <div className="flex gap-4 text-[#A0663A] text-lg"><span>↗</span><span>✕</span></div>
     </div>
@@ -74,9 +69,7 @@ const WeversePostUI = ({ data }: { data: any }) => (
       </div>
       <span className="text-[#A0663A] text-lg">⋯</span>
     </div>
-    <div className="px-4 pb-3">
-      <p className="text-[14px] text-[#3D2B1F] leading-relaxed">{data.content}</p>
-    </div>
+    <div className="px-4 pb-3"><p className="text-[14px] text-[#3D2B1F] leading-relaxed">{data.content}</p></div>
     {data.imageDesc && (
       <div className="w-full bg-[#F5E6D0] aspect-[4/3] flex flex-col items-center justify-center gap-2">
         <span className="text-[#A0663A] text-xl">🖼</span>
@@ -84,10 +77,7 @@ const WeversePostUI = ({ data }: { data: any }) => (
       </div>
     )}
     <div className="px-4 py-3 flex items-center gap-6 border-t border-[#EAE0D5]">
-      <button className="flex items-center gap-1.5 text-[#A0663A]">
-        <Heart className="w-5 h-5" />
-        <span className="text-[12px]">{(data.likes || 0).toLocaleString()}</span>
-      </button>
+      <button className="flex items-center gap-1.5 text-[#A0663A]"><Heart className="w-5 h-5" /><span className="text-[12px]">{(data.likes || 0).toLocaleString()}</span></button>
       <button className="text-[#A0663A] text-xl">🔖</button>
     </div>
   </div>
@@ -98,10 +88,7 @@ const BubbleMessageUI = ({ data }: { data: any }) => (
     <div className="px-4 py-3 flex items-center justify-between bg-[#F0EBE3] border-b border-[#EAE0D5]">
       <span className="text-[#C4936A] text-[14px]">{'<'}</span>
       <span className="text-[16px] font-bold text-[#3D2B1F]">{data.artist}</span>
-      <div className="flex gap-4">
-        <span className="text-[#A0663A]">🔍</span>
-        <span className="text-[#A0663A]">⋯</span>
-      </div>
+      <div className="flex gap-4"><span className="text-[#A0663A]">🔍</span><span className="text-[#A0663A]">⋯</span></div>
     </div>
     <div className="px-4 py-4 space-y-2">
       {data.messages?.map((msg: any, idx: number) => (
@@ -116,9 +103,7 @@ const BubbleMessageUI = ({ data }: { data: any }) => (
             </div>
             <div className="bg-white rounded-2xl rounded-tl-none px-3 py-2 inline-block max-w-[85%] border border-[#EAE0D5]">
               <p className="text-[13px] text-[#3D2B1F] leading-relaxed">{msg.text}</p>
-              {msg.translation && (
-                <p className="text-[12px] text-[#C4936A] mt-0.5 leading-relaxed">{msg.translation}</p>
-              )}
+              {msg.translation && <p className="text-[12px] text-[#C4936A] mt-0.5 leading-relaxed">{msg.translation}</p>}
             </div>
             <div className="text-[10px] text-[#A0663A] mt-1 pl-1">{msg.time}</div>
           </div>
@@ -126,8 +111,7 @@ const BubbleMessageUI = ({ data }: { data: any }) => (
       ))}
     </div>
     <div className="px-4 py-3 bg-[#F0EBE3] border-t border-[#EAE0D5] flex items-center justify-end gap-4">
-      <span className="text-[#A0663A] text-xl">☺</span>
-      <span className="text-[#C4936A] text-xl">➤</span>
+      <span className="text-[#A0663A] text-xl">☺</span><span className="text-[#C4936A] text-xl">➤</span>
     </div>
   </div>
 );
@@ -173,32 +157,24 @@ const TheqooPostUI = ({ post }: { post: TheqooPost }) => (
 
 const CharacterCardUI = ({ card }: any) => {
   if (!card || typeof card !== 'object') return null;
-  const name = card.name || '未知角色';
-  const stageName = card.stageName || '';
-  const group = card.group || '未知团体';
-  const status = card.status || '活跃中';
-  const persona = card.publicPersona || '暂无信息';
-  const personality = card.realPersonality || '暂无信息';
-  const traits = card.weaknesses || [];
-  const story = card.hiddenStory;
   return (
     <div className="bg-white border border-[#EAE0D5] rounded-3xl overflow-hidden shadow-sm my-6 max-w-md mx-auto font-sans">
       <div className="bg-[#C4936A] p-5 text-white text-center relative overflow-hidden">
         <div className="absolute top-0 right-0 p-4 opacity-20"><Sparkles className="w-12 h-12" /></div>
         <div className="text-[10px] font-black uppercase tracking-widest mb-1 opacity-80">Artist Profile</div>
-        <h3 className="text-xl font-bold">{name} {stageName ? `(${stageName})` : ''}</h3>
+        <h3 className="text-xl font-bold">{card.name} {card.stageName ? `(${card.stageName})` : ''}</h3>
       </div>
       <div className="p-5 space-y-4 text-left">
         <div className="grid grid-cols-2 gap-3 text-xs">
-          <div className="bg-[#FAF7F2] p-3 rounded-2xl border border-[#EAE0D5]"><div className="text-[#A0663A] font-black mb-1 uppercase text-[9px]">Group</div><div className="font-bold text-[#3D2B1F]">{group}</div></div>
-          <div className="bg-[#FAF7F2] p-3 rounded-2xl border border-[#EAE0D5]"><div className="text-[#A0663A] font-black mb-1 uppercase text-[9px]">Status</div><div className="font-bold text-[#3D2B1F]">{status}</div></div>
+          <div className="bg-[#FAF7F2] p-3 rounded-2xl border border-[#EAE0D5]"><div className="text-[#A0663A] font-black mb-1 uppercase text-[9px]">Group</div><div className="font-bold text-[#3D2B1F]">{card.group || '未知团体'}</div></div>
+          <div className="bg-[#FAF7F2] p-3 rounded-2xl border border-[#EAE0D5]"><div className="text-[#A0663A] font-black mb-1 uppercase text-[9px]">Status</div><div className="font-bold text-[#3D2B1F]">{card.status || '活跃中'}</div></div>
         </div>
-        <div className="bg-[#FAF7F2] p-4 rounded-2xl border border-[#EAE0D5] text-xs"><span className="font-black text-[#C4936A] block uppercase text-[9px] mb-1">Public Persona</span><p className="text-[#3D2B1F] italic">"{persona}"</p></div>
-        <div className="bg-[#FAF7F2] p-4 rounded-2xl border border-[#EAE0D5] text-xs"><span className="font-black text-[#A0663A] block uppercase text-[9px] mb-1">Real Personality</span><p className="text-[#3D2B1F]">{personality}</p></div>
-        {Array.isArray(traits) && traits.length > 0 && (
-          <div className="flex flex-wrap gap-2">{traits.map((item: string, i: number) => <span key={i} className="text-[10px] px-3 py-1 bg-[#F5E6D0] text-[#A0663A] rounded-full border border-[#EAE0D5] font-bold"># {item}</span>)}</div>
+        {card.publicPersona && <div className="bg-[#FAF7F2] p-4 rounded-2xl border border-[#EAE0D5] text-xs"><span className="font-black text-[#C4936A] block uppercase text-[9px] mb-1">Public Persona</span><p className="text-[#3D2B1F] italic">"{card.publicPersona}"</p></div>}
+        {card.realPersonality && <div className="bg-[#FAF7F2] p-4 rounded-2xl border border-[#EAE0D5] text-xs"><span className="font-black text-[#A0663A] block uppercase text-[9px] mb-1">Real Personality</span><p className="text-[#3D2B1F]">{card.realPersonality}</p></div>}
+        {Array.isArray(card.weaknesses) && card.weaknesses.length > 0 && (
+          <div className="flex flex-wrap gap-2">{card.weaknesses.map((item: string, i: number) => <span key={i} className="text-[10px] px-3 py-1 bg-[#F5E6D0] text-[#A0663A] rounded-full border border-[#EAE0D5] font-bold"># {item}</span>)}</div>
         )}
-        {story && <div className="pt-2 border-t border-dashed border-[#EAE0D5]"><span className="font-black text-[#A0663A] block uppercase text-[9px] mb-1">Hidden Story</span><p className="text-[11px] text-[#A0663A] italic">{story}</p></div>}
+        {card.hiddenStory && <div className="pt-2 border-t border-dashed border-[#EAE0D5]"><span className="font-black text-[#A0663A] block uppercase text-[9px] mb-1">Hidden Story</span><p className="text-[11px] text-[#A0663A] italic">{card.hiddenStory}</p></div>}
       </div>
     </div>
   );
@@ -253,13 +229,12 @@ const MobileDrawer = ({ gameState, onClose }: { gameState: GameState, onClose: (
   const isMomMode = gameState.gameMode === 'mom';
   const targetMembers = gameState.members.filter(m => gameState.targets.includes(m.id));
   const cpAffection = targetMembers[0]?.affection || 0;
+  const daughterProfile = (gameState as any).daughterProfile;
 
   return (
-    <motion.div
-      initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+    <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
       transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-      className="fixed inset-x-0 bottom-0 z-50 bg-[#FAF7F2] rounded-t-[2rem] shadow-2xl border-t border-[#EAE0D5] max-h-[70vh] overflow-y-auto"
-    >
+      className="fixed inset-x-0 bottom-0 z-50 bg-[#FAF7F2] rounded-t-[2rem] shadow-2xl border-t border-[#EAE0D5] max-h-[70vh] overflow-y-auto">
       <div className="flex justify-center pt-3 pb-2"><div className="w-10 h-1 bg-[#EAE0D5] rounded-full"></div></div>
       <div className="flex items-center justify-between px-6 pb-4 border-b border-[#EAE0D5]">
         <h3 className="font-black text-[#C4936A] text-sm uppercase tracking-widest">
@@ -278,6 +253,17 @@ const MobileDrawer = ({ gameState, onClose }: { gameState: GameState, onClose: (
               <motion.div animate={{ width: `${cpAffection}%` }} className="h-full bg-gradient-to-r from-[#C4936A] to-[#A0663A] rounded-full" />
             </div>
           </div>
+        ) : isMomMode ? (
+          <div className="bg-white p-4 rounded-2xl border border-[#EAE0D5]">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-bold text-[#3D2B1F]">{daughterProfile?.name || '女儿'}</span>
+              <span className="text-[11px] text-[#C4936A] font-mono font-bold">{(gameState as any).momTrustLevel || 50}/100</span>
+            </div>
+            <div className="h-2 bg-[#F5E6D0] rounded-full overflow-hidden">
+              <motion.div animate={{ width: `${(gameState as any).momTrustLevel || 50}%` }} className="h-full bg-[#C4936A] rounded-full" />
+            </div>
+            {daughterProfile && <div className="text-[10px] text-[#A0663A] mt-2">{daughterProfile.nationality} · {daughterProfile.personality}</div>}
+          </div>
         ) : (
           <div className="space-y-3">
             {targetMembers.map(member => (
@@ -289,27 +275,30 @@ const MobileDrawer = ({ gameState, onClose }: { gameState: GameState, onClose: (
                 <div className="h-2 bg-[#F5E6D0] rounded-full overflow-hidden mb-1">
                   <motion.div animate={{ width: `${member.affection}%` }} className="h-full bg-[#C4936A] rounded-full" />
                 </div>
-                <div className="text-[10px] text-[#A0663A]">{isMomMode ? `信任度 ${member.affection}/100` : member.status}</div>
+                <div className="text-[10px] text-[#A0663A]">{member.status}</div>
               </div>
             ))}
           </div>
         )}
-        <section>
-          <div className="bg-white p-4 rounded-2xl border border-[#EAE0D5] space-y-2">
-            <div className="flex justify-between text-xs"><span className="text-[#A0663A]">场景</span><span className="font-bold text-[#3D2B1F]">{gameState.currentScene}</span></div>
-            <div className="flex justify-between text-xs"><span className="text-[#A0663A]">第几周</span><span className="font-bold text-[#C4936A]">Week {gameState.turnCount || 1}</span></div>
-            {gameState.isComebackSetting && <div className="text-[10px] font-black text-[#A0663A] bg-[#F5E6D0] px-2 py-1 rounded-lg">回归期进行中</div>}
-          </div>
-        </section>
+        <div className="bg-white p-4 rounded-2xl border border-[#EAE0D5] space-y-2">
+          <div className="flex justify-between text-xs"><span className="text-[#A0663A]">场景</span><span className="font-bold text-[#3D2B1F]">{gameState.currentScene}</span></div>
+          <div className="flex justify-between text-xs"><span className="text-[#A0663A]">第几周</span><span className="font-bold text-[#C4936A]">Week {gameState.turnCount || 1}</span></div>
+          {gameState.isComebackSetting && <div className="text-[10px] font-black text-[#A0663A] bg-[#F5E6D0] px-2 py-1 rounded-lg">回归期进行中</div>}
+        </div>
       </div>
     </motion.div>
   );
 };
 
-const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete: (data: any) => void, onReset: () => void, members: Member[] }) => {
+const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: any) => void, members: Member[] }) => {
   const [step, setStep] = useState(1);
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
-  const [data, setData] = useState({ playerName: '', playerAge: 19, identity: [] as string[], gameMode: 'romance' as string, targets: [] as string[], selectedCPs: [] as string[] });
+  const [data, setData] = useState({
+    playerName: '', playerAge: 19, identity: [] as string[],
+    gameMode: 'romance' as string, targets: [] as string[], selectedCPs: [] as string[],
+    // 宝妈线专属
+    daughterNationality: '', daughterPersonality: '', daughterBackground: ''
+  });
   const [customIdentity, setCustomIdentity] = useState('');
 
   const ids = ["韩国留学生","便利店/咖啡厅打工人","娱乐公司实习生","音乐节目工作人员","妆造师/发型助理","翻译/海外商务助理","娱乐记者/博主","普通粉丝","资深粉丝","公寓同栋住户"];
@@ -319,6 +308,16 @@ const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete:
     { id: 'CPCP', name: '助攻模式', desc: '红线拉起来' },
     { id: 'mom', name: '宝妈模式', desc: '养成系养一下' }
   ];
+  const nationalities = ['韩国', '中国', '日本', '其他'];
+  const personalities = [
+    { id: '完美主义型', desc: '对自己要求极高，进步快但容易崩' },
+    { id: '野心勃勃型', desc: '目标明确，为出道可以牺牲一切' },
+    { id: '敏感共情型', desc: '感知力极强，很容易被周围情绪影响' },
+    { id: '隐忍内敛型', desc: '什么都藏着，积累到一定程度会爆发' },
+    { id: '乐天抗压型', desc: '天生抗打击，但有时候不够专注' },
+    { id: '讨好型', desc: '把所有人放在自己前面，内心积压很多' },
+  ];
+  const backgrounds = ['工薪阶层', '富裕家庭', '单亲家庭'];
 
   const soloIds = ['yena', 'eunbi'];
   const groups = Array.from(new Set(members.filter(m => !soloIds.includes(m.id)).map(m => m.group)));
@@ -368,8 +367,7 @@ const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete:
             const m = members.find(x => x.id === id);
             return m ? (
               <span key={id} className="text-[10px] bg-[#F5E6D0] text-[#A0663A] px-2 py-1 rounded-full border border-[#EAE0D5] font-bold flex items-center gap-1">
-                {m.name}
-                <button onClick={() => toggleTarget(id)} className="text-[#C4936A] hover:text-[#A0663A]">×</button>
+                {m.name}<button onClick={() => toggleTarget(id)} className="text-[#C4936A] hover:text-[#A0663A]">×</button>
               </span>
             ) : null;
           })}
@@ -380,17 +378,19 @@ const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete:
 
   const canProceedStep4 = () => {
     if (data.gameMode === 'CPCP') return data.targets.length === 2;
+    if (data.gameMode === 'mom') return !!(data.daughterNationality && data.daughterPersonality && data.daughterBackground);
     return data.targets.length >= 1;
   };
 
   const currentIds = data.gameMode === 'mom' ? momIds : ids;
+  const totalSteps = data.gameMode === 'mom' ? 3 : 4;
 
   return (
     <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center p-4 py-12">
       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white border border-[#EAE0D5] rounded-[2.5rem] shadow-sm w-full max-w-xl overflow-hidden flex flex-col">
         <div className="bg-[#C4936A] p-8 text-white text-center">
           <h2 className="text-2xl font-bold tracking-widest mb-1">爱豆收集梦想生活</h2>
-          <p className="text-xs opacity-80">Step {step} of {data.gameMode === 'mom' ? '3' : '4'}</p>
+          <p className="text-xs opacity-80">Step {step} of {totalSteps}</p>
         </div>
         <div className="p-8 flex-1 overflow-y-auto max-h-[65vh] custom-scrollbar bg-[#FAF7F2]">
           <AnimatePresence mode="wait">
@@ -405,7 +405,7 @@ const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete:
               <motion.div key="s2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
                 <label className="text-xs font-black text-[#A0663A] uppercase">选择模式</label>
                 <div className="space-y-3">{modes.map(m => (
-                  <button key={m.id} onClick={() => { setData({...data, gameMode: m.id, targets: [], identity: []}); setSelectedGroup(null); }}
+                  <button key={m.id} onClick={() => { setData({...data, gameMode: m.id, targets: [], identity: [], daughterNationality: '', daughterPersonality: '', daughterBackground: ''}); setSelectedGroup(null); }}
                     className={`w-full p-4 rounded-2xl border text-left transition-all ${data.gameMode === m.id ? 'bg-[#F5E6D0] border-[#C4936A] text-[#A0663A]' : 'bg-white border-[#EAE0D5] text-[#3D2B1F]'}`}>
                     <div className="font-bold text-sm">{m.name}</div>
                     <div className="text-[10px] opacity-60 mt-1">{m.desc}</div>
@@ -437,7 +437,44 @@ const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete:
               <motion.div key="s4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
                 {data.gameMode === 'romance' && <MemberPicker label="选择你的自担" />}
                 {data.gameMode === 'CPCP' && <MemberPicker label="选两个人来拉郎" max={2} />}
-                {data.gameMode === 'mom' && <MemberPicker label="选择你的孩子" max={1} />}
+                {data.gameMode === 'mom' && (
+                  <div className="space-y-5">
+                    <div className="space-y-2">
+                      <label className="text-xs font-black text-[#A0663A] uppercase">女儿国籍</label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {nationalities.map(n => (
+                          <button key={n} onClick={() => setData({...data, daughterNationality: n})}
+                            className={`p-3 rounded-xl border text-[11px] transition-all ${data.daughterNationality === n ? 'bg-[#F5E6D0] border-[#C4936A] text-[#A0663A] font-bold' : 'bg-white border-[#EAE0D5] text-[#3D2B1F]'}`}>
+                            {n}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-black text-[#A0663A] uppercase">女儿性格</label>
+                      <div className="space-y-2">
+                        {personalities.map(p => (
+                          <button key={p.id} onClick={() => setData({...data, daughterPersonality: p.id})}
+                            className={`w-full p-3 rounded-xl border text-left transition-all ${data.daughterPersonality === p.id ? 'bg-[#F5E6D0] border-[#C4936A] text-[#A0663A]' : 'bg-white border-[#EAE0D5] text-[#3D2B1F]'}`}>
+                            <div className="font-bold text-[11px]">{p.id}</div>
+                            <div className="text-[10px] opacity-60 mt-0.5">{p.desc}</div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-black text-[#A0663A] uppercase">家庭背景</label>
+                      <div className="grid grid-cols-3 gap-2">
+                        {backgrounds.map(b => (
+                          <button key={b} onClick={() => setData({...data, daughterBackground: b})}
+                            className={`p-3 rounded-xl border text-[11px] transition-all ${data.daughterBackground === b ? 'bg-[#F5E6D0] border-[#C4936A] text-[#A0663A] font-bold' : 'bg-white border-[#EAE0D5] text-[#3D2B1F]'}`}>
+                            {b}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <button onClick={() => { setStep(data.gameMode === 'mom' ? 2 : 3); setSelectedGroup(null); setData({...data, targets: []}); }} className="w-full py-3 bg-white text-[#A0663A] rounded-2xl text-sm font-bold border border-[#EAE0D5] hover:bg-[#F5E6D0] transition-all">← 上一步</button>
                 <button onClick={() => onComplete(data)} disabled={!canProceedStep4()} className="w-full bg-[#C4936A] text-white py-4 rounded-2xl font-bold hover:bg-[#A0663A] transition-all disabled:opacity-50">Start!</button>
               </motion.div>
@@ -448,6 +485,60 @@ const CharacterCreationWizard = ({ onComplete, onReset, members }: { onComplete:
     </div>
   );
 };
+
+// ============================================================
+// 内容块解析（支持正文和UI组件交织）
+// ============================================================
+type ContentBlock =
+  | { type: 'text'; content: string }
+  | { type: 'kkt'; data: any }
+  | { type: 'weverse'; data: any }
+  | { type: 'bubble'; data: any }
+  | { type: 'theqoo'; data: any }
+  | { type: 'card'; data: any }
+  | { type: 'musicshow'; data: any };
+
+function parseContentBlocks(text: string): ContentBlock[] {
+  const blocks: ContentBlock[] = [];
+  const tags = [
+    { start: 'KKTMSG_START', end: 'KKTMSG_END', type: 'kkt' },
+    { start: 'WEVERSE_START', end: 'WEVERSE_END', type: 'weverse' },
+    { start: 'BUBBLE_START', end: 'BUBBLE_END', type: 'bubble' },
+    { start: 'THEQOO_START', end: 'THEQOO_END', type: 'theqoo' },
+    { start: 'CARD_START', end: 'CARD_END', type: 'card' },
+    { start: 'MUSICSHOW_START', end: 'MUSICSHOW_END', type: 'musicshow' },
+  ];
+
+  let remaining = text;
+  while (remaining.length > 0) {
+    let earliest = { index: Infinity, tag: null as any };
+    for (const tag of tags) {
+      const idx = remaining.indexOf(tag.start);
+      if (idx !== -1 && idx < earliest.index) earliest = { index: idx, tag };
+    }
+
+    if (earliest.tag === null) {
+      const cleaned = remaining.replace(/^[A-D][\.、。\s].+$/gm, '').replace(/\[.*?\]/g, '').replace(/\n{3,}/g, '\n\n').trim();
+      if (cleaned) blocks.push({ type: 'text', content: cleaned });
+      break;
+    }
+
+    if (earliest.index > 0) {
+      const textBefore = remaining.slice(0, earliest.index).replace(/^[A-D][\.、。\s].+$/gm, '').replace(/\[.*?\]/g, '').replace(/\n{3,}/g, '\n\n').trim();
+      if (textBefore) blocks.push({ type: 'text', content: textBefore });
+    }
+
+    const endIdx = remaining.indexOf(earliest.tag.end, earliest.index);
+    if (endIdx === -1) break;
+    const content = remaining.slice(earliest.index + earliest.tag.start.length, endIdx).trim();
+    try {
+      blocks.push({ type: earliest.tag.type as any, data: JSON.parse(content) });
+    } catch(e) {}
+    remaining = remaining.slice(endIdx + earliest.tag.end.length);
+  }
+
+  return blocks;
+}
 
 function extractBlock(text: string, startTag: string, endTag: string): { content: string; remaining: string } | null {
   const start = text.indexOf(startTag);
@@ -460,7 +551,7 @@ function extractBlock(text: string, startTag: string, endTag: string): { content
 }
 
 function parseOptions(text: string): { text: string; action: string }[] {
-  const abcdPattern = /^([A-C])[\.、。\s]+(.+)$/gm;
+  const abcdPattern = /^\*{0,2}([A-C])[\.、。\s]\*{0,2}\s*(.+)$/gm;
   const options: { text: string; action: string }[] = [];
   let match;
   while ((match = abcdPattern.exec(text)) !== null) {
@@ -479,6 +570,16 @@ function parseOptions(text: string): { text: string; action: string }[] {
   if (numbered.length >= 2) return numbered;
   return [];
 }
+
+const MarkdownBlock = ({ content }: { content: string }) => (
+  <Markdown components={{
+    p: ({children}) => {
+      const text = String(children);
+      const isOption = /^[A-C][\.、。]/.test(text);
+      return <p className={isOption ? 'text-[#C4936A] font-bold' : ''}>{children}</p>;
+    }
+  }}>{content}</Markdown>
+);
 
 export default function App() {
   const getInitialGameState = (): GameState => ({
@@ -506,9 +607,39 @@ export default function App() {
   useEffect(() => { setApiKeyMissing(!import.meta.env.VITE_DEEPSEEK_API_KEY); }, []);
 
   const handleCreationComplete = (data: any) => {
+    const isCPMode = data.gameMode === 'CPCP';
+    const isMomMode = data.gameMode === 'mom';
     const targetNames = INITIAL_MEMBERS.filter(m => data.targets.includes(m.id)).map(m => m.name);
-    const summary = `我的名字是 ${data.playerName}，身份是 ${(data.identity || []).join(', ') || '普通人'}。${data.gameMode === 'CPCP' ? `我想撮合 ${targetNames.join(' 和 ')}。` : `我想关注 ${targetNames.join(', ')}。`}游戏模式：${data.gameMode}。故事开始。`;
-    const newState: GameState = { ...gameState, ...data, members: INITIAL_MEMBERS, setupStep: SetupStep.CARDS, history: [] };
+
+    let summary = `我的名字是 ${data.playerName}，`;
+    if (isMomMode) {
+      summary += `我是一位妈妈。女儿设定：国籍${data.daughterNationality}，性格${data.daughterPersonality}，家庭背景${data.daughterBackground}。请根据这些设定生成女儿的虚构角色，然后从她8岁那年开始故事。`;
+    } else {
+      summary += `身份是 ${(data.identity || []).join(', ') || '普通人'}。${isCPMode ? `我想撮合 ${targetNames.join(' 和 ')}。` : `我想关注 ${targetNames.join(', ')}。`}游戏模式：${data.gameMode}。故事开始。`;
+    }
+
+    const initializedMembers = INITIAL_MEMBERS.map(m => {
+      if (isCPMode && data.targets.includes(m.id)) {
+        const otherTargetId = data.targets.find((id: string) => id !== m.id);
+        const relation = (m as any).initialRelationships?.find((r: any) => r.targetId === otherTargetId);
+        return { ...m, affection: relation ? relation.affinity : 0 };
+      }
+      return m;
+    });
+
+    const daughterProfile = isMomMode ? {
+      nationality: data.daughterNationality,
+      personality: data.daughterPersonality,
+      background: data.daughterBackground,
+      name: '',
+      trustLevel: 50,
+    } : null;
+
+    const newState: GameState = {
+      ...gameState, ...data, members: initializedMembers,
+      setupStep: SetupStep.CARDS, history: [],
+      ...(daughterProfile ? { daughterProfile, momTrustLevel: 50 } : {})
+    } as any;
     setGameState(newState);
     handleAIStep(summary, newState);
   };
@@ -530,60 +661,54 @@ export default function App() {
 
   const processAIResponse = (response: string, stateAtCall: GameState) => {
     let remaining = response;
-    let snapshot: any = null, theqooPost: any = null, musicResult: any = null;
-    let kktMessage: any = null, weversePost: any = null, bubbleMessage: any = null;
-    let cards: any[] = [];
+    // 清理AI乱加的加粗标记
+    remaining = remaining.replace(/\*\*([A-Z_]+(?:START|END))\*\*/g, '$1');
 
+    // 先提取 SNAPSHOT 和 MUSICSHOW（不参与交织）
+    let snapshot: any = null;
+    let musicResult: any = null;
     const snapshotBlock = extractBlock(remaining, 'SNAPSHOT_START', 'SNAPSHOT_END');
     if (snapshotBlock) { remaining = snapshotBlock.remaining; try { snapshot = JSON.parse(snapshotBlock.content); } catch(e) {} }
-    const theqooBlock = extractBlock(remaining, 'THEQOO_START', 'THEQOO_END');
-    if (theqooBlock) { remaining = theqooBlock.remaining; try { theqooPost = JSON.parse(theqooBlock.content); } catch(e) {} }
     const musicBlock = extractBlock(remaining, 'MUSICSHOW_START', 'MUSICSHOW_END');
     if (musicBlock) { remaining = musicBlock.remaining; try { musicResult = JSON.parse(musicBlock.content); } catch(e) {} }
-    const kktBlock = extractBlock(remaining, 'KKTMSG_START', 'KKTMSG_END');
-    if (kktBlock) { remaining = kktBlock.remaining; try { kktMessage = JSON.parse(kktBlock.content); } catch(e) {} }
-    const weverseBlock = extractBlock(remaining, 'WEVERSE_START', 'WEVERSE_END');
-    if (weverseBlock) { remaining = weverseBlock.remaining; try { weversePost = JSON.parse(weverseBlock.content); } catch(e) {} }
-    const bubbleBlock = extractBlock(remaining, 'BUBBLE_START', 'BUBBLE_END');
-    if (bubbleBlock) { remaining = bubbleBlock.remaining; try { bubbleMessage = JSON.parse(bubbleBlock.content); } catch(e) {} }
 
-    let cardBlock = extractBlock(remaining, 'CARD_START', 'CARD_END');
-    while (cardBlock) {
-      remaining = cardBlock.remaining;
-      try { const card = JSON.parse(cardBlock.content); const existingNames = (stateAtCall.collectedCards || []).map((c: any) => c.name); if (card?.name && !existingNames.includes(card.name)) cards.push(card); } catch(e) {}
-      cardBlock = extractBlock(remaining, 'CARD_START', 'CARD_END');
-    }
-
+    // 解析选项（从完整正文里提取）
     const options = parseOptions(remaining);
-    const displayContent = remaining
-      .replace(/^[A-D][\.、。\s]+.+$/gm, '')
-      .replace(/\[必须包含.*?\]/g, '')
-      .replace(/\[系统.*?\]/g, '')
-      .replace(/\[本轮.*?\]/g, '')
-      .replace(/\[CP模式.*?\]/g, '')
-      .replace(/\[宝妈模式.*?\]/g, '')
-      .replace(/^选项[：:]\s*$/gm, '')
-      .replace(/^状态快照[：:]\s*$/gm, '')
-      .replace(/```[\s\S]*?```/g, '')
-      .replace(/\n{3,}/g, '\n\n')
-      .trim();
+
+    // 把剩余内容解析成交织的内容块
+    const contentBlocks = parseContentBlocks(remaining);
+
+    // 从内容块中提取角色卡（同时保留在块里渲染）
+    const newCards: any[] = [];
+    contentBlocks.forEach(block => {
+      if (block.type === 'card') {
+        const existingNames = (stateAtCall.collectedCards || []).map((c: any) => c.name);
+        if (block.data?.name && !existingNames.includes(block.data.name)) {
+          newCards.push(block.data);
+        }
+      }
+    });
 
     setGameState(prev => {
-      let next = { ...prev };
-      const isWeekEnd = snapshot?.isWeekEnd === true;
+      let next = { ...prev } as any;
       if (snapshot) {
-        // CP模式：两个目标成员都同步CP亲密度
         const cpNewAffection = prev.gameMode === 'CPCP' && snapshot.members?.length > 0
           ? snapshot.members[0].affection : null;
 
-        next = { ...next,
+        // 宝妈线：从snapshot更新信任度
+        if (prev.gameMode === 'mom' && snapshot.members?.length > 0) {
+          next.momTrustLevel = snapshot.members[0].affection ?? next.momTrustLevel;
+        }
+
+        next = {
+          ...next,
           currentScene: snapshot.currentScene ?? next.currentScene,
           turnCount: snapshot.weekCount ?? snapshot.week ?? next.turnCount,
           hiddenSummary: snapshot.hiddenSummary ?? next.hiddenSummary,
           isComebackSetting: snapshot.isComebackSetting ?? false,
           groupHeats: snapshot.groupHeats ?? next.groupHeats,
           currentMusicShow: musicResult || next.currentMusicShow,
-          members: next.members.map(m => {
+          members: next.members.map((m: Member) => {
             if (prev.gameMode === 'CPCP' && prev.targets.includes(m.id) && cpNewAffection !== null) {
               return { ...m, affection: cpNewAffection };
             }
@@ -593,24 +718,22 @@ export default function App() {
         };
       }
       if (musicResult) next.musicShowHistory = [...(next.musicShowHistory || []), musicResult];
-      if (cards.length > 0) next.collectedCards = [...(next.collectedCards || []), ...cards];
-      if (cards.length > 0 && prev.setupStep === SetupStep.CARDS) next.setupStep = SetupStep.STARTED;
+      if (newCards.length > 0) next.collectedCards = [...(next.collectedCards || []), ...newCards];
+      if (newCards.length > 0 && prev.setupStep === SetupStep.CARDS) next.setupStep = SetupStep.STARTED;
+
+      // 有内容才推进
+      const hasContent = contentBlocks.length > 0 || musicResult;
 
       return {
         ...next,
         history: [...next.history, {
           role: MessageRole.ASSISTANT,
-          content: (displayContent && displayContent.trim()) || (cards.length > 0 ? "（剧情准备就绪）" : "（剧情推进中...）"),
+          content: '',  // content 不再用于渲染，改用 contentBlocks
           timestamp: Date.now(),
-          theqooPost,
-          cardData: cards.length > 0 ? cards : undefined,
+          contentBlocks,
           currentMusicShow: musicResult || undefined,
           options: options.length > 0 ? options : undefined,
-          isComebackSetup: false,
-          isWeekEnd,
-          kktMessage,
-          weversePost,
-          bubbleMessage,
+          isWeekEnd: snapshot?.isWeekEnd === true,
         }]
       };
     });
@@ -627,13 +750,15 @@ export default function App() {
     await handleAIStep(textToSend, nextState);
   };
 
-  if (gameState.setupStep === SetupStep.CREATION) return <CharacterCreationWizard onComplete={handleCreationComplete} onReset={executeReset} members={gameState.members} />;
+  if (gameState.setupStep === SetupStep.CREATION) return <CharacterCreationWizard onComplete={handleCreationComplete} members={gameState.members} />;
 
   const isCPMode = gameState.gameMode === 'CPCP';
   const isMomMode = gameState.gameMode === 'mom';
   const targetMembers = gameState.members.filter(m => gameState.targets.includes(m.id));
   const primaryTarget = targetMembers[0];
   const cpAffection = primaryTarget?.affection || 0;
+  const daughterProfile = (gameState as any).daughterProfile;
+  const momTrustLevel = (gameState as any).momTrustLevel || 50;
 
   const sidebarLabel = isMomMode ? '母女信任度' : isCPMode ? 'CP 羁绊值' : '角色状态';
   const modeLabel = isMomMode ? '宝妈' : isCPMode ? '助攻' : '攻略';
@@ -662,7 +787,6 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* 桌面侧边栏 */}
       <aside className="w-72 bg-[#FAF7F2] border-r border-[#EAE0D5] flex-shrink-0 flex-col hidden lg:flex">
         <div className="p-6 border-b border-[#EAE0D5]">
           <h1 className="text-base font-black text-[#C4936A] tracking-tighter flex items-center gap-2"><Gamepad2 className="w-5 h-5" /> 爱豆收集梦想生活</h1>
@@ -675,7 +799,6 @@ export default function App() {
           <section>
             <h3 className="text-[10px] font-black text-[#A0663A] uppercase tracking-widest mb-3 flex items-center gap-2"><Users className="w-3 h-3" /> {sidebarLabel}</h3>
             {isCPMode ? (
-              // CP模式：合并显示
               <div className="bg-white p-4 rounded-2xl border border-[#C4936A]">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-xs font-bold text-[#3D2B1F]">{targetMembers.map(m => m.name).join(' ♡ ')}</span>
@@ -688,13 +811,23 @@ export default function App() {
                   {cpAffection < 15 ? '互相不熟，公事公办' : cpAffection < 30 ? '有些微妙的默契' : cpAffection < 50 ? '暧昧模糊，互相试探' : cpAffection < 70 ? '明显的特殊感' : cpAffection < 85 ? '没有说破，但都知道了' : '只差最后一步'}
                 </div>
               </div>
+            ) : isMomMode ? (
+              <div className="bg-white p-4 rounded-2xl border border-[#EAE0D5]">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xs font-bold text-[#3D2B1F]">{daughterProfile?.name || '女儿'}</span>
+                  <span className="text-[10px] text-[#C4936A] font-mono font-bold">{momTrustLevel}/100</span>
+                </div>
+                <div className="h-1.5 bg-[#F5E6D0] rounded-full overflow-hidden">
+                  <motion.div animate={{ width: `${momTrustLevel}%` }} className="h-full bg-[#C4936A] rounded-full" />
+                </div>
+                {daughterProfile && <div className="text-[9px] text-[#A0663A] mt-1">{daughterProfile.nationality} · {daughterProfile.personality}</div>}
+              </div>
             ) : (
-              // 攻略/宝妈模式：列表显示
               <div className="space-y-2">{targetMembers.map(member => (
                 <div key={member.id} className="bg-white p-4 rounded-2xl border border-[#EAE0D5]">
                   <div className="flex justify-between items-center mb-2"><span className="text-xs font-bold text-[#3D2B1F]">{member.name}</span><span className="text-[10px] text-[#C4936A] font-mono font-bold">{member.affection}/100</span></div>
                   <div className="h-1.5 bg-[#F5E6D0] rounded-full overflow-hidden"><motion.div animate={{ width: `${member.affection}%` }} className="h-full bg-[#C4936A] rounded-full" /></div>
-                  <div className="text-[9px] text-[#A0663A] mt-1">{isMomMode ? `信任度 ${member.affection}/100` : member.status}</div>
+                  <div className="text-[9px] text-[#A0663A] mt-1">{member.status}</div>
                 </div>
               ))}</div>
             )}
@@ -714,11 +847,13 @@ export default function App() {
               <h2 className="text-sm font-bold flex items-center gap-1 text-[#3D2B1F]"><MapPin className="w-3 h-3 text-[#C4936A]" /> {gameState.currentScene}</h2>
             </div>
           </div>
-          {primaryTarget && (
+          {(primaryTarget || isMomMode) && (
             <button onClick={() => setShowDrawer(true)} className="lg:hidden flex items-center gap-2 bg-[#FAF7F2] px-3 py-2 rounded-2xl border border-[#EAE0D5] active:scale-95 transition-all">
               <Heart className="w-3 h-3 text-[#C4936A]" />
-              <span className="text-[11px] font-bold text-[#3D2B1F]">{isCPMode ? targetMembers.map(m => m.name).join(' ♡ ') : primaryTarget.name}</span>
-              <span className="text-[11px] font-black text-[#C4936A]">{primaryTarget.affection}</span>
+              <span className="text-[11px] font-bold text-[#3D2B1F]">
+                {isMomMode ? (daughterProfile?.name || '女儿') : isCPMode ? targetMembers.map(m => m.name).join(' ♡ ') : primaryTarget?.name}
+              </span>
+              <span className="text-[11px] font-black text-[#C4936A]">{isMomMode ? momTrustLevel : cpAffection}</span>
               <ChevronUp className="w-3 h-3 text-[#A0663A]" />
             </button>
           )}
@@ -733,28 +868,39 @@ export default function App() {
           <AnimatePresence initial={false}>
             {gameState.history.map((msg, i) => {
               const isLatest = i === gameState.history.length - 1;
+              const blocks = (msg as any).contentBlocks as ContentBlock[] | undefined;
               return (
                 <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={`flex ${msg.role === MessageRole.USER ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[92%] md:max-w-2xl ${msg.role === MessageRole.USER ? 'ml-8' : 'mr-8'}`}>
                     {msg.role === MessageRole.ASSISTANT && <div className="text-[9px] font-black text-[#A0663A] uppercase tracking-widest ml-3 mb-2 flex items-center gap-1"><Zap className="w-3 h-3" /> NARRATIVE</div>}
-                    <div className={`p-5 md:p-6 rounded-[1.5rem] text-sm leading-relaxed markdown-container ${msg.role === MessageRole.USER ? 'bg-[#C4936A] text-white rounded-tr-none' : 'bg-[#FAF7F2] border border-[#EAE0D5] text-[#3D2B1F] rounded-tl-none'}`}>
-                      <Markdown components={{
-                        p: ({children}) => {
-                          const text = String(children);
-                          const isOption = /^[A-C][\.、。]/.test(text);
-                          return <p className={isOption ? 'text-[#C4936A] font-bold' : ''}>{children}</p>;
-                        }
-                      }}>{msg.content}</Markdown>
-                      {msg.cardData?.map((card: any, idx: number) => <CharacterCardUI key={idx} card={card} />)}
-                      {(msg as any).kktMessage && <KKTMessageUI data={(msg as any).kktMessage} />}
-                      {(msg as any).weversePost && <WeversePostUI data={(msg as any).weversePost} />}
-                      {(msg as any).bubbleMessage && <BubbleMessageUI data={(msg as any).bubbleMessage} />}
-                      {msg.theqooPost && <TheqooPostUI post={msg.theqooPost} />}
-                      {msg.currentMusicShow && isLatest && <MusicShowUI result={msg.currentMusicShow} />}
-                      {msg.options && <OptionsUI options={msg.options} isLatest={isLatest} />}
-                      {msg.content.includes('错误信息') && (
-                        <button onClick={() => { let j = -1; for (let k = i-1; k >= 0; k--) { if (gameState.history[k].role === MessageRole.USER) { j = k; break; } } if (j !== -1) { const c = gameState.history[j].content; setGameState(prev => ({ ...prev, history: prev.history.slice(0, i) })); handleSend(c); } }}
-                          className="mt-3 flex items-center gap-2 text-xs font-black text-[#C4936A] uppercase bg-white/50 px-3 py-2 rounded-xl border border-[#EAE0D5]"><RefreshCw className="w-3 h-3" /> 重试</button>
+                    <div className={`rounded-[1.5rem] overflow-hidden ${msg.role === MessageRole.USER ? 'bg-[#C4936A] text-white rounded-tr-none' : 'bg-[#FAF7F2] border border-[#EAE0D5] text-[#3D2B1F] rounded-tl-none'}`}>
+                      {msg.role === MessageRole.USER ? (
+                        <div className="p-5 md:p-6 text-sm leading-relaxed">{msg.content}</div>
+                      ) : blocks && blocks.length > 0 ? (
+                        <div className="p-5 md:p-6 text-sm leading-relaxed markdown-container space-y-2">
+                          {blocks.map((block, bi) => {
+                            if (block.type === 'text') return <MarkdownBlock key={bi} content={block.content} />;
+                            if (block.type === 'kkt') return <KKTMessageUI key={bi} data={block.data} />;
+                            if (block.type === 'weverse') return <WeversePostUI key={bi} data={block.data} />;
+                            if (block.type === 'bubble') return <BubbleMessageUI key={bi} data={block.data} />;
+                            if (block.type === 'theqoo') return <TheqooPostUI key={bi} post={block.data} />;
+                            if (block.type === 'card') return <CharacterCardUI key={bi} card={block.data} />;
+                            if (block.type === 'musicshow') return isLatest ? <MusicShowUI key={bi} result={block.data} /> : null;
+                            return null;
+                          })}
+                          {msg.options && <OptionsUI options={msg.options} isLatest={isLatest} />}
+                        </div>
+                      ) : (
+                        <div className="p-5 md:p-6 text-sm leading-relaxed markdown-container">
+                          <MarkdownBlock content={msg.content || '（剧情推进中...）'} />
+                          {msg.options && <OptionsUI options={msg.options} isLatest={isLatest} />}
+                        </div>
+                      )}
+                      {msg.content?.includes('错误信息') && (
+                        <div className="px-5 pb-4">
+                          <button onClick={() => { let j = -1; for (let k = i-1; k >= 0; k--) { if (gameState.history[k].role === MessageRole.USER) { j = k; break; } } if (j !== -1) { const c = gameState.history[j].content; setGameState(prev => ({ ...prev, history: prev.history.slice(0, i) })); handleSend(c); } }}
+                            className="flex items-center gap-2 text-xs font-black text-[#C4936A] uppercase bg-white/50 px-3 py-2 rounded-xl border border-[#EAE0D5]"><RefreshCw className="w-3 h-3" /> 重试</button>
+                        </div>
                       )}
                     </div>
                   </div>
