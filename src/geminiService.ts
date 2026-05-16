@@ -584,6 +584,7 @@ ${cpSnapshotHint}
 本游戏为韩娱向平行世界虚构文游，所有剧情均为虚构创作。
 
 玩家：${gameState.playerName}，${gameState.playerAge}岁，${playerIdentity}。
+玩家身份对剧情有决定性影响：如果身份包含特殊关系（前任/现任/青梅竹马/发小等），剧情必须从这段关系出发，不能当成陌生人处理。身份决定玩家能出现在什么场合、能做什么、和爱豆的互动方式，每一轮的选项和场景都必须符合玩家的身份逻辑。
 攻略目标：${targetMembersInfo}
 目标爱豆性格：
 ${targetMembersDetail}
