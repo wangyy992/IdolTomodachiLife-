@@ -302,7 +302,6 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
   const [customIdentity, setCustomIdentity] = useState('');
 
   const ids = ["韩国留学生","便利店/咖啡厅打工人","娱乐公司实习生","音乐节目工作人员","妆造师/发型助理","翻译/海外商务助理","娱乐记者/博主","普通粉丝","资深粉丝","公寓同栋住户"];
-  const momIds = ["全职妈妈","上班族妈妈","单亲妈妈","富裕家庭","工薪阶层","异地陪读妈妈","娱乐圈相关从业者"];
   const modes = [
     { id: 'romance', name: '攻略模式', desc: '爱豆失德中' },
     { id: 'CPCP', name: '助攻模式', desc: '红线拉起来' },
@@ -317,7 +316,7 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
     { id: '乐天抗压型', desc: '天生抗打击，但有时候不够专注' },
     { id: '讨好型', desc: '把所有人放在自己前面，内心积压很多' },
   ];
-  const backgrounds = ['工薪阶层', '富裕家庭', '单亲家庭'];
+  const backgrounds = ['贫困','小资', '富裕'];
 
 
 
