@@ -319,7 +319,7 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
   ];
   const backgrounds = ['工薪阶层', '富裕家庭', '单亲家庭'];
 
-  const soloIds = ['yena', 'eunbi'];
+
   const groups = Array.from(new Set(members.filter(m => !soloIds.includes(m.id)).map(m => m.group)));
   const groupedMembers: Record<string, Member[]> = {};
   groups.forEach(g => { groupedMembers[g] = members.filter(m => m.group === g); });
