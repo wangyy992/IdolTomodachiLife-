@@ -483,8 +483,7 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
                   </div>
                 )}
                 <button onClick={() => { setStep(data.gameMode === 'mom' ? 2 : 3); setSelectedGroup(null); setData({...data, targets: []}); }} className="w-full py-3 bg-white text-[#A0663A] rounded-2xl text-sm font-bold border border-[#EAE0D5] hover:bg-[#F5E6D0] transition-all">← 上一步</button>
-                <button onClick={() => on
-                Complete(data)} disabled={!canProceedStep4()} className="w-full bg-[#C4936A] text-white py-4 rounded-2xl font-bold hover:bg-[#A0663A] transition-all disabled:opacity-50">Start!</button>
+                <button onClick={() => onComplete(data)} disabled={!canProceedStep4()} className="w-full bg-[#C4936A] text-white py-4 rounded-2xl font-bold hover:bg-[#A0663A] transition-all disabled:opacity-50">Start!</button>
               </motion.div>
             )}
           </AnimatePresence>
