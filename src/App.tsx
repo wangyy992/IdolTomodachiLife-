@@ -299,11 +299,9 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
     daughterNationality: '', daughterPersonality: '', daughterBackground: ''
   });
   const [customIdentity, setCustomIdentity] = useState('');
-  const ids = [
-    "韩国留学生","便利店/咖啡厅打工人","娱乐公司实习生","音乐节目工作人员",
-    "妆造师/发型助理","翻译/海外商务助理","娱乐记者/博主","普通粉丝","资深粉丝","公寓同栋住户",
-    "现任女友","前任","青梅竹马","发小","暗恋对象（单向）"
-  ];
+  const ids = ["韩国留学生","便利店/咖啡厅打工人","娱乐公司实习生","音乐节目工作人员","妆造师/发型助理","翻译/海外商务助理","娱乐记者/博主","普通粉丝","资深粉丝","公寓同栋住户","现任女友","前任","青梅竹马","发小","暗恋对象（单向）"];
+  const cpIds = ["娱乐公司实习生","音乐节目工作人员","妆造师/发型助理","翻译/海外商务助理","娱乐记者/博主","普通粉丝","资深粉丝","韩国留学生","便利店/咖啡厅打工人","公寓同栋住户"];
+  const currentIds = data.gameMode === 'CPCP' ? cpIds : ids;
   const modes = [
     { id: 'romance', name: '攻略模式', desc: '爱豆失德中' },
     { id: 'CPCP', name: '助攻模式', desc: '红线拉起来' },
