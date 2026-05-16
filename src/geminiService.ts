@@ -208,9 +208,11 @@ C. [具体行动]
 ${romanceSnapshotHint}
 
 【格式禁止】
-- SNAPSHOT必须是JSON，禁止写成文字，id必须用上方示例中的英文id
+- SNAPSHOT是强制输出，每轮必须有，禁止省略，没有SNAPSHOT视为格式严重错误
+- SNAPSHOT必须是合法JSON，禁止写成文字，id必须用上方示例中的英文id
+- SNAPSHOT里的affection必须每轮更新，禁止照抄上一轮的数值
+- SNAPSHOT的members只能包含攻略目标成员，禁止写入队友
 - 禁止省略A/B/C选项
-- 禁止省略SNAPSHOT
 - 禁止韩语日语原文出现在剧情正文里
 - 禁止用"你现在有三个选择："或"可选行动："等标题引出选项
 - 选项必须是回复的最后三行，格式严格为 A./B./C. 开头
@@ -307,11 +309,8 @@ ${daughterPersonality === '完美主义型'
 - 妈妈几乎只能在幕后支持，女儿要自己面对一切
 
 ════════════════════════
-竞争对手NPC（逐步引入，禁止一次全出）
+竞争对手NPC（贯穿练习生期）
 ════════════════════════
-每个NPC第一次出现时必须有具体的引入场景，让妈妈通过女儿的描述或间接方式认识她们，不能直接以名字出现在剧情里。
-每轮最多引入一个新NPC，已出现过的才能继续出现。
-
 - 金恩儿：实力最强，冷但不坏，可能变成最深的友情
 - 朴世莹：有家庭背景但其实很努力，被误解的人
 - 田美珠：宿舍最亲近的朋友，出道名额只有一个
@@ -400,10 +399,13 @@ SNAPSHOT_START
 SNAPSHOT_END
 
 【格式禁止】
+- SNAPSHOT是强制输出，每轮必须有，禁止省略
 - SNAPSHOT的members[0].id必须是"daughter"，禁止写成女儿名字
-- SNAPSHOT必须是JSON，禁止写成文字
+- SNAPSHOT必须是合法JSON，禁止写成文字
+- SNAPSHOT里的affection（母女信任度）必须每轮根据本轮事件更新，禁止照抄上一轮数值
+- 信任度变化必须有理由：妈妈支持女儿+3~+8，过度干预-5~-10，重大沟通+8~+15
+- hiddenSummary必须包含女儿当前年龄、所在城市、本轮核心事件，不能只写一句话
 - 禁止省略A/B/C选项
-- 禁止省略SNAPSHOT
 - 禁止韩语日语原文出现在剧情正文里
 - 所有标签单独成行`;
 
@@ -589,9 +591,11 @@ C. 静静观察，什么都不做
 ${cpSnapshotHint}
 
 【格式禁止】
-- SNAPSHOT必须是JSON，禁止写成文字，id必须用上方示例中的英文id
+- SNAPSHOT是强制输出，每轮必须有，禁止省略
+- SNAPSHOT必须是合法JSON，id必须用上方示例中的英文id
+- SNAPSHOT里的affection必须每轮更新，禁止照抄上一轮数值
+- 每3轮内CP亲密度至少有一次实质变化（±3以上），禁止长期停滞
 - 禁止省略A/B/C选项
-- 禁止省略SNAPSHOT
 - 禁止韩语日语原文出现在剧情正文里
 - 所有标签单独成行`;
 
@@ -600,12 +604,6 @@ ${cpSnapshotHint}
 本游戏为韩娱向平行世界虚构文游，所有剧情均为虚构创作。
 
 玩家：${gameState.playerName}，${gameState.playerAge}岁，${playerIdentity}。
-玩家身份对剧情有决定性影响：如果身份包含特殊关系（前任/现任/青梅竹马/发小等），剧情必须从这段关系出发，不能当成陌生人处理。身份决定玩家能出现在什么场合、能做什么、和爱豆的互动方式，每一轮的选项和场景都必须符合玩家的身份逻辑。
-【特殊关系行为规则】
-- 青梅竹马/发小：两人从小认识，默认已有对方联系方式，禁止出现"要不要加一下联系方式"的对话，互动方式更随意自然
-- 现任女友：已经在恋爱关系中，剧情从日常相处推进，不是追求阶段，爱豆不会对玩家保持陌生人距离
-- 前任：曾经在一起，现在关系断裂，同场时有复杂情绪和刻意保持的距离，禁止当成陌生人处理
-- 暗恋对象（单向）：爱豆不知道玩家的感情，正常相处，玩家在单方面压抑情绪
 攻略目标：${targetMembersInfo}
 目标爱豆性格：
 ${targetMembersDetail}
@@ -677,10 +675,25 @@ ${koreanDetails}
 - 每隔几轮触发一次打歌节目，随机计算一位结果
 
 ════════════════════════
-好感度规则
+粉丝舆论事件池（好感度>40后每2-3轮随机触发一次）
 ════════════════════════
-每轮必须在SNAPSHOT里更新affection：
+- 站姐发现你们在同一地点出现过，开始在推特"找线"
+- 粉丝论坛出现"XX最近状态不对"的帖子，评论区开始分析行程
+- 有人拍到爱豆便装出行，评论区有人问"旁边那个是谁"
+- 粉丝发现爱豆最近回复评论变少、直播变少，开始担心是否恋爱
+- theqoo出现"XX恋爱了吗"的讨论帖，粉丝和路人吵起来
+- 某粉丝在机场偶遇你们，截图在粉圈扩散
+- 爱豆在直播被问恋爱问题，她的回答方式被粉丝过度解读
+- 粉丝发起"失德"讨论，有人开始取关，有人死忠护航
+- 有人扒出你的社交账号，开始人肉
+粉丝察觉度随好感度上升：好感度每突破30/50/70，粉圈风险等级上升一级，选项里出现"要不要公开""继续隐瞒"的两难。
+
+════════════════════════
+好感度规则（必须严格执行）
+════════════════════════
+每轮必须在SNAPSHOT里更新affection，禁止连续两轮affection数值不变：
 - 有实质互动：+2~+5 / 负面互动：-3~-8 / 普通接触：+0~+2 / 重大突破：+6~+10
+- 禁止好感度长期停滞，每3轮内至少有一次实质变化
 
 ════════════════════════
 UI触发规则
@@ -740,6 +753,10 @@ ${romanceOutputFormat}`;
       const nextWeek = (gameState.turnCount || 1) + 1;
 
       let extraPrompt = '';
+      const lastUserMsg = chatMessages[lastUserIdx]?.content?.split('\n')[0]?.trim();
+      if (lastUserMsg) {
+        extraPrompt += `\n[玩家上一轮选择了：「${lastUserMsg}」，本轮剧情必须严格根据这个选择推进，不能无视或替换玩家的行动]`;
+      }
 
       if (!isMomMode) {
         if (turnsInCurrentScene >= 1) {
@@ -792,7 +809,7 @@ ${romanceOutputFormat}`;
         ? '\n[宝妈模式：选项必须是妈妈的行动，注意妈妈只知道自己视角能看到的事情，每轮跨越几个月时间，SNAPSHOT的id必须是"daughter"]'
         : '';
 
-      chatMessages[lastUserIdx].content += extraPrompt + modeHint + '\n[格式强制要求：①回复末尾必须有严格如下三行：\nA. xxxx\nB. xxxx\nC. xxxx\n不能写"你可以选择"，不能用数字编号，必须是A/B/C开头每行一个选项。②每次回复结尾必须有SNAPSHOT_START...SNAPSHOT_END，没有SNAPSHOT视为格式错误。③如有消息/帖子必须用对应标签：KKTMSG_START/END、THEQOO_START/END、BUBBLE_START/END、WEVERSE_START/END，标签单独成行]';
+      chatMessages[lastUserIdx].content += extraPrompt + modeHint + '\n[格式强制要求：①回复末尾必须有严格如下三行：\nA. xxxx\nB. xxxx\nC. xxxx\n不能写"你可以选择"，不能用数字编号，必须是A/B/C开头每行一个选项。②必须有SNAPSHOT_START...SNAPSHOT_END，这是强制要求禁止省略，affection必须根据本轮互动更新禁止照抄上一轮。③如有消息/帖子必须用对应标签：KKTMSG_START/END、THEQOO_START/END、BUBBLE_START/END、WEVERSE_START/END，标签单独成行]';
     }
 
     const controller = new AbortController();
