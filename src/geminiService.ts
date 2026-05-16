@@ -792,7 +792,7 @@ ${romanceOutputFormat}`;
         ? '\n[宝妈模式：选项必须是妈妈的行动，注意妈妈只知道自己视角能看到的事情，每轮跨越几个月时间，SNAPSHOT的id必须是"daughter"]'
         : '';
 
-      chatMessages[lastUserIdx].content += extraPrompt + modeHint + '\n[格式强制要求：①回复末尾必须有严格如下三行：\nA. xxxx\nB. xxxx\nC. xxxx\n不能写"你可以选择"，不能用数字编号，必须是A/B/C开头每行一个选项。②必须有SNAPSHOT_START...SNAPSHOT_END。③如有消息/帖子必须用对应标签：KKTMSG_START/END、THEQOO_START/END、BUBBLE_START/END、WEVERSE_START/END，标签单独成行]';
+      chatMessages[lastUserIdx].content += extraPrompt + modeHint + '\n[格式强制要求：①回复末尾必须有严格如下三行：\nA. xxxx\nB. xxxx\nC. xxxx\n不能写"你可以选择"，不能用数字编号，必须是A/B/C开头每行一个选项。②每次回复结尾必须有SNAPSHOT_START...SNAPSHOT_END，没有SNAPSHOT视为格式错误。③如有消息/帖子必须用对应标签：KKTMSG_START/END、THEQOO_START/END、BUBBLE_START/END、WEVERSE_START/END，标签单独成行]';
     }
 
     const controller = new AbortController();
