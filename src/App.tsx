@@ -69,13 +69,12 @@ const WeversePostUI = ({ data }: { data: any }) => (
       </div>
       <span className="text-[#A0663A] text-lg">⋯</span>
     </div>
-    <div className="px-4 pb-3"><p className="text-[14px] text-[#3D2B1F] leading-relaxed">{data.content}</p></div>
-    {data.imageDesc && (
-      <div className="w-full bg-[#F5E6D0] aspect-[4/3] flex flex-col items-center justify-center gap-2">
+    <div className="px-4 pb-3"><p className="text-[14px] text-[#3D2B1F] leading-relaxed">{data.content}</p></div>    {data.imageDesc && (
+      <div className="w-full bg-[#F5E6D0] aspect-[4/3] flex flex-col items-center justify-center gap-2 p-4">
         <span className="text-[#A0663A] text-xl">🖼</span>
-        <p className="text-[11px] text-[#A0663A]">图片</p>
+        <p className="text-[11px] text-[#A0663A] text-center italic">{data.imageDesc}</p>
       </div>
-    )}
+)}
     <div className="px-4 py-3 flex items-center gap-6 border-t border-[#EAE0D5]">
       <button className="flex items-center gap-1.5 text-[#A0663A]"><Heart className="w-5 h-5" /><span className="text-[12px]">{(data.likes || 0).toLocaleString()}</span></button>
       <button className="text-[#A0663A] text-xl">🔖</button>
