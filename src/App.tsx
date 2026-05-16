@@ -638,7 +638,7 @@ export default function App() {
       nationality: data.daughterNationality,
       personality: data.daughterPersonality,
       background: data.daughterBackground,
-      name: '',
+      name: data.daughterName || '',
       trustLevel: 50,
     } : null;
 
