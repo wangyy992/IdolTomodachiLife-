@@ -383,7 +383,7 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
     return data.targets.length >= 1;
   };
 
-  const currentIds = data.gameMode === 'mom' ? momIds : ids;
+  const currentIds = ids;
   const totalSteps = data.gameMode === 'mom' ? 3 : 4;
 
   return (
