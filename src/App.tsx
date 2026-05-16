@@ -320,8 +320,6 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
   const backgrounds = ['工薪阶层', '富裕家庭', '单亲家庭'];
 
 
-  const groupedMembers: Record<string, Member[]> = {};
-  groups.forEach(g => { groupedMembers[g] = members.filter(m => m.group === g); });
 
   const groupedMembers: Record<string, Member[]> = {};
   groups.forEach(g => { groupedMembers[g] = members.filter(m => m.group === g); });
