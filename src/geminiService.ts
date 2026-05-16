@@ -53,6 +53,9 @@ export async function callGeminiAPI(messages: ChatMessage[], gameState: GameStat
   const cpMember1 = gameState.members.find(m => m.id === gameState.targets[0]);
   const cpMember2 = gameState.members.find(m => m.id === gameState.targets[1]);
   const cpAffection = cpMember1?.affection || 0;
+  const cpSnapshotHint = `SNAPSHOT_START
+  {"members":[{"id":"${cpMember1?.id}","affection":CP亲密度数字,"careerPressure":数字,"status":"状态"},{"id":"${cpMember2?.id}","affection":CP亲密度数字,"careerPressure":数字,"status":"状态"}],"currentScene":"地点","weekCount":数字,"isWeekEnd":false,"hiddenSummary":"摘要","isComebackSetting":false,"groupHeats":[]}
+  SNAPSHOT_END`;
 
   // 提取两人之间的初始关系数据
   const cpInitialRelation = (cpMember1 as any)?.initialRelationships?.find(
