@@ -47,6 +47,9 @@ export async function callGeminiAPI(messages: ChatMessage[], gameState: GameStat
 
   const targetAffections = gameState.members.filter(m => gameState.targets.includes(m.id));
   const relationStages = targetAffections.map(m => `${m.name}：${getRelationStage(m.affection)}`).join('、');
+  const romanceSnapshotHint = `SNAPSHOT_START
+  {"members":[${targetAffections.map(m => `{"id":"${m.id}","affection":好感度数字,"careerPressure":数字,"status":"当前状态"}`).join(',')}],"currentScene":"地点","weekCount":数字,"isWeekEnd":true或false,"hiddenSummary":"2-3句摘要","isComebackSetting":true或false,"groupHeats":[]}
+  SNAPSHOT_END`;
   const isInitialSetup = gameState.setupStep === SetupStep.CARDS;
 
   // CP模式相关
@@ -221,7 +224,13 @@ SNAPSHOT_END
 【女儿基础设定】
 国籍：${daughterNationality}
 性格类型：${daughterPersonality}
-家庭背景：${daughterBackground}
+家庭背景：${daughterBackground}（${
+  daughterBackground === '贫困' 
+    ? '每一笔培训费都是压力，妈妈可能要兼职甚至借钱支撑女儿的梦想，经济危机随时会成为故事转折点'
+    : daughterBackground === '小资'
+    ? '生活质量还不错，能负担基本的培训费用，但顶级资源仍然需要取舍，偶尔会有经济压力'
+    : '钱不是问题，但家庭期望值更高，可能有更复杂的家族关系和压力'
+})
 ${daughterName ? `已确定名字：${daughterName}` : ''}
 
 【国籍决定的地点与时间线】
