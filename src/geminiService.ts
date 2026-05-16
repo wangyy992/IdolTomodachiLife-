@@ -703,6 +703,7 @@ ${outputFormat}`;
     const data = await response.json();
     const text = data?.choices?.[0]?.message?.content;
     if (!text || text.trim() === '') throw new Error('AI 返回内容为空。');
+    console.log('🤖 AI原始返回：\n', text);
     return text;
 
   } catch (error) {
