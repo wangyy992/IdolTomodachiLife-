@@ -38,10 +38,10 @@ export async function callGeminiAPI(messages: ChatMessage[], gameState: GameStat
   const getRelationStage = (affection: number) => {
     if (affection < 15) return '陌生人';
     if (affection < 30) return '有过一面之缘';
-    if (affection < 45) return '普通认识';
-    if (affection < 60) return '开始有些特别';
-    if (affection < 75) return '暧昧未明';
-    if (affection < 90) return '关系微妙且深入';
+    if (affection < 75) return '普通认识';
+    if (affection < 85) return '开始有些特别';
+    if (affection < 90) return '暧昧未明';
+    if (affection < 95) return '关系微妙且深入';
     return '感情确立';
   };
 
@@ -197,6 +197,8 @@ SNAPSHOT_END
 - 禁止省略A/B/C选项
 - 禁止省略SNAPSHOT
 - 禁止韩语日语原文出现在剧情正文里
+- 禁止用"你现在有三个选择："或"可选行动："等标题引出选项
+- 选项必须是回复的最后三行，格式严格为 A./B./C. 开头
 - 所有标签单独成行`;
 
   // 宝妈线prompt
@@ -666,8 +668,9 @@ ${outputFormat}`;
         ? '\n[宝妈模式：选项必须是妈妈的行动，注意妈妈只知道自己视角能看到的事情，每轮跨越几个月时间]'
         : '';
 
-      chatMessages[lastUserIdx].content += extraPrompt + modeHint + '\n[必须包含：①A/B/C三个选项 ②SNAPSHOT_START...SNAPSHOT_END。如有消息/帖子用对应标签，标签单独成行]';
+      chatMessages[lastUserIdx].content += extraPrompt + modeHint + '\n[格式强制要求：①回复末尾必须有严格如下三行：\nA. xxxx\nB. xxxx\nC. xxxx\n不能写"你可以选择"，不能用数字编号，必须是A/B/C开头每行一个选项。②必须有SNAPSHOT_START...SNAPSHOT_END。③如有消息/帖子必须用对应标签：KKTMSG_START/END、THEQOO_START/END、BUBBLE_START/END、WEVERSE_START/END，标签单独成行]';
     }
+    
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 60000);
