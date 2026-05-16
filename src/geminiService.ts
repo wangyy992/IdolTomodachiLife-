@@ -38,10 +38,10 @@ export async function callGeminiAPI(messages: ChatMessage[], gameState: GameStat
   const getRelationStage = (affection: number) => {
     if (affection < 15) return '陌生人';
     if (affection < 30) return '有过一面之缘';
-    if (affection < 75) return '普通认识';
-    if (affection < 85) return '开始有些特别';
-    if (affection < 90) return '暧昧未明';
-    if (affection < 95) return '关系微妙且深入';
+    if (affection < 45) return '普通认识';
+    if (affection < 60) return '开始有些特别';
+    if (affection < 75) return '暧昧未明';
+    if (affection < 90) return '关系微妙且深入';
     return '感情确立';
   };
 
@@ -54,10 +54,9 @@ export async function callGeminiAPI(messages: ChatMessage[], gameState: GameStat
   const cpMember2 = gameState.members.find(m => m.id === gameState.targets[1]);
   const cpAffection = cpMember1?.affection || 0;
   const cpSnapshotHint = `SNAPSHOT_START
-  {"members":[{"id":"${cpMember1?.id}","affection":CP亲密度数字,"careerPressure":数字,"status":"状态"},{"id":"${cpMember2?.id}","affection":CP亲密度数字,"careerPressure":数字,"status":"状态"}],"currentScene":"地点","weekCount":数字,"isWeekEnd":false,"hiddenSummary":"摘要","isComebackSetting":false,"groupHeats":[]}
-  SNAPSHOT_END`;
+{"members":[{"id":"${cpMember1?.id}","affection":CP亲密度数字,"careerPressure":数字,"status":"状态"},{"id":"${cpMember2?.id}","affection":CP亲密度数字,"careerPressure":数字,"status":"状态"}],"currentScene":"地点","weekCount":数字,"isWeekEnd":false,"hiddenSummary":"摘要","isComebackSetting":false,"groupHeats":[]}
+SNAPSHOT_END`;
 
-  // 提取两人之间的初始关系数据
   const cpInitialRelation = (cpMember1 as any)?.initialRelationships?.find(
     (rel: any) => rel.targetId === cpMember2?.id
   );
@@ -65,7 +64,6 @@ export async function callGeminiAPI(messages: ChatMessage[], gameState: GameStat
     ? `初始亲密度：${cpInitialRelation.affinity}/100，初始张力：${cpInitialRelation.tension}/100\n关系备注：${cpInitialRelation.note}`
     : '无特殊既往史，标准同行关系';
 
-  // 提取跨团关联（比如前任关系）
   const crossRelations = gameState.members
     .filter(m => gameState.targets.includes(m.id))
     .flatMap(m => ((m as any).initialRelationships || [])
@@ -89,24 +87,22 @@ export async function callGeminiAPI(messages: ChatMessage[], gameState: GameStat
     return '彼此确认心意，只差一步';
   };
 
-  // 宝妈线相关
-  const daughter = gameState.members.find(m => m.id === gameState.targets[0]);
-  const trustLevel = daughter?.affection || 50;
-  const daughterNationality = daughter?.nationality || '韩国';
-  const nationalityChallenge = daughterNationality === '中国'
-    ? '签证压力大，回国舆论风险高，但唱跳实力强'
-    : daughterNationality === '日本'
-    ? '需要攻克发音关，有特定舆论敏感期，舞台表现力强'
-    : daughterNationality === '韩国'
-    ? '语言无障碍，但面临最激烈的内卷和升学压力'
-    : '海外背景带来独特视角，但需要额外适应韩国练习生文化';
+  // 宝妈线相关 — 从 daughterProfile 读取虚构女儿设定
+  const daughterProfile = (gameState as any).daughterProfile;
+  const momTrustLevel = (gameState as any).momTrustLevel ?? 50;
+  const daughterNationality = daughterProfile?.nationality || '韩国';
+  const daughterPersonality = daughterProfile?.personality || '';
+  const daughterBackground = daughterProfile?.background || '';
+  const daughterName = daughterProfile?.name || '';
 
-  const getMomStage = () => {
-    const week = gameState.turnCount || 1;
-    if (week <= 3) return '启蒙期（女儿8-10岁）';
-    if (week <= 11) return '练习生期（女儿12-16岁）';
-    return '出道冲刺期（女儿17-18岁）';
-  };
+  // 根据国籍决定地点和赴韩时间线
+  const nationalityTimeline = daughterNationality === '韩国'
+    ? `地点从家乡城市或首尔开始。语言无障碍，但面临最激烈的内卷和升学压力。直接在国内接触韩国练习生制度。`
+    : daughterNationality === '中国'
+    ? `启蒙期在中国国内（北京/上海/广州等城市），先在国内学舞/声乐。签证和赴韩问题是核心现实压力之一。通常13-15岁才有机会赴韩面试，或通过在华海选才踏上韩国土地。赴韩之前的几轮故事都发生在国内。`
+    : daughterNationality === '日本'
+    ? `启蒙期在日本国内（东京/大阪等城市），先在国内接受舞蹈/声乐训练。日本有一定的韩娱训练机构，但正式赴韩通常在14-16岁，通过日本选拔或海外面试。语言关（韩语）是重要的成长弧度。`
+    : `启蒙期在本国，对韩国偶像文化的接触可能通过网络或当地韩流社群开始。赴韩时间最晚，通常16-18岁通过选秀节目的海外选拔才有机会，或者根本不去首尔而是通过网络曝光被发现。`;
 
   const getTrustStage = (t: number) => {
     if (t < 20) return '女儿开始有秘密不告诉你';
@@ -114,6 +110,13 @@ export async function callGeminiAPI(messages: ChatMessage[], gameState: GameStat
     if (t < 60) return '关系平稳，但不够亲密';
     if (t < 80) return '女儿愿意跟你说心里话';
     return '母女关系非常亲密，女儿把你当朋友';
+  };
+
+  const getMomStage = () => {
+    const week = gameState.turnCount || 1;
+    if (week <= 3) return '启蒙期（女儿8-10岁）';
+    if (week <= 11) return '练习生期（女儿12-16岁）';
+    return '出道冲刺期（女儿17-18岁）';
   };
 
   // 共用写作风格
@@ -127,6 +130,8 @@ export async function callGeminiAPI(messages: ChatMessage[], gameState: GameStat
 - 对话要符合爱豆真实说话风格，不油腻、不霸总、不老土
 - 心理描写克制，多写动作和眼神，少写心里想什么
 - 禁止写"心跳加速""手心出汗"这类直白表达，用行为暗示情绪
+- 禁止角色用"那我也真心地说一句""我真心地说"这类起头语，情绪必须藏在行为和细节里
+- 对话要留白，说七分留三分，禁止把潜台词说破
 - 有意外感和真实感，不要每次都是教科书式浪漫
 
 好的写法：
@@ -135,7 +140,8 @@ export async function callGeminiAPI(messages: ChatMessage[], gameState: GameStat
 
 禁止的写法：
 "你感受到了她的温度，心跳不由自主地加速了。"
-"她深情地望着你，眼神里满是爱意。"`;
+"她深情地望着你，眼神里满是爱意。"
+"那我也真心地说一句——"`;
 
   const koreanDetails = `
 ════════════════════════
@@ -149,13 +155,11 @@ export async function callGeminiAPI(messages: ChatMessage[], gameState: GameStat
 - 行程永远在赶，打歌节目彩排和正录是两件事
 - 经纪人会突然出现打断对话`;
 
-  // theqoo格式说明（共用）
   const theqooFormat = `THEQOO_START
 {"title":"帖子标题","category":"아이돌","viewsCount":48392,"likesCount":1823,"commentsCount":247,"comments":[{"authorId":"글릿조아_민주야","content":"韩文评论（中文翻译）","translation":""},{"authorId":"페어낫_사랑해","content":"韩文评论","translation":""},{"authorId":"냉정한_로드리뷰어","content":"争议评论","translation":""}]}
 THEQOO_END
 注意：评论必须有分歧——至少一条路人评价、一条粉丝护航、一条争议评论`;
 
-  // 输出格式（共用部分）
   const outputFormat = `
 【输出格式】
 
@@ -178,6 +182,9 @@ WEVERSE_END
 BUBBLE_START
 {"artist":"爱豆中文名","group":"团体","messages":[{"text":"消息内容","translation":"中文翻译（如原文是中文则留空）","time":"22:15"}]}
 BUBBLE_END
+注意：Bubble是爱豆发给所有付费订阅粉丝的群发消息，不是私聊。
+内容只能是：深夜碎碎念、吃东西的感慨、练习累了的随口一句、对粉丝的集体撒娇。
+禁止：叫玩家名字、约玩家见面、说只有两人知道的事、表达对玩家的特殊感情。
 
 ${theqooFormat}
 
@@ -192,7 +199,7 @@ C. [具体行动]
 
 第四部分：
 SNAPSHOT_START
-{"members":[{"id":"英文小写id","affection":数字,"careerPressure":数字,"status":"当前状态"}],"currentScene":"地点","weekCount":数字,"isWeekEnd":true或false,"hiddenSummary":"2-3句摘要","isComebackSetting":true或false,"groupHeats":[]}
+{"members":[{"id":"daughter","affection":母女信任度数字,"careerPressure":数字,"status":"女儿当前状态"}],"currentScene":"地点","weekCount":数字,"isWeekEnd":true或false,"hiddenSummary":"2-3句摘要","isComebackSetting":true或false,"groupHeats":[]}
 SNAPSHOT_END
 
 【格式禁止】
@@ -204,21 +211,28 @@ SNAPSHOT_END
 - 选项必须是回复的最后三行，格式严格为 A./B./C. 开头
 - 所有标签单独成行`;
 
-  // 宝妈线prompt
+  // 宝妈线prompt — 使用虚构女儿设定
   const momPrompt = `你是《爱豆收集梦想生活·星妈之路》的DM。
 本游戏为韩娱向平行世界虚构文游，所有剧情均为虚构创作。
 
-玩家扮演一位妈妈，陪伴女儿从启蒙到出道（或遗憾退圈）的全过程。
+玩家扮演一位妈妈，陪伴虚构女儿从启蒙到出道（或遗憾退圈）的全过程。
 妈妈：${gameState.playerName}，${playerIdentity}。
-女儿：${daughter?.name || ''}（${daughter?.stageName || ''}）
-女儿国籍：${daughterNationality}（${nationalityChallenge}）
-女儿性格：${daughter?.realPersonality || ''}
+
+【女儿基础设定】
+国籍：${daughterNationality}
+性格类型：${daughterPersonality}
+家庭背景：${daughterBackground}
+${daughterName ? `已确定名字：${daughterName}` : ''}
+
+【国籍决定的地点与时间线】
+${nationalityTimeline}
+
 ${memory}${cardMemory}
 
 【当前状态】
 游戏阶段：${getMomStage()}
-第${gameState.turnCount || 1}轮 | 场景：${gameState.currentScene || '首尔'}
-母女信任度：${trustLevel}/100（${getTrustStage(trustLevel)}）
+第${gameState.turnCount || 1}轮 | 场景：${gameState.currentScene || (daughterNationality === '韩国' ? '首尔' : daughterNationality === '中国' ? '北京' : daughterNationality === '日本' ? '东京' : '当地城市')}
+母女信任度：${momTrustLevel}/100（${getTrustStage(momTrustLevel)}）
 选秀期：${gameState.isComebackSetting ? '是' : '否'}
 ${writingStyle}
 
@@ -226,9 +240,24 @@ ${writingStyle}
 核心基调
 ════════════════════════
 写实向韩娱养成模拟，非爽文。
-强调普通家庭闯入韩娱圈的现实压力：钱、时间、签证、舆论、母女关系。
+强调普通家庭闯入韩娱圈的现实压力：钱、时间、签证（外籍尤其重要）、舆论、母女关系。
 整体氛围：七分甜三分虐。女儿越长大，妈妈能介入的空间越小。
 妈妈只能知道自己视角能看到的事情，不知道宿舍里发生了什么、女儿没告诉你的事。
+
+════════════════════════
+女儿性格规则（必须贯穿始终）
+════════════════════════
+${daughterPersonality === '完美主义型'
+  ? '女儿对自己要求极高，进步快但容易崩，受挫后很难重建自信。妈妈的评价对她影响极大，一句否定可能让她沉默很久。'
+  : daughterPersonality === '野心勃勃型'
+  ? '女儿目标明确，为出道可以牺牲一切，有时候手段让妈妈担心。和妈妈最容易起冲突，因为她不想被任何人管。'
+  : daughterPersonality === '敏感共情型'
+  ? '女儿感知力极强，很容易被周围人的情绪影响，需要稳定的环境。妈妈是她最重要的情绪锚点，但妈妈自己崩溃时她会立刻感知到。'
+  : daughterPersonality === '隐忍内敛型'
+  ? '女儿什么都藏着，表面没事，积累到一定程度会突然爆发。妈妈最难读懂她，需要主动创造安全感才会开口。'
+  : daughterPersonality === '乐天抗压型'
+  ? '女儿天生抗打击，但有时候不够专注，容易满足现状。妈妈担心她不够拼，但强行施压又会让她失去自己的节奏。'
+  : '女儿把所有人放在自己前面，内心积压很多。表面上非常乖，但妈妈需要察觉她"太懂事"背后的疲惫。'}
 
 ════════════════════════
 语言规则
@@ -241,16 +270,19 @@ ${writingStyle}
 【启蒙期 2-3轮】女儿8-10岁
 - 发现天赋、第一次接触舞台、决定是否走这条路
 - 事件：模仿爱豆、街头被星探搭话、报舞蹈班、第一次试镜
+- 场景在本国，不涉及韩国
 - 妈妈可以高度介入，女儿还很依赖你
 
 【练习生期 6-8轮】女儿12-16岁
-- 进入公司、宿舍生活、内部竞争、青春期叛逆、家庭经济压力
+- 进入（本国或韩国）公司、宿舍生活、内部竞争、青春期叛逆、家庭经济压力
+- 非韩国籍：前几轮在本国训练，赴韩是重大转折事件，要写出异乡感、语言关、文化冲突
+- 韩国籍：直接在首尔附近训练，面对升学压力和极度内卷
 - 事件：宿舍矛盾、被公司重点培养/边缘化、伤病、行程冲突
 - 妈妈的介入开始受限，女儿有自己的秘密
 
 【出道冲刺期 3-4轮】女儿17-18岁
 - 选秀节目、最终排名、出道or退圈、公开身份后的舆论
-- 事件：选秀打投、Dispatch预告、粉丝扒背景、公司约谈
+- 事件：选秀打投、Dispatch预告、粉丝扒背景（尤其外籍成员更容易被扒）、公司约谈
 - 妈妈几乎只能在幕后支持，女儿要自己面对一切
 
 ════════════════════════
@@ -275,7 +307,7 @@ ${writingStyle}
 - 妈妈过度干预：-5~-10
 - 重大事件后真心沟通：+8~+15
 - 女儿发现妈妈背后操控：-10~-20
-每轮必须在SNAPSHOT的members第一个成员的affection里更新信任度。
+每轮必须在SNAPSHOT的members[0].affection里更新信任度（id固定写"daughter"）。
 
 ════════════════════════
 选秀期特殊行动（出道冲刺期触发）
@@ -313,13 +345,43 @@ ${writingStyle}
 - 禁止竞争对手写成纯恶人
 - 禁止公司和经纪人无脑反派化
 - 禁止女儿完全听妈妈的话
+- 禁止外籍女儿一开始就在首尔，必须符合国籍对应的时间线
 
 ════════════════════════
 ${isInitialSetup
-    ? '【初始化】先简单问玩家家庭背景（工薪/富裕/单亲），然后从女儿8岁第一次在电视前模仿爱豆跳舞开始第一轮。写出那个具体的傍晚场景。'
-    : '【剧情推进】推动养成故事，信任度变化要有理由，每轮包含2-3个事件。'}
+    ? `【初始化】根据女儿的国籍（${daughterNationality}）、性格（${daughterPersonality}）、家庭背景（${daughterBackground}），先生成一个完整的虚构女儿角色：给她起一个符合国籍的名字、设定外貌特征、细化性格表现。然后从她8岁第一次在电视/网络前看到韩国爱豆的那个场景开始第一轮。写出那个具体的傍晚：妈妈在做什么，女儿在做什么，那一刻发生了什么让妈妈第一次意识到女儿可能认真的。场景在${daughterNationality === '韩国' ? '韩国家里' : daughterNationality === '中国' ? '中国家里' : daughterNationality === '日本' ? '日本家里' : '当地家里'}。`
+    : '【剧情推进】推动养成故事，信任度变化要有理由，每轮包含2-3个事件，注意当前阶段女儿应该在哪个城市/国家。'}
 ════════════════════════
-${outputFormat}`;
+
+【输出格式】
+
+第一部分：剧情正文（200-400字，有镜头感）
+
+第二部分：UI组件（有则输出，无则省略，宝妈线通常不需要Weverse/Bubble，但可以有KKT和Theqoo）
+
+KKTMSG_START
+{"sender":"发信人","avatar":"😊","messages":[{"text":"消息内容","time":"14:23","isRead":false}]}
+KKTMSG_END
+
+${theqooFormat}
+
+第三部分：选项（直接写）
+A. [妈妈可以做的具体行动]
+B. [妈妈可以做的具体行动]
+C. [妈妈可以做的具体行动]
+
+第四部分：
+SNAPSHOT_START
+{"members":[{"id":"daughter","affection":母女信任度数字,"careerPressure":数字,"status":"女儿当前状态描述"}],"currentScene":"具体城市和地点","weekCount":数字,"isWeekEnd":false,"hiddenSummary":"2-3句本轮关键事件摘要","isComebackSetting":false,"groupHeats":[]}
+SNAPSHOT_END
+
+【格式禁止】
+- SNAPSHOT的members[0].id必须是"daughter"，禁止写成女儿名字
+- SNAPSHOT必须是JSON，禁止写成文字
+- 禁止省略A/B/C选项
+- 禁止省略SNAPSHOT
+- 禁止韩语日语原文出现在剧情正文里
+- 所有标签单独成行`;
 
   // CP线prompt
   const cpPrompt = `你是《爱豆收集梦想生活》助攻模式的DM。
@@ -355,6 +417,36 @@ ${koreanDetails}
 玩家是幕后推手，两位爱豆才是主角。
 核心体验：观察两人细节互动，享受"我磕到了"的快感。
 整体氛围：细腻暧昧，可甜可修罗场，有真实韩娱质感。
+
+════════════════════════
+玩家视角限制（重要）
+════════════════════════
+玩家身份：${playerIdentity}
+
+根据身份严格限制玩家能看到什么、能做什么：
+
+【局内人——能直接接触】
+- 娱乐公司实习生/工作人员：能出现在后台、待机室、行程车，能直接观察两人互动，但受职业约束不能随便开口，助攻行动多为安排行程、传递信息
+- 音乐节目工作人员：能在打歌现场后台观察，知道当天行程安排，但只在录制日才有机会接触
+- 妆造师/发型助理：和成员有近距离接触，能观察到她们的状态和情绪，但职业要求保持沉默
+- 翻译/海外商务助理：在特定的海外活动或跨团合作场合才能接触到，信息有限但偶尔能成为中间人
+- 娱乐记者/博主：有职业渠道接触公开信息，能采访但不能越界，报道还是隐瞒是持续的选择
+
+【粉丝——只能通过公开渠道】
+- 普通粉丝：只能从直播、官方物料、theqoo帖子、站姐照片拼凑两人关系，大部分时候是间接推断，助攻行动多为发帖、控评、解读
+- 资深粉丝：有半公开的粉圈人脉，偶尔能得到非官方信息，但真假难辨
+
+【首尔生活者——偶遇视角】
+- 韩国留学生：偶尔在咖啡厅或街头偶遇便装出行的爱豆，接触机会极少，主要靠社交媒体了解动态
+- 便利店/咖啡厅打工人：爱豆是常客，能观察到她们私下的状态，但接触仅限于收银台前的几句话
+- 公寓同栋住户：偶尔在电梯或楼道里遇见，知道她们几点回家，但没有主动接触的理由
+
+【禁止事项】
+- 禁止玩家出现在自己身份触及不到的场合
+- 禁止直接呈现两人的私下对话和心理活动——玩家只能看到自己视角能看到的
+- 禁止所有身份的选项都一样，选项必须符合玩家当前身份能做到的事
+- 粉丝类身份的选项应该是：发帖、截图分析、在评论区留言、联系粉圈人脉
+- 工作人员类身份的选项应该是：安排行程、传递信息、制造偶遇机会、打掩护
 
 ════════════════════════
 语言规则
@@ -474,9 +566,7 @@ B. [玩家可以做的具体行动]
 C. 静静观察，什么都不做
 
 第四部分：
-SNAPSHOT_START
-{"members":[{"id":"第一个CP成员id","affection":CP亲密度,"careerPressure":数字,"status":"状态"},{"id":"第二个CP成员id","affection":CP亲密度,"careerPressure":数字,"status":"状态"}],"currentScene":"地点","weekCount":数字,"isWeekEnd":false,"hiddenSummary":"2-3句CP进展摘要","isComebackSetting":false,"groupHeats":[]}
-SNAPSHOT_END
+${cpSnapshotHint}
 
 【格式禁止】
 - SNAPSHOT必须是JSON，禁止写成文字
@@ -593,7 +683,7 @@ ${outputFormat}`;
     const cleanHistory = messages.slice(-6).map(msg => ({
       ...msg,
       content: msg.role === MessageRole.ASSISTANT
-        ? msg.content
+        ? (msg.content || '')
             .replace(/SNAPSHOT_START[\s\S]*?SNAPSHOT_END/g, '')
             .replace(/THEQOO_START[\s\S]*?THEQOO_END/g, '')
             .replace(/KKTMSG_START[\s\S]*?KKTMSG_END/g, '')
@@ -602,7 +692,7 @@ ${outputFormat}`;
             .replace(/MUSICSHOW_START[\s\S]*?MUSICSHOW_END/g, '')
             .replace(/CARD_START[\s\S]*?CARD_END/g, '')
             .trim()
-        : msg.content
+        : msg.content || ''
     }));
 
     const chatMessages: { role: 'user' | 'assistant'; content: string }[] = cleanHistory.map(m => ({
@@ -621,7 +711,6 @@ ${outputFormat}`;
 
       let extraPrompt = '';
 
-      // 场景切换指令（宝妈线不需要）
       if (!isMomMode) {
         if (turnsInCurrentScene >= 1) {
           extraPrompt += `\n[系统指令：本轮必须结束当前场景！正文描述时间跳跃，SNAPSHOT中weekCount更新为${nextWeek}，切换currentScene为新地点]`;
@@ -630,17 +719,19 @@ ${outputFormat}`;
         }
       }
 
-      // 动态触发规则
       const triggerHints: string[] = [];
 
       if (isMomMode) {
         const week = gameState.turnCount || 1;
         if (week <= 3) {
-          triggerHints.push('当前是启蒙期，妈妈可以高度介入女儿的决定');
+          triggerHints.push(`当前是启蒙期，妈妈可以高度介入女儿的决定，场景在${daughterNationality === '韩国' ? '韩国' : daughterNationality === '中国' ? '中国' : daughterNationality === '日本' ? '日本' : '本国'}家乡`);
         } else if (week <= 11) {
           triggerHints.push('当前是练习生期，女儿有自己的生活，妈妈介入受限');
-          if (trustLevel < 40) triggerHints.push('母女信任度低，女儿开始隐瞒一些事情，妈妈只能从侧面察觉异常');
-          if (trustLevel > 80) triggerHints.push('母女信任度高，女儿愿意主动找妈妈倾诉');
+          if (daughterNationality !== '韩国' && week <= 6) {
+            triggerHints.push('外籍练习生阶段，可能尚未赴韩，或刚刚抵达首尔，语言关和文化冲突是核心压力');
+          }
+          if (momTrustLevel < 40) triggerHints.push('母女信任度低，女儿开始隐瞒一些事情，妈妈只能从侧面察觉异常');
+          if (momTrustLevel > 80) triggerHints.push('母女信任度高，女儿愿意主动找妈妈倾诉');
         } else {
           triggerHints.push('当前是出道冲刺期，选秀进行中，可触发打投/买专辑/控评等特殊行动');
           triggerHints.push('这一阶段妈妈几乎只能在幕后支持，女儿要自己面对舞台和舆论');
@@ -668,12 +759,11 @@ ${outputFormat}`;
       const modeHint = isCPMode
         ? '\n[CP模式：选项必须是玩家的助攻行动，重点描写两位CP成员的互动细节，写出"磕到了"的感觉]'
         : isMomMode
-        ? '\n[宝妈模式：选项必须是妈妈的行动，注意妈妈只知道自己视角能看到的事情，每轮跨越几个月时间]'
+        ? '\n[宝妈模式：选项必须是妈妈的行动，注意妈妈只知道自己视角能看到的事情，每轮跨越几个月时间，SNAPSHOT的id必须是"daughter"]'
         : '';
 
       chatMessages[lastUserIdx].content += extraPrompt + modeHint + '\n[格式强制要求：①回复末尾必须有严格如下三行：\nA. xxxx\nB. xxxx\nC. xxxx\n不能写"你可以选择"，不能用数字编号，必须是A/B/C开头每行一个选项。②必须有SNAPSHOT_START...SNAPSHOT_END。③如有消息/帖子必须用对应标签：KKTMSG_START/END、THEQOO_START/END、BUBBLE_START/END、WEVERSE_START/END，标签单独成行]';
     }
-    
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 60000);
