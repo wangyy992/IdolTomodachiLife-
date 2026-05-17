@@ -738,7 +738,7 @@ export default function App() {
         .map((b: any) => b.content)
         .join('\n');
       const optionsText = options.length > 0
-        ? '\n【本轮可选行动】\n' + options.map((o: any) => o.text).join('\n')
+        ? '\n' + options.map((o: any) => o.text).join('\n')
         : '';
 
       return {
