@@ -746,7 +746,7 @@ export const INITIAL_MEMBERS: Member[] = [
     status: '回归活动期',
     initialRelationships: [
       { targetId: 'gaeul', type: '队内', affinity: 75, tension: 25, note: '双支柱间的职业默契' },
-      { targetId: 'wonyoung', type: '队内', affinity: 78, tension: 45, note: 'IZ*ONE战友，顶流间的微妙互补' },
+      { targetId: 'wonyoung', type: '队内', affinity: 78, tension: 55, note: 'IZ*ONE战友，顶流间的微妙互补，感情复杂微妙，时好时坏，张力高' },
       { targetId: 'yuna_itzy', type: '跨团', affinity: 45, tension: 85, note: '前女友关系，同台时完美礼貌但张力极高，极度避讳' },
       { targetId: 'liz', type: '队内', affinity: 68, tension: 35, note: '经常被对方叫全名捉弄' },
       { targetId: 'rei', type: '队内', affinity: 70, tension: 10, note: '有借体育服穿的亲近缘分' }
@@ -802,7 +802,7 @@ export const INITIAL_MEMBERS: Member[] = [
     careerPressure: 68,
     status: '回归活动期',
     initialRelationships: [
-      { targetId: 'yujin_ive', type: '队内', affinity: 78, tension: 45, note: 'IZ*ONE战友，最特别的关系，微妙的互补' },
+      { targetId: 'yujin_ive', type: '队内', affinity: 78, tension: 55, note: 'IZ*ONE战友，最特别的关系，微妙的互补，感情复杂微妙，时好时坏，张力高' },
       { targetId: 'leeseo', type: '队内', affinity: 72, tension: 10, note: '最疼爱的忙内后辈' },
       { targetId: 'gaeul', type: '队内', affinity: 65, tension: 15, note: '稳定的队友关系' },
       { targetId: 'liz', type: '队内', affinity: 65, tension: 10, note: '稳定的队友关系' }
