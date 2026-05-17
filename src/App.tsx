@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/react';
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, RefreshCw, Users, Eye, MapPin, Gamepad2, Heart, Zap, Sparkles, X, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
