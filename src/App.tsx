@@ -396,8 +396,8 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
           <AnimatePresence mode="wait">
             {step === 1 && (
               <motion.div key="s1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
-                <div className="space-y-2"><label className="text-xs font-black text-[#A0663A] uppercase">你的名字</label><input type="text" value={data.playerName} onChange={e => setData({...data, playerName: e.target.value})} className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-sm focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" placeholder="请输入角色昵称..." /></div>
-                <div className="space-y-2"><label className="text-xs font-black text-[#A0663A] uppercase">年龄</label><input type="number" value={data.playerAge} onChange={e => setData({...data, playerAge: parseInt(e.target.value)})} className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-sm focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" /></div>
+                <div className="space-y-2"><label className="text-xs font-black text-[#A0663A] uppercase">你的名字</label><input type="text" value={data.playerName} onChange={e => setData({...data, playerName: e.target.value})} className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-base focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" placeholder="请输入角色昵称..." /></div>
+                <div className="space-y-2"><label className="text-xs font-black text-[#A0663A] uppercase">年龄</label><input type="number" value={data.playerAge} onChange={e => setData({...data, playerAge: parseInt(e.target.value)})} className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-base focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" /></div>
                 <button onClick={() => setStep(2)} disabled={!data.playerName} className="w-full bg-[#C4936A] text-white py-4 rounded-2xl font-bold disabled:opacity-50 hover:bg-[#A0663A] transition-all">继续</button>
               </motion.div>
             )}
@@ -426,7 +426,7 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
                 ))}</div>
                 <input type="text" value={customIdentity} onChange={e => setCustomIdentity(e.target.value)}
                   placeholder="或手动输入自定义身份..."
-                  className="w-full bg-white border border-[#EAE0D5] rounded-xl p-3 text-[11px] focus:ring-1 focus:ring-[#C4936A] outline-none text-[#3D2B1F]"
+                  className="w-full bg-white border border-[#EAE0D5] rounded-xl p-3 text-base focus:ring-1 focus:ring-[#C4936A] outline-none text-[#3D2B1F]"
                   onKeyDown={(e) => { if (e.key === 'Enter') { const val = customIdentity.trim(); if (val && !data.identity.includes(val)) { setData({...data, identity: [...data.identity, val]}); setCustomIdentity(''); } e.preventDefault(); } }} />
                 <button onClick={() => setStep(2)} className="w-full py-3 bg-white text-[#A0663A] rounded-2xl text-sm font-bold border border-[#EAE0D5] hover:bg-[#F5E6D0] transition-all">← 上一步</button>
                 <button onClick={() => { const val = customIdentity.trim(); const newIdentity = val && !data.identity.includes(val) ? [...data.identity, val] : data.identity; setData({...data, identity: newIdentity}); if (newIdentity.length > 0) setStep(4); }}
@@ -466,7 +466,7 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
                       <label className="text-xs font-black text-[#A0663A] uppercase">女儿的名字（选填，不填由AI生成）</label>
                       <input type="text" value={data.daughterName}
                         onChange={e => setData({...data, daughterName: e.target.value})}
-                        className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-sm focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]"
+                        className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-base focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]"
                         placeholder="给女儿起个名字..." />
                     </div>
                     <div className="space-y-2">
@@ -522,13 +522,23 @@ function parseContentBlocks(text: string): ContentBlock[] {
     }
 
     if (earliest.tag === null) {
-      const cleaned = remaining.replace(/^\*{0,2}[A-D]\.\*{0,2}.+$/gm, '').replace(/^[A-D][\.、。\s].+$/gm, '').replace(/\[.*?\]/g, '').replace(/^---+$/gm, '').replace(/\n{3,}/g, '\n\n').trim();
+      const cleaned = remaining
+        .replace(/^\*{0,2}[A-D]\.\*{0,2}.+$/gm, '')
+        .replace(/^[A-D][\.、。\s].+$/gm, '')
+        .replace(/\[.*?\]/g, '')
+        .replace(/^---+$/gm, '')
+        .replace(/\n{3,}/g, '\n\n').trim();
       if (cleaned) blocks.push({ type: 'text', content: cleaned });
       break;
     }
 
     if (earliest.index > 0) {
-      const textBefore = remaining.slice(0, earliest.index).replace(/^\*{0,2}[A-D]\.\*{0,2}.+$/gm, '').replace(/^[A-D][\.、。\s].+$/gm, '').replace(/\[.*?\]/g, '').replace(/^---+$/gm, '').replace(/\n{3,}/g, '\n\n').trim();
+      const textBefore = remaining.slice(0, earliest.index)
+        .replace(/^\*{0,2}[A-D]\.\*{0,2}.+$/gm, '')
+        .replace(/^[A-D][\.、。\s].+$/gm, '')
+        .replace(/\[.*?\]/g, '')
+        .replace(/^---+$/gm, '')
+        .replace(/\n{3,}/g, '\n\n').trim();
       if (textBefore) blocks.push({ type: 'text', content: textBefore });
     }
 
@@ -651,7 +661,7 @@ export default function App() {
   const handleAIStep = async (userContent: string, stateToUse: GameState) => {
     try {
       const response = await Promise.race([
-        callGeminiAPI(stateToUse.history.slice(-6), stateToUse),
+        callGeminiAPI(stateToUse.history.slice(-10), stateToUse),
         new Promise((_, reject) => setTimeout(() => reject(new Error("通讯超时，请重试。")), 60000))
       ]) as string;
       processAIResponse(response, stateToUse);
@@ -667,6 +677,8 @@ export default function App() {
     let remaining = response;
     remaining = remaining.replace(/\*\*([A-Z_]+(?:START|END))\*\*/g, '$1');
     remaining = remaining.replace(/---+\s*\n(SNAPSHOT_START)/g, '$1');
+    remaining = remaining.replace(/KATALK_START|KATALK START/g, 'KKTMSG_START');
+    remaining = remaining.replace(/KATALK_END|KATALK END/g, 'KKTMSG_END');
 
     let snapshot: any = null;
     let musicResult: any = null;
@@ -718,17 +730,22 @@ export default function App() {
       if (newCards.length > 0) next.collectedCards = [...(next.collectedCards || []), ...newCards];
       if (newCards.length > 0 && prev.setupStep === SetupStep.CARDS) next.setupStep = SetupStep.STARTED;
 
-      // Round 自动 +1，不依赖 AI
       next.turnCount = (prev.turnCount || 0) + 1;
+
+      // 把选项也存入content，让AI下一轮能看到上一轮给了什么选项
+      const textContent = contentBlocks
+        .filter((b: any) => b.type === 'text')
+        .map((b: any) => b.content)
+        .join('\n');
+      const optionsText = options.length > 0
+        ? '\n【本轮可选行动】\n' + options.map((o: any) => o.text).join('\n')
+        : '';
 
       return {
         ...next,
         history: [...next.history, {
           role: MessageRole.ASSISTANT,
-          content: contentBlocks
-            .filter((b: any) => b.type === 'text')
-            .map((b: any) => b.content)
-            .join('\n'),
+          content: textContent + optionsText,
           timestamp: Date.now(),
           contentBlocks,
           currentMusicShow: musicResult || undefined,
@@ -926,7 +943,7 @@ export default function App() {
             <textarea value={input} onChange={e => setInput(e.target.value)}
               onKeyDown={e => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
               placeholder="输入你的行动..."
-              className="flex-1 bg-[#FAF7F2] border border-[#EAE0D5] rounded-3xl px-6 py-4 text-sm focus:ring-2 focus:ring-[#C4936A] resize-none h-14 custom-scrollbar outline-none text-[#3D2B1F]"
+              className="flex-1 bg-[#FAF7F2] border border-[#EAE0D5] rounded-3xl px-6 py-4 text-base focus:ring-2 focus:ring-[#C4936A] resize-none h-14 custom-scrollbar outline-none text-[#3D2B1F]"
               disabled={isLoading} />
             <button onClick={() => handleSend()} disabled={isLoading || !input.trim()} className="bg-[#C4936A] text-white px-5 rounded-3xl active:scale-95 disabled:opacity-50 flex-shrink-0 hover:bg-[#A0663A] transition-all"><Send className="w-5 h-5" /></button>
           </div>
@@ -936,7 +953,7 @@ export default function App() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap');
         * { font-family: 'Noto Sans SC', sans-serif; }
-        input, textarea, select { font-size: 16px !important; }
+        input, textarea, select { font-size: 16px !important; touch-action: manipulation; }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #EAE0D5; border-radius: 10px; }
