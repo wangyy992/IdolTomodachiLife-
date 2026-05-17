@@ -414,7 +414,8 @@ SNAPSHOT_END
 本游戏为韩娱向平行世界虚构文游，所有剧情均为虚构创作。
 
 玩家：${gameState.playerName}，${gameState.playerAge}岁，${playerIdentity}。
-玩家的身份让他/她能自然接触到这两位爱豆。
+玩家性别默认为女性，用"她"称呼，除非玩家明确说明。
+玩家的身份让她能自然接触到这两位爱豆。
 
 【CP组合】
 A：${cpMember1?.name || '未知'}（${cpMember1?.stageName}，${cpMember1?.group}）
@@ -631,6 +632,12 @@ ${cpSnapshotHint}
 本游戏为韩娱向平行世界虚构文游，所有剧情均为虚构创作。
 
 玩家：${gameState.playerName}，${gameState.playerAge}岁，${playerIdentity}。
+【玩家性别】默认为女性，全程用"她"称呼玩家，除非玩家明确说明。
+【特殊关系行为规则】
+- 青梅竹马/发小：两人从小认识，默认已有联系方式，禁止出现"要不要加联系方式"，互动更随意自然
+- 现任女友：已在恋爱中，剧情从日常相处推进，不是追求阶段
+- 前任：曾经在一起，同场时有复杂情绪，禁止当成陌生人处理
+- 暗恋对象（单向）：爱豆不知道玩家感情，正常相处，玩家单方面压抑
 攻略目标：${targetMembersInfo}
 目标爱豆性格：
 ${targetMembersDetail}
@@ -759,7 +766,7 @@ ${romanceOutputFormat}`;
   const systemPrompt = isCPMode ? cpPrompt : isMomMode ? momPrompt : romancePrompt;
 
   try {
-    const cleanHistory = messages.slice(-6).map(msg => ({
+    const cleanHistory = messages.slice(-10).map(msg => ({
       ...msg,
       content: msg.role === MessageRole.ASSISTANT
         ? (msg.content || '')
@@ -845,7 +852,7 @@ ${romanceOutputFormat}`;
         ? '\n[宝妈模式：选项必须是妈妈的行动，注意妈妈只知道自己视角能看到的事情，每轮跨越几个月时间，SNAPSHOT的id必须是"daughter"]'
         : '';
 
-      chatMessages[lastUserIdx].content += extraPrompt + modeHint + '\n[格式强制要求：①回复末尾必须有严格如下三行：\nA. xxxx\nB. xxxx\nC. xxxx\n不能写"你可以选择"，不能用数字编号，必须是A/B/C开头每行一个选项。②必须有SNAPSHOT_START...SNAPSHOT_END，这是强制要求禁止省略，affection必须根据本轮互动更新禁止照抄上一轮。③如有消息/帖子必须用对应标签：KKTMSG_START/END、THEQOO_START/END、BUBBLE_START/END、WEVERSE_START/END，标签单独成行]';
+      chatMessages[lastUserIdx].content += extraPrompt + modeHint + '\n[格式强制要求：①回复末尾必须有严格如下三行：\nA. xxxx\nB. xxxx\nC. xxxx\n不能写"你可以选择"，不能用数字编号，必须是A/B/C开头每行一个选项。②必须有SNAPSHOT_START...SNAPSHOT_END，这是强制要求禁止省略。affection必须根据本轮互动变化更新，哪怕只是普通接触也要+1或+2，禁止连续两轮数值完全不变。③如有消息/帖子必须用对应标签：KKTMSG_START/END、THEQOO_START/END、BUBBLE_START/END、WEVERSE_START/END，标签单独成行]';
     }
 
     const controller = new AbortController();
