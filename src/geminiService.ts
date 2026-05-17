@@ -529,6 +529,33 @@ CP营业：直播里微妙互动被截图、综艺节目刻意安排同组
 - CP亲密度突破85：接近告白，玩家需要创造最后机会
 
 ════════════════════════
+粉丝生态（真实韩娱CP粉圈必须呈现）
+════════════════════════
+每段CP关系在粉丝圈里都有三种声音，剧情要体现这种张力：
+
+【唯粉视角】
+- 看到两人亲密互动会心疼，发帖"请不要CP我家爱豆"
+- 觉得被营业欺骗，在评论区质问"这不是在卖腐吗"
+- 有人开始退饭，有人坚持说"她们只是朋友"
+- 认为CP粉在消费爱豆，很反感
+
+【CP粉视角】
+- 截图、cut视频、发"我嗑到了"的推特
+- 在theqoo发分析帖，把每一个眼神都解读一遍
+- 买专辑支持"梦中情CP"，做应援物
+- 两人冷淡时崩溃发帖"CP散了吗"
+
+【路人/媒体视角】
+- 觉得两人在卖腐吸流量，半信半疑
+- 媒体发"XX和XX的特殊友情"标题党文章
+- 评论区：粉丝吵架，路人嗑瓜
+
+【公司视角（CP亲密度>60后触发）】
+- 经纪人开始担心粉丝舆论影响团队形象
+- 可能安排两人减少公开接触，或主动发声"只是队友"
+- 极端情况：要求两人在公开场合保持距离
+
+════════════════════════
 玩家助攻行动类型
 ════════════════════════
 - 制造独处机会、传话、打掩护、提供情报、出谋划策、静静观察
@@ -675,7 +702,7 @@ ${koreanDetails}
 - 每隔几轮触发一次打歌节目，随机计算一位结果
 
 ════════════════════════
-粉丝舆论事件池（好感度>40后每2-3轮随机触发一次）
+粉丝舆论事件池（好感度>20后开始有细微异动，>40后每2-3轮触发一次明显事件）
 ════════════════════════
 - 站姐发现你们在同一地点出现过，开始在推特"找线"
 - 粉丝论坛出现"XX最近状态不对"的帖子，评论区开始分析行程
@@ -686,7 +713,16 @@ ${koreanDetails}
 - 爱豆在直播被问恋爱问题，她的回答方式被粉丝过度解读
 - 粉丝发起"失德"讨论，有人开始取关，有人死忠护航
 - 有人扒出你的社交账号，开始人肉
-粉丝察觉度随好感度上升：好感度每突破30/50/70，粉圈风险等级上升一级，选项里出现"要不要公开""继续隐瞒"的两难。
+- 爱豆在直播里忘情大笑，粉丝截图说"好久没见她这样笑了"，但话锋一转开始猜原因
+- 粉丝发现爱豆直播时手机通知声响了，暂停了两秒，脸上有轻微变化，开始找线
+- 有粉丝发帖哭诉"我支持了三年，换来这个"，底下一片共情
+
+粉丝察觉度随好感度阶梯上升：
+- 好感度>20：粉丝开始觉得爱豆"状态不对"，但说不清楚
+- 好感度>40：粉圈出现讨论帖，但还在观望
+- 好感度>60：明显有人开始找线，theqoo热帖出现
+- 好感度>80：Dispatch级别的危机，粉圈分裂，唯粉退饭浪潮
+选项里开始出现"要不要公开""继续隐瞒""让爱豆自己决定"的两难。
 
 ════════════════════════
 好感度规则（必须严格执行）
@@ -753,10 +789,6 @@ ${romanceOutputFormat}`;
       const nextWeek = (gameState.turnCount || 1) + 1;
 
       let extraPrompt = '';
-      const lastUserMsg = chatMessages[lastUserIdx]?.content?.split('\n')[0]?.trim();
-      if (lastUserMsg) {
-        extraPrompt += `\n[玩家上一轮选择了：「${lastUserMsg}」，本轮剧情必须严格根据这个选择推进，不能无视或替换玩家的行动]`;
-      }
 
       if (!isMomMode) {
         if (turnsInCurrentScene >= 1) {
@@ -770,6 +802,7 @@ ${romanceOutputFormat}`;
 
       if (isMomMode) {
         const week = gameState.turnCount || 1;
+        triggerHints.push(`当前母女信任度：${momTrustLevel}/100，本轮SNAPSHOT的affection必须在此基础上根据妈妈的行动变化`);
         if (week <= 3) {
           triggerHints.push(`当前是启蒙期，妈妈可以高度介入女儿的决定，场景在${daughterNationality === '韩国' ? '韩国' : daughterNationality === '中国' ? '中国' : daughterNationality === '日本' ? '日本' : '本国'}家乡`);
         } else if (week <= 11) {
@@ -784,17 +817,20 @@ ${romanceOutputFormat}`;
           triggerHints.push('这一阶段妈妈几乎只能在幕后支持，女儿要自己面对舞台和舆论');
         }
       } else if (isCPMode) {
-        if (cpAffection > 85) triggerHints.push('CP亲密度已超过85，告白时机即将成熟，本轮可以创造关键机会');
-        else if (cpAffection > 70) triggerHints.push('CP亲密度超过70，公司和周围人开始察觉，本轮可触发干预事件');
-        else if (cpAffection > 50) triggerHints.push('CP亲密度超过50，两人开始有私下联系，可触发bubble或kkt消息');
-        else if (cpAffection > 30) triggerHints.push('CP亲密度超过30，粉丝开始嗑这对CP，本轮可触发theqoo热帖');
+        triggerHints.push(`当前CP亲密度：${cpAffection}/100，本轮SNAPSHOT的affection必须在此基础上根据互动变化`);
+        if (cpAffection > 85) triggerHints.push('CP亲密度已超过85，告白时机即将成熟，本轮可以创造关键机会；唯粉已经开始大规模退饭');
+        else if (cpAffection > 70) triggerHints.push('CP亲密度超过70，公司和周围人开始察觉，本轮可触发干预事件；唯粉和CP粉的冲突升温');
+        else if (cpAffection > 50) triggerHints.push('CP亲密度超过50，两人开始有私下单独联系；CP粉嗑到升天，唯粉开始不安');
+        else if (cpAffection > 30) triggerHints.push('CP亲密度超过30，粉丝开始嗑这对CP，本轮可触发theqoo热帖；路人觉得她们在卖腐');
         if (gameState.isComebackSetting) triggerHints.push('回归期：CP营业风险上升，粉丝截图更积极，公司更敏感');
       } else {
         const mainTarget = gameState.members.find(m => gameState.targets.includes(m.id));
         if (mainTarget) {
-          if (mainTarget.affection > 70) triggerHints.push('好感度超过70，公司和成员开始察觉，本轮可触发经纪人约谈或行程干预');
-          else if (mainTarget.affection > 50) triggerHints.push('好感度超过50，爱豆可能通过bubble或kkt主动联系');
-          else if (mainTarget.affection > 30) triggerHints.push('好感度超过30，爱豆开始有主动联系的意愿，但态度依然克制');
+          triggerHints.push(`当前好感度：${mainTarget.affection}/100，本轮SNAPSHOT的affection必须在此基础上根据互动变化`);
+          if (mainTarget.affection > 70) triggerHints.push('好感度超过70，公司和成员开始察觉，本轮可触发经纪人约谈或行程干预；粉圈已有明显讨论');
+          else if (mainTarget.affection > 50) triggerHints.push('好感度超过50，爱豆可能通过bubble或kkt主动联系；theqoo开始出现讨论帖');
+          else if (mainTarget.affection > 30) triggerHints.push('好感度超过30，爱豆开始有主动联系的意愿，但态度依然克制；粉丝开始察觉状态不对');
+          else if (mainTarget.affection > 20) triggerHints.push('好感度超过20，粉丝开始隐约觉得爱豆状态不对，可触发轻微粉圈异动');
         }
         if (gameState.isComebackSetting) triggerHints.push('回归期：私下联系风险更高，粉丝关注度上升，行程更密集');
       }
