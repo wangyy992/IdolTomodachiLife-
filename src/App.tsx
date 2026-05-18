@@ -1,4 +1,3 @@
-import { Analytics } from '@vercel/analytics/react';
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, RefreshCw, Users, Eye, MapPin, Gamepad2, Heart, Zap, Sparkles, X, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -299,7 +298,8 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
   const [data, setData] = useState({
     playerName: '', playerAge: 19, identity: [] as string[],
     gameMode: 'romance' as string, targets: [] as string[], selectedCPs: [] as string[],
-    daughterNationality: '', daughterPersonality: '', daughterBackground: '', daughterName: ''
+    daughterNationality: '', daughterPersonality: '', daughterBackground: '', daughterName: '',
+    playerApiKey: ''
   });
   const [customIdentity, setCustomIdentity] = useState('');
 
@@ -399,6 +399,11 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
               <motion.div key="s1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
                 <div className="space-y-2"><label className="text-xs font-black text-[#A0663A] uppercase">你的名字</label><input type="text" value={data.playerName} onChange={e => setData({...data, playerName: e.target.value})} className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-base focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" placeholder="请输入角色昵称..." /></div>
                 <div className="space-y-2"><label className="text-xs font-black text-[#A0663A] uppercase">年龄</label><input type="number" value={data.playerAge} onChange={e => setData({...data, playerAge: parseInt(e.target.value)})} className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-base focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" /></div>
+                <div className="space-y-2">
+                  <label className="text-xs font-black text-[#A0663A] uppercase">DeepSeek API Key（可选）</label>
+                  <input type="password" value={data.playerApiKey} onChange={e => setData({...data, playerApiKey: e.target.value})} className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-base focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" placeholder="填入自己的key可免费无限玩～" />
+                  <p className="text-[10px] text-[#A0663A] opacity-70">不填则使用公共额度（可能较慢）。key仅存于本地，不会上传。</p>
+                </div>
                 <button onClick={() => setStep(2)} disabled={!data.playerName} className="w-full bg-[#C4936A] text-white py-4 rounded-2xl font-bold disabled:opacity-50 hover:bg-[#A0663A] transition-all">继续</button>
               </motion.div>
             )}
@@ -406,7 +411,7 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
               <motion.div key="s2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
                 <label className="text-xs font-black text-[#A0663A] uppercase">选择模式</label>
                 <div className="space-y-3">{modes.map(m => (
-                  <button key={m.id} onClick={() => { setData({...data, gameMode: m.id, targets: [], identity: [], daughterNationality: '', daughterPersonality: '', daughterBackground: '', daughterName: ''}); setSelectedGroup(null); }}
+                  <button key={m.id} onClick={() => { setData({...data, gameMode: m.id, targets: [], identity: [], daughterNationality: '', daughterPersonality: '', daughterBackground: '', daughterName: '', playerApiKey: data.playerApiKey}); setSelectedGroup(null); }}
                     className={`w-full p-4 rounded-2xl border text-left transition-all ${data.gameMode === m.id ? 'bg-[#F5E6D0] border-[#C4936A] text-[#A0663A]' : 'bg-white border-[#EAE0D5] text-[#3D2B1F]'}`}>
                     <div className="font-bold text-sm">{m.name}</div>
                     <div className="text-[10px] opacity-60 mt-1">{m.desc}</div>
@@ -653,7 +658,8 @@ export default function App() {
     const newState: GameState = {
       ...gameState, ...data, members: initializedMembers,
       setupStep: SetupStep.CARDS, history: [], turnCount: 0,
-      ...(daughterProfile ? { daughterProfile, momTrustLevel: 50 } : {})
+      ...(daughterProfile ? { daughterProfile, momTrustLevel: 50 } : {}),
+      ...(data.playerApiKey ? { playerApiKey: data.playerApiKey } : {})
     } as any;
     setGameState(newState);
     handleAIStep(summary, newState);
@@ -739,7 +745,7 @@ export default function App() {
         .map((b: any) => b.content)
         .join('\n');
       const optionsText = options.length > 0
-        ? '\n' + options.map((o: any) => o.text).join('\n')
+        ? '\n【本轮可选行动】\n' + options.map((o: any) => o.text).join('\n')
         : '';
 
       return {
@@ -968,7 +974,6 @@ export default function App() {
         @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .animate-spin-slow { animation: spin-slow 8s linear infinite; }
       `}</style>
-      <Analytics />
     </div>
   );
 }
