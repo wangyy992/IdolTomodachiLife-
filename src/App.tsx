@@ -408,7 +408,7 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
                   <div className="space-y-2">
                     <label className="text-xs font-black text-[#A0663A] uppercase">选择模型</label>
                     <div className="grid grid-cols-2 gap-2">
-                      {[{id:'deepseek-v4-flash',name:'Flash',desc:'快速省钱'},{id:'deepseek-v3',name:'V3',desc:'质量更好'}].map(m => (
+                      {[{id:'deepseek-v4-flash',name:'Flash',desc:'快速省钱'},{id:'deepseek-v4-pro',name:'Pro',desc:'质量更好'}].map(m => (
                         <button key={m.id} onClick={() => setData({...data, playerModel: m.id})}
                           className={`p-3 rounded-xl border text-left transition-all ${data.playerModel === m.id ? 'bg-[#F5E6D0] border-[#C4936A] text-[#A0663A]' : 'bg-white border-[#EAE0D5] text-[#3D2B1F]'}`}>
                           <div className="font-bold text-[11px]">{m.name}</div>
