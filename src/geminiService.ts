@@ -868,6 +868,26 @@ ${romanceOutputFormat}`;
 2. 只要玩家本轮提供了动作回应（A/B/C选项任何一个），在正文中描写对应回馈的同时，在后端必须予以明确增减。
 3. 严格遵循驱动机制：积极互动/送水/精准助攻（选项A、B）强制结算为 [+2 到 +5] 涨幅；克制观察/默默守候（选项C）强制结算为 [+1 到 +2] 或随宿命张力波动。
 4. 严禁由于道德圣人或极端写实倾向抹消玩家的努力，请大胆且符合数学逻辑地向前推进数值！]`;
+      // 强力阻断器：用最简单粗暴的指令防止 AI 吞选项
+      const optionEnforcerPrompt = `
+\n════════════════════════
+🚨 绝对死刑指令：必须生成 A/B/C 三个选项 🚨
+════════════════════════
+你经常在回复末尾忘记生成选项，这是系统绝对不能容忍的严重 BUG！
+本轮回复【必须】严格遵守以下顺序作为结尾：
+
+1. 剧情正文与组件输出完毕。
+2. 直接输出三行行动选项，禁止使用任何标题（如不要写"可选行动："、"你的选择："），直接写：
+A. [具体行动文本，15字以内]
+B. [具体行动文本，15字以内]
+C. [具体行动文本，15字以内]
+3. 选项结束后，紧跟输出 SNAPSHOT_START ... SNAPSHOT_END。
+
+听着，选项必须是夹在正文和 SNAPSHOT 之间的最后三行文本，格式必须是 A. / B. / C. 开头！如果本轮没有输出这三个选项，系统将会崩溃！请立刻生成它们！`;
+
+      chatMessages[lastUserIdx].content += extraPrompt + modeHint + finalDrivePrompt + optionEnforcerPrompt;
+
+
 
       chatMessages[lastUserIdx].content += extraPrompt + modeHint + finalDrivePrompt + '\n[格式强制要求：①回复末尾必须有严格如下三行：\nA. xxxx\nB. xxxx\nC. xxxx\n不能写"你可以选择"，不能用数字编号，必须是A/B/C开头每行一个选项。②必须有SNAPSHOT_START...SNAPSHOT_END，这是强制要求禁止省略。affection必须根据本轮互动变化更新，哪怕只是普通接触也要+1或+2，禁止连续两轮数值完全不变。③如有消息/帖子必须用对应标签：KKTMSG_START/END、THEQOO_START/END、BUBBLE_START/END、WEVERSE_START/END，标签单独成行]';
     }
