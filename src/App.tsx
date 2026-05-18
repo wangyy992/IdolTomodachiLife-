@@ -299,7 +299,7 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
     playerName: '', playerAge: 19, identity: [] as string[],
     gameMode: 'romance' as string, targets: [] as string[], selectedCPs: [] as string[],
     daughterNationality: '', daughterPersonality: '', daughterBackground: '', daughterName: '',
-    playerApiKey: ''
+    playerApiKey: '', playerModel: 'deepseek-v4-flash'
   });
   const [customIdentity, setCustomIdentity] = useState('');
 
@@ -404,6 +404,20 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
                   <input type="password" value={data.playerApiKey} onChange={e => setData({...data, playerApiKey: e.target.value})} className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-base focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" placeholder="填入自己的key可免费无限玩～" />
                   <p className="text-[10px] text-[#A0663A] opacity-70">不填则使用公共额度（可能较慢）。key仅存于本地，不会上传。</p>
                 </div>
+                {data.playerApiKey && (
+                  <div className="space-y-2">
+                    <label className="text-xs font-black text-[#A0663A] uppercase">选择模型</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[{id:'deepseek-v4-flash',name:'Flash',desc:'快速省钱'},{id:'deepseek-v3',name:'V3',desc:'质量更好'}].map(m => (
+                        <button key={m.id} onClick={() => setData({...data, playerModel: m.id})}
+                          className={`p-3 rounded-xl border text-left transition-all ${data.playerModel === m.id ? 'bg-[#F5E6D0] border-[#C4936A] text-[#A0663A]' : 'bg-white border-[#EAE0D5] text-[#3D2B1F]'}`}>
+                          <div className="font-bold text-[11px]">{m.name}</div>
+                          <div className="text-[10px] opacity-60">{m.desc}</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <button onClick={() => setStep(2)} disabled={!data.playerName} className="w-full bg-[#C4936A] text-white py-4 rounded-2xl font-bold disabled:opacity-50 hover:bg-[#A0663A] transition-all">继续</button>
               </motion.div>
             )}
@@ -659,7 +673,7 @@ export default function App() {
       ...gameState, ...data, members: initializedMembers,
       setupStep: SetupStep.CARDS, history: [], turnCount: 0,
       ...(daughterProfile ? { daughterProfile, momTrustLevel: 50 } : {}),
-      ...(data.playerApiKey ? { playerApiKey: data.playerApiKey } : {})
+      ...(data.playerApiKey ? { playerApiKey: data.playerApiKey, playerModel: data.playerModel } : {})
     } as any;
     setGameState(newState);
     handleAIStep(summary, newState);
