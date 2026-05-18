@@ -2,11 +2,11 @@ import { ChatMessage, MessageRole, GameState, SetupStep } from './types';
 
 export async function callGeminiAPI(messages: ChatMessage[], gameState: GameState) {
   const playerApiKey = (gameState as any).playerApiKey || '';
+  const playerModel = (gameState as any).playerModel || 'deepseek-v4-flash';
   const deepseekKey = playerApiKey || import.meta.env.VITE_DEEPSEEK_API_KEY || '';
-  const zhipuKey = import.meta.env.VITE_ZHIPU_API_KEY || '';
-  if (!deepseekKey && !zhipuKey) throw new Error('API Key missing.');
-  // 优先级：玩家key/DeepSeek → 智谱GLM-4-Flash
-  const useZhipu = !deepseekKey && !!zhipuKey;
+  if (!deepseekKey) throw new Error('API Key missing.');
+  // 玩家自填key时使用玩家选择的模型，否则用默认flash
+  const modelToUse = playerApiKey ? playerModel : 'deepseek-v4-flash';
 
   const isCPMode = gameState.gameMode === 'CPCP';
   const isMomMode = gameState.gameMode === 'mom';
@@ -863,51 +863,27 @@ ${romanceOutputFormat}`;
     const timeoutId = setTimeout(() => controller.abort(), 60000);
     let text = '';
     try {
-      if (useZhipu) {
-        // 智谱 GLM-4-Flash 免费API
-        const resp = await fetch('https://open.bigmodel.cn/api/paas/v4/chat/completions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': zhipuKey },
-          body: JSON.stringify({
-            model: 'glm-4.7-flash',
-            messages: [{ role: 'user', content: systemPrompt + '\n\n' + chatMessages.map(m => `${m.role === 'user' ? '玩家' : 'DM'}：${m.content}`).join('\n') }],
-            temperature: 0.75,
-            max_tokens: 4096,
-            stream: false,
-          }),
-          signal: controller.signal,
-        });
-        if (!resp.ok) {
-          const errText = await resp.text();
-          if (resp.status === 429) throw new Error('请求过于频繁，请稍后再试。');
-          throw new Error(`智谱 API 错误 (${resp.status})：${errText}`);
-        }
-        const zdata = await resp.json();
-        text = zdata?.choices?.[0]?.message?.content || '';
-      } else {
-        // DeepSeek API（玩家自填key或开发者key）
-        const resp = await fetch('https://api.deepseek.com/chat/completions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${deepseekKey}` },
-          body: JSON.stringify({
-            model: 'deepseek-v4-flash',
-            messages: [{ role: 'system', content: systemPrompt }, ...chatMessages],
-            temperature: 0.75,
-            top_p: 0.95,
-            max_tokens: 4096,
-          }),
-          signal: controller.signal,
-        });
-        if (!resp.ok) {
-          const errText = await resp.text();
-          if (resp.status === 401) throw new Error('API Key 无效。');
-          if (resp.status === 429) throw new Error('请求过于频繁，请稍后再试。');
-          if (resp.status === 402) throw new Error('DeepSeek 余额不足，请充值。');
-          throw new Error(`DeepSeek API 错误 (${resp.status})：${errText}`);
-        }
-        const ddata = await resp.json();
-        text = ddata?.choices?.[0]?.message?.content || '';
+      const resp = await fetch('https://api.deepseek.com/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${deepseekKey}` },
+        body: JSON.stringify({
+          model: modelToUse,
+          messages: [{ role: 'system', content: systemPrompt }, ...chatMessages],
+          temperature: 0.75,
+          top_p: 0.95,
+          max_tokens: 4096,
+        }),
+        signal: controller.signal,
+      });
+      if (!resp.ok) {
+        const errText = await resp.text();
+        if (resp.status === 401) throw new Error('API Key 无效。');
+        if (resp.status === 429) throw new Error('请求过于频繁，请稍后再试。');
+        if (resp.status === 402) throw new Error('DeepSeek 余额不足，请充值。');
+        throw new Error(`DeepSeek API 错误 (${resp.status})：${errText}`);
       }
+      const ddata = await resp.json();
+      text = ddata?.choices?.[0]?.message?.content || '';
     } finally {
       clearTimeout(timeoutId);
     }
