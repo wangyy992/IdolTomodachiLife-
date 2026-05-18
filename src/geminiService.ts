@@ -3,9 +3,10 @@ import { ChatMessage, MessageRole, GameState, SetupStep } from './types';
 export async function callGeminiAPI(messages: ChatMessage[], gameState: GameState) {
   const playerApiKey = (gameState as any).playerApiKey || '';
   const deepseekKey = playerApiKey || import.meta.env.VITE_DEEPSEEK_API_KEY || '';
-  const geminiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
-  if (!deepseekKey && !geminiKey) throw new Error('API Key missing.');
-  const useGemini = !deepseekKey && !!geminiKey;
+  const zhipuKey = import.meta.env.VITE_ZHIPU_API_KEY || '';
+  if (!deepseekKey && !zhipuKey) throw new Error('API Key missing.');
+  // 优先级：玩家key/DeepSeek → 智谱GLM-4-Flash
+  const useZhipu = !deepseekKey && !!zhipuKey;
 
   const isCPMode = gameState.gameMode === 'CPCP';
   const isMomMode = gameState.gameMode === 'mom';
@@ -862,30 +863,29 @@ ${romanceOutputFormat}`;
     const timeoutId = setTimeout(() => controller.abort(), 60000);
     let text = '';
     try {
-      if (useGemini) {
-        // Gemini 免费 API
-        const geminiMessages = chatMessages.map(m => ({
-          role: m.role === 'user' ? 'user' : 'model',
-          parts: [{ text: m.content }]
-        }));
-        const geminiBody = {
-          system_instruction: { parts: [{ text: systemPrompt }] },
-          contents: geminiMessages,
-          generationConfig: { temperature: 0.75, maxOutputTokens: 4096 }
-        };
-        const resp = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,
-          { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(geminiBody), signal: controller.signal }
-        );
+      if (useZhipu) {
+        // 智谱 GLM-4-Flash 免费API
+        const resp = await fetch('https://open.bigmodel.cn/api/paas/v4/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': zhipuKey },
+          body: JSON.stringify({
+            model: 'glm-4-flash',
+            messages: [{ role: 'user', content: systemPrompt + '\n\n' + chatMessages.map(m => `${m.role === 'user' ? '玩家' : 'DM'}：${m.content}`).join('\n') }],
+            temperature: 0.75,
+            max_tokens: 4096,
+            stream: false,
+          }),
+          signal: controller.signal,
+        });
         if (!resp.ok) {
           const errText = await resp.text();
-          if (resp.status === 429) throw new Error('Gemini 请求过于频繁，请稍后再试。');
-          throw new Error(`Gemini API 错误 (${resp.status})：${errText}`);
+          if (resp.status === 429) throw new Error('请求过于频繁，请稍后再试。');
+          throw new Error(`智谱 API 错误 (${resp.status})：${errText}`);
         }
-        const gdata = await resp.json();
-        text = gdata?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        const zdata = await resp.json();
+        text = zdata?.choices?.[0]?.message?.content || '';
       } else {
-        // DeepSeek API
+        // DeepSeek API（玩家自填key或开发者key）
         const resp = await fetch('https://api.deepseek.com/chat/completions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${deepseekKey}` },
