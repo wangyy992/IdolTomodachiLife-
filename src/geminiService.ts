@@ -1,8 +1,11 @@
 import { ChatMessage, MessageRole, GameState, SetupStep } from './types';
 
 export async function callGeminiAPI(messages: ChatMessage[], gameState: GameState) {
-  const apiKey = import.meta.env.VITE_DEEPSEEK_API_KEY;
-  if (!apiKey) throw new Error('API Key missing.');
+  const playerApiKey = (gameState as any).playerApiKey || '';
+  const deepseekKey = playerApiKey || import.meta.env.VITE_DEEPSEEK_API_KEY || '';
+  const geminiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
+  if (!deepseekKey && !geminiKey) throw new Error('API Key missing.');
+  const useGemini = !deepseekKey && !!geminiKey;
 
   const isCPMode = gameState.gameMode === 'CPCP';
   const isMomMode = gameState.gameMode === 'mom';
@@ -857,34 +860,58 @@ ${romanceOutputFormat}`;
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 60000);
-    let response: Response;
+    let text = '';
     try {
-      response = await fetch('https://api.deepseek.com/chat/completions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-        body: JSON.stringify({
-          model: 'deepseek-v4-flash',
-          messages: [{ role: 'system', content: systemPrompt }, ...chatMessages],
-          temperature: 0.75,
-          top_p: 0.95,
-          max_tokens: 4096,
-        }),
-        signal: controller.signal,
-      });
+      if (useGemini) {
+        // Gemini 免费 API
+        const geminiMessages = chatMessages.map(m => ({
+          role: m.role === 'user' ? 'user' : 'model',
+          parts: [{ text: m.content }]
+        }));
+        const geminiBody = {
+          system_instruction: { parts: [{ text: systemPrompt }] },
+          contents: geminiMessages,
+          generationConfig: { temperature: 0.75, maxOutputTokens: 4096 }
+        };
+        const resp = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,
+          { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(geminiBody), signal: controller.signal }
+        );
+        if (!resp.ok) {
+          const errText = await resp.text();
+          if (resp.status === 429) throw new Error('Gemini 请求过于频繁，请稍后再试。');
+          throw new Error(`Gemini API 错误 (${resp.status})：${errText}`);
+        }
+        const gdata = await resp.json();
+        text = gdata?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      } else {
+        // DeepSeek API
+        const resp = await fetch('https://api.deepseek.com/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${deepseekKey}` },
+          body: JSON.stringify({
+            model: 'deepseek-v4-flash',
+            messages: [{ role: 'system', content: systemPrompt }, ...chatMessages],
+            temperature: 0.75,
+            top_p: 0.95,
+            max_tokens: 4096,
+          }),
+          signal: controller.signal,
+        });
+        if (!resp.ok) {
+          const errText = await resp.text();
+          if (resp.status === 401) throw new Error('API Key 无效。');
+          if (resp.status === 429) throw new Error('请求过于频繁，请稍后再试。');
+          if (resp.status === 402) throw new Error('DeepSeek 余额不足，请充值。');
+          throw new Error(`DeepSeek API 错误 (${resp.status})：${errText}`);
+        }
+        const ddata = await resp.json();
+        text = ddata?.choices?.[0]?.message?.content || '';
+      }
     } finally {
       clearTimeout(timeoutId);
     }
 
-    if (!response.ok) {
-      const errText = await response.text();
-      if (response.status === 401) throw new Error('API Key 无效。');
-      if (response.status === 429) throw new Error('请求过于频繁，请稍后再试。');
-      if (response.status === 402) throw new Error('DeepSeek 余额不足，请充值。');
-      throw new Error(`DeepSeek API 错误 (${response.status})：${errText}`);
-    }
-
-    const data = await response.json();
-    const text = data?.choices?.[0]?.message?.content;
     if (!text || text.trim() === '') throw new Error('AI 返回内容为空。');
     console.log('🤖 AI原始返回：\n', text);
     return text;
