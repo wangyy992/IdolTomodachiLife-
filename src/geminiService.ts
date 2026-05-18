@@ -869,7 +869,7 @@ ${romanceOutputFormat}`;
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': zhipuKey },
           body: JSON.stringify({
-            model: 'glm-4-flash',
+            model: 'glm-4.7-flash',
             messages: [{ role: 'user', content: systemPrompt + '\n\n' + chatMessages.map(m => `${m.role === 'user' ? '玩家' : 'DM'}：${m.content}`).join('\n') }],
             temperature: 0.75,
             max_tokens: 4096,
