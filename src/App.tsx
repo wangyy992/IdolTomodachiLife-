@@ -401,7 +401,7 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
                 <div className="space-y-2"><label className="text-xs font-black text-[#A0663A] uppercase">年龄</label><input type="number" value={data.playerAge} onChange={e => setData({...data, playerAge: parseInt(e.target.value)})} className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-base focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" /></div>
                 <div className="space-y-2">
                   <label className="text-xs font-black text-[#A0663A] uppercase">DeepSeek API Key（可选）</label>
-                  <input type="password" value={data.playerApiKey} onChange={e => setData({...data, playerApiKey: e.target.value})} className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-base focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" placeholder="填入自己的key可免费无限玩～" />
+                  <input type="password" value={data.playerApiKey} onChange={e => setData({...data, playerApiKey: e.target.value})} className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-base focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" placeholder="填入自己的key可无限玩～" />
                   <p className="text-[10px] text-[#A0663A] opacity-70">不填则使用公共额度（可能较慢）。key仅存于本地，不会上传。</p>
                 </div>
                 {data.playerApiKey && (
