@@ -769,8 +769,8 @@ ${isInitialSetup
 ${romanceOutputFormat}`;
 
   const systemPrompt = isCPMode ? cpPrompt : isMomMode ? momPrompt : romancePrompt;
-  const languageInstruction = (gameState as any).language === 'traditional'
-  ? '請使用繁體中文（台灣用語）進行所有輸出，包括劇情正文、選項和系統訊息。\n'
+    const languageInstruction = (gameState as any).language === 'traditional'
+    ? '請使用繁體中文（台灣用語）進行所有輸出，包括劇情正文、選項和系統訊息。\n'
   : '';
 
 const systemPrompt = languageInstruction + (isCPMode ? cpPrompt : isMomMode ? momPrompt : romancePrompt);
