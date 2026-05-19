@@ -225,7 +225,7 @@ const OptionsUI = ({ options, isLatest }: { options: any[], isLatest: boolean })
   );
 };
 
-const MobileDrawer = ({ gameState, onClose }: { gameState: GameState, onClose: () => void }) => {
+const MobileDrawer = ({ gameState, onClose, onSave, onLoad, onDelete, saveSlots }: { gameState: GameState, onClose: () => void, onSave: () => void, onLoad: (id: string) => void, onDelete: (id: string) => void, saveSlots: any[] }) => {
   const isCPMode = gameState.gameMode === 'CPCP';
   const isMomMode = gameState.gameMode === 'mom';
   const targetMembers = gameState.members.filter(m => gameState.targets.includes(m.id));
@@ -286,6 +286,23 @@ const MobileDrawer = ({ gameState, onClose }: { gameState: GameState, onClose: (
           <div className="flex justify-between text-xs"><span className="text-[#A0663A]">场景</span><span className="font-bold text-[#3D2B1F]">{gameState.currentScene}</span></div>
           <div className="flex justify-between text-xs"><span className="text-[#A0663A]">Round</span><span className="font-bold text-[#C4936A]">{roundCount}</span></div>
           {gameState.isComebackSetting && <div className="text-[10px] font-black text-[#A0663A] bg-[#F5E6D0] px-2 py-1 rounded-lg">回归期进行中</div>}
+        </div>
+        <div className="space-y-2">
+          <button onClick={() => { onSave(); onClose(); }} className="w-full py-3 bg-[#C4936A] text-white rounded-2xl text-[10px] font-black uppercase hover:bg-[#A0663A] transition-all">💾 存档</button>
+          {saveSlots.length > 0 && (
+            <div className="space-y-2">
+              <div className="text-[9px] font-black text-[#A0663A] uppercase">读档</div>
+              {saveSlots.map((slot: any) => (
+                <div key={slot.id} className="bg-white border border-[#EAE0D5] rounded-xl p-3 flex items-center justify-between gap-2">
+                  <button onClick={() => { onLoad(slot.id); onClose(); }} className="flex-1 text-left">
+                    <div className="text-[10px] font-black text-[#3D2B1F]">{slot.scene}</div>
+                    <div className="text-[9px] text-[#A0663A]">Round {slot.round} · {slot.time}</div>
+                  </button>
+                  <button onClick={() => onDelete(slot.id)} className="text-[#C4936A] text-[10px] hover:text-[#A0663A]">✕</button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </motion.div>
@@ -646,6 +663,33 @@ export default function App() {
   const [showConfirmReset, setShowConfirmReset] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
   const [isTraditional, setIsTraditional] = useState(false);
+  const [showSaveSlots, setShowSaveSlots] = useState(false);
+  const [saveSlots, setSaveSlots] = useState<{id:string,name:string,time:string,scene:string,round:number}[]>(() => {
+    try { return JSON.parse(localStorage.getItem('save_slots') || '[]'); } catch { return []; }
+  });
+
+  const saveGame = () => {
+    const id = Date.now().toString();
+    const time = new Date().toLocaleString('zh-TW', {month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+    const slot = { id, name: `存档 ${time}`, time, scene: gameState.currentScene, round: gameState.turnCount || 0 };
+    const newSlots = [slot, ...saveSlots].slice(0, 10);
+    setSaveSlots(newSlots);
+    localStorage.setItem('save_slots', JSON.stringify(newSlots));
+    localStorage.setItem(`save_data_${id}`, JSON.stringify(gameState));
+    alert('存档成功！');
+  };
+
+  const loadGame = (id: string) => {
+    const data = localStorage.getItem(`save_data_${id}`);
+    if (data) { try { setGameState(JSON.parse(data)); setShowSaveSlots(false); } catch {} }
+  };
+
+  const deleteSlot = (id: string) => {
+    const newSlots = saveSlots.filter(s => s.id !== id);
+    setSaveSlots(newSlots);
+    localStorage.setItem('save_slots', JSON.stringify(newSlots));
+    localStorage.removeItem(`save_data_${id}`);
+  };
 
   const convertToTraditional = (text: string): string => {
     if ((window as any).OpenCC) {
@@ -846,7 +890,7 @@ export default function App() {
         {showDrawer && (
           <>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-40 bg-black/40 lg:hidden" onClick={() => setShowDrawer(false)} />
-            <MobileDrawer gameState={gameState} onClose={() => setShowDrawer(false)} />
+            <MobileDrawer gameState={gameState} onClose={() => setShowDrawer(false)} onSave={saveGame} onLoad={loadGame} onDelete={deleteSlot} saveSlots={saveSlots} />
           </>
         )}
       </AnimatePresence>
@@ -897,7 +941,25 @@ export default function App() {
             )}
           </section>
         </div>
-        <div className="p-5 border-t border-[#EAE0D5]">
+        <div className="p-5 border-t border-[#EAE0D5] space-y-3">
+          <button onClick={saveGame} className="w-full flex items-center justify-center gap-2 py-3 bg-[#C4936A] text-white rounded-2xl text-[10px] font-black uppercase hover:bg-[#A0663A] transition-all">💾 存档</button>
+          <button onClick={() => setShowSaveSlots(!showSaveSlots)} className="w-full flex items-center justify-center gap-2 py-3 bg-white text-[#A0663A] rounded-2xl text-[10px] font-black uppercase border border-[#EAE0D5] hover:bg-[#F5E6D0] transition-all">📂 读档 ({saveSlots.length})</button>
+          {showSaveSlots && saveSlots.length > 0 && (
+            <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
+              {saveSlots.map(slot => (
+                <div key={slot.id} className="bg-white border border-[#EAE0D5] rounded-xl p-3 flex items-center justify-between gap-2">
+                  <button onClick={() => loadGame(slot.id)} className="flex-1 text-left">
+                    <div className="text-[10px] font-black text-[#3D2B1F]">{slot.scene}</div>
+                    <div className="text-[9px] text-[#A0663A]">Round {slot.round} · {slot.time}</div>
+                  </button>
+                  <button onClick={() => deleteSlot(slot.id)} className="text-[#C4936A] text-[10px] hover:text-[#A0663A] flex-shrink-0">✕</button>
+                </div>
+              ))}
+            </div>
+          )}
+          {showSaveSlots && saveSlots.length === 0 && (
+            <div className="text-[10px] text-[#A0663A] text-center py-2">暂无存档</div>
+          )}
           <button onClick={handleReset} className="w-full flex items-center justify-center gap-2 py-3 bg-white text-[#A0663A] rounded-2xl text-[10px] font-black uppercase border border-[#EAE0D5] hover:bg-[#F5E6D0] transition-all"><RefreshCw className="w-4 h-4" /> Reset</button>
         </div>
       </aside>
