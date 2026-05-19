@@ -129,20 +129,6 @@ SNAPSHOT_END`;
     return '出道冲刺期（女儿17-18岁）';
   };
 
-  // 数值驱动硬规则块（直接对冲AI的安全摆烂本能）
-  const valueDriveLogic = `
-════════════════════════
-好感度/亲密度数值动态驱动模型
-════════════════════════
-每一轮剧情结算，你【必须】在 SNAPSHOT 的 "affection" 中做出明确的数值变化。克制不等于停滞，严禁连续多轮数字锁死不变。
-【强制数学期望增减指南】：
-- 极高质量互动/神级助攻/精准戳中情绪（通常为选项 A 或 B）：本轮 affection 必须增多 [+2 到 +5]
-- 发生了重大剧情突破或打破冰点的修罗场对视：本轮 affection 必须增多 [+5 到 +8]
-- 自由度较低的日常照面/消极避嫌/静静观察（通常为选项 C）：根据当前张力与氛围，affection 必须变动 [+1 到 +2] 或 [-1 到 +1]
-- 行为不当、踩雷、被公司撞破：affection 必须降低 [-3 到 -8]
-【张力与亲密联动】：
-- 若初始张力(Tension) > 50（如前女友、竞争对手），同台或眼神交汇时必须伴随情绪波动，数字绝不能保持 0 增量。`;
-
   // 共用写作风格
   const writingStyle = `
 ════════════════════════
@@ -247,12 +233,12 @@ ${romanceSnapshotHint}
 国籍：${daughterNationality}
 性格类型：${daughterPersonality}
 家庭背景：${daughterBackground}（${
-    daughterBackground === '贫困'
-      ? '每一笔培训费都是压力，妈妈可能要兼职甚至借钱支撑女儿的梦想，经济危机随时会成为故事转折点'
-      : daughterBackground === '小资'
-      ? '生活质量还不错，能负担基本的培训费用，但顶级资源仍然需要取舍，偶尔会有经济压力'
-      : '钱不是问题，但家庭期望值更高，可能有更复杂的家族关系和压力'
-  }）
+  daughterBackground === '贫困'
+    ? '每一笔培训费都是压力，妈妈可能要兼职甚至借钱支撑女儿的梦想，经济危机随时会成为故事转折点'
+    : daughterBackground === '小资'
+    ? '生活质量还不错，能负担基本的培训费用，但顶级资源仍然需要取舍，偶尔会有经济压力'
+    : '钱不是问题，但家庭期望值更高，可能有更复杂的家族关系和压力'
+}）
 ${daughterName ? `已确定名字：${daughterName}` : ''}
 
 【国籍决定的地点与时间线】
@@ -276,7 +262,6 @@ ${memory}${cardMemory}
 - hiddenSummary必须包含：女儿当前年龄、所在城市/国家、本轮核心事件
 - 每轮只推进数周至数月，不得一轮跨越数年
 ${writingStyle}
-${valueDriveLogic}
 
 ════════════════════════
 核心基调
@@ -391,8 +376,8 @@ ${daughterPersonality === '完美主义型'
 
 ════════════════════════
 ${isInitialSetup
-        ? `【初始化】根据女儿的国籍（${daughterNationality}）、性格（${daughterPersonality}）、家庭背景（${daughterBackground}）${daughterName ? `、名字（${daughterName}）` : ''}，先生成一个完整的虚构女儿角色：${daughterName ? `名字已确定为${daughterName}，` : '给她起一个符合国籍的名字，'}设定外貌特征、细化性格表现。然后从她8岁第一次在电视/网络前看到韩国爱豆的那个场景开始第一轮。写出那个具体的傍晚：妈妈在做什么，女儿在做什么，那一刻发生了什么让妈妈第一次意识到女儿可能认真的。场景在${daughterNationality === '韩国' ? '韩国家里' : daughterNationality === '中国' ? '中国家里' : daughterNationality === '日本' ? '日本家里' : '当地家里'}。`
-        : '【剧情推进】推动养成故事，信任度变化要有理由，每轮包含2-3个事件，注意当前阶段女儿应该在哪个城市/国家。'}
+    ? `【初始化】根据女儿的国籍（${daughterNationality}）、性格（${daughterPersonality}）、家庭背景（${daughterBackground}）${daughterName ? `、名字（${daughterName}）` : ''}，先生成一个完整的虚构女儿角色：${daughterName ? `名字已确定为${daughterName}，` : '给她起一个符合国籍的名字，'}设定外貌特征、细化性格表现。然后从她8岁第一次在电视/网络前看到韩国爱豆的那个场景开始第一轮。写出那个具体的傍晚：妈妈在做什么，女儿在做什么，那一刻发生了什么让妈妈第一次意识到女儿可能认真的。场景在${daughterNationality === '韩国' ? '韩国家里' : daughterNationality === '中国' ? '中国家里' : daughterNationality === '日本' ? '日本家里' : '当地家里'}。`
+    : '【剧情推进】推动养成故事，信任度变化要有理由，每轮包含2-3个事件，注意当前阶段女儿应该在哪个城市/国家。'}
 ════════════════════════
 
 【输出格式】
@@ -459,14 +444,13 @@ ${cardMemory}
 注意：必须严格从上一轮记忆继续推进，禁止重置或无故跳跃时间线。hiddenSummary必须写明本轮CP关系核心进展。
 ${writingStyle}
 ${koreanDetails}
-${valueDriveLogic}
 
 ════════════════════════
 核心基调
 ════════════════════════
 写实向韩娱CP助攻模拟，非爽文。
 玩家是幕后推手，两位爱豆才是主角。
-核心体验：观察两人细节互动，享受"我嗑到了"的快感。
+核心体验：观察两人细节互动，享受"我磕到了"的快感。
 整体氛围：细腻暧昧，可甜可修罗场，有真实韩娱质感。
 
 ════════════════════════
@@ -510,6 +494,16 @@ ${valueDriveLogic}
 - 亲密度高（>70）：两人有默契，非公开场合会自然靠近，有只有彼此懂的梗
 - 张力高（>50）：互动时有明显的紧绷感或压抑的情绪
 - 特殊关系（如前任）：同场必须表现出"完美的礼貌"与"紧绷的下颌线"，禁止直视
+
+════════════════════════
+CP亲密度规则
+════════════════════════
+- 玩家成功制造两人互动机会：+3~+8
+- 两人自然发生化学反应：+2~+5
+- 玩家行动造成误会或阻碍：-3~-8
+- 外部因素（公司、粉丝、行程冲突）：-2~-5
+- 重大突破事件：+8~+15
+每轮必须在SNAPSHOT的members第一个成员的affection里更新CP亲密度。
 
 ════════════════════════
 阶段行为边界
@@ -583,13 +577,13 @@ CP营业：直播里微妙互动被截图、综艺节目刻意安排同组
 - 禁止两人关系推进太快
 - 禁止玩家成为主角抢走戏份
 - 禁止把其他爱豆写成纯恶毒阻碍者
-- 禁止公司 and 经纪人无脑反派化
+- 禁止公司和经纪人无脑反派化
 - 禁止过度玛丽苏结局
 
 ════════════════════════
 ${isInitialSetup
-        ? `【初始化】为${cpMember1?.name}和${cpMember2?.name}各生成一张角色卡，然后开启第一幕。场景真实日常，两人第一次出现在同一空间，描写两人各自的状态，玩家在旁边观察。注意两人的初始关系数据决定了第一幕的互动基调。`
-        : '【剧情推进】推动两人的感情线，玩家选择如何助攻，CP亲密度变化要有理由，多写两人之间的细节互动。'}
+    ? `【初始化】为${cpMember1?.name}和${cpMember2?.name}各生成一张角色卡，然后开启第一幕。场景真实日常，两人第一次出现在同一空间，描写两人各自的状态，玩家在旁边观察。注意两人的初始关系数据决定了第一幕的互动基调。`
+    : '【剧情推进】推动两人的感情线，玩家选择如何助攻，CP亲密度变化要有理由，多写两人之间的细节互动。'}
 ════════════════════════
 
 【输出格式】
@@ -665,7 +659,6 @@ ${cardMemory}
 注意：必须严格从上一轮记忆继续推进，禁止重置或无故跳跃时间线。hiddenSummary必须写明本轮好感度变化原因和关键事件。
 ${writingStyle}
 ${koreanDetails}
-${valueDriveLogic}
 
 ════════════════════════
 核心基调
@@ -712,6 +705,12 @@ ${valueDriveLogic}
 - 好感度突破50：可能触发KKT消息
 - 好感度突破70且连续多次私下见面：公司警觉度上升，可能触发经纪人约谈、被要求减少联系
 - 连续多次见面：经纪人或成员开始注意异常
+
+════════════════════════
+回归期规则
+════════════════════════
+- 回归期内爱豆行程密集，私下联系风险更大
+- 每隔几轮触发一次打歌节目，随机计算一位结果
 
 ════════════════════════
 粉丝舆论事件池（好感度>20后开始有细微异动，>40后每2-3轮触发一次明显事件）
@@ -763,18 +762,15 @@ UI触发规则
 
 ════════════════════════
 ${isInitialSetup
-        ? '【初始化】为目标爱豆生成角色卡，然后开启第一幕。场景真实日常，初遇偶然，爱豆反应符合陌生人阶段。'
-        : '【剧情推进】推动故事，好感度变化要有理由，同一场景2轮必须推进。'}
+    ? '【初始化】为目标爱豆生成角色卡，然后开启第一幕。场景真实日常，初遇偶然，爱豆反应符合陌生人阶段。'
+    : '【剧情推进】推动故事，好感度变化要有理由，同一场景2轮必须推进。'}
 ════════════════════════
 ${romanceOutputFormat}`;
-  
 
   const languageInstruction = (gameState as any).language === 'traditional'
-    ? '請使用繁體中文（台灣用語）進行所有輸出，包括劇情正文、選項和系統訊息。\n'
+    ? '請使用繁體中文（台灣用語）進行所有輸出，包括劇情正文、對話、選項和所有文字。禁止輸出簡體中文。\n\n'
     : '';
-  
   const systemPrompt = languageInstruction + (isCPMode ? cpPrompt : isMomMode ? momPrompt : romancePrompt);
-
 
   try {
     const cleanHistory = messages.slice(-10).map(msg => ({
@@ -841,11 +837,6 @@ ${romanceOutputFormat}`;
         else if (cpAffection > 50) triggerHints.push('CP亲密度超过50，两人开始有私下单独联系；CP粉嗑到升天，唯粉开始不安');
         else if (cpAffection > 30) triggerHints.push('CP亲密度超过30，粉丝开始嗑这对CP，本轮可触发theqoo热帖；路人觉得她们在卖腐');
         if (gameState.isComebackSetting) triggerHints.push('回归期：CP营业风险上升，粉丝截图更积极，公司更敏感');
-        
-        // 专门针对申有娜与安宥真等高张力既往史的修罗场硬干预规则
-        if (cpInitialRelation && cpInitialRelation.tension > 70) {
-          triggerHints.push(`高危张力检测：两人具有【${cpInitialRelation.note}】既往史，同框描写必须强调“完美礼貌掩盖下的极端避嫌与窒息感”，眼神严禁直接交汇，互动数字强制变动`);
-        }
       } else {
         const mainTarget = gameState.members.find(m => gameState.targets.includes(m.id));
         if (mainTarget) {
@@ -868,34 +859,7 @@ ${romanceOutputFormat}`;
         ? '\n[宝妈模式：选项必须是妈妈的行动，注意妈妈只知道自己视角能看到的事情，每轮跨越几个月时间，SNAPSHOT的id必须是"daughter"]'
         : '';
 
-      // 强制灌注期望驱动器，将强制精算命令放在用户输入的最后
-      const finalDrivePrompt = `\n[数值精算硬指令（V4精算核心启动）：
-1. 绝对禁止在 SNAPSHOT 结算中令 affection 亲密度数据维持上一轮原样！
-2. 只要玩家本轮提供了动作回应（A/B/C选项任何一个），在正文中描写对应回馈的同时，在后端必须予以明确增减。
-3. 严格遵循驱动机制：积极互动/送水/精准助攻（选项A、B）强制结算为 [+2 到 +5] 涨幅；克制观察/默默守候（选项C）强制结算为 [+1 到 +2] 或随宿命张力波动。
-4. 严禁由于道德圣人或极端写实倾向抹消玩家的努力，请大胆且符合数学逻辑地向前推进数值！]`;
-      // 强力阻断器：用最简单粗暴的指令防止 AI 吞选项
-      const optionEnforcerPrompt = `
-\n════════════════════════
-🚨 绝对死刑指令：必须生成 A/B/C 三个选项 🚨
-════════════════════════
-你经常在回复末尾忘记生成选项，这是系统绝对不能容忍的严重 BUG！
-本轮回复【必须】严格遵守以下顺序作为结尾：
-
-1. 剧情正文与组件输出完毕。
-2. 直接输出三行行动选项，禁止使用任何标题（如不要写"可选行动："、"你的选择："），直接写：
-A. [具体行动文本，15字以内]
-B. [具体行动文本，15字以内]
-C. [具体行动文本，15字以内]
-3. 选项结束后，紧跟输出 SNAPSHOT_START ... SNAPSHOT_END。
-
-听着，选项必须是夹在正文和 SNAPSHOT 之间的最后三行文本，格式必须是 A. / B. / C. 开头！如果本轮没有输出这三个选项，系统将会崩溃！请立刻生成它们！`;
-
-      chatMessages[lastUserIdx].content += extraPrompt + modeHint + finalDrivePrompt + optionEnforcerPrompt;
-
-
-
-      chatMessages[lastUserIdx].content += extraPrompt + modeHint + finalDrivePrompt + '\n[格式强制要求：①回复末尾必须有严格如下三行：\nA. xxxx\nB. xxxx\nC. xxxx\n不能写"你可以选择"，不能用数字编号，必须是A/B/C开头每行一个选项。②必须有SNAPSHOT_START...SNAPSHOT_END，这是强制要求禁止省略。affection必须根据本轮互动变化更新，哪怕只是普通接触也要+1或+2，禁止连续两轮数值完全不变。③如有消息/帖子必须用对应标签：KKTMSG_START/END、THEQOO_START/END、BUBBLE_START/END、WEVERSE_START/END，标签单独成行]';
+      chatMessages[lastUserIdx].content += extraPrompt + modeHint + '\n[格式强制要求：①回复末尾必须有严格如下三行：\nA. xxxx\nB. xxxx\nC. xxxx\n不能写"你可以选择"，不能用数字编号，必须是A/B/C开头每行一个选项。②必须有SNAPSHOT_START...SNAPSHOT_END，这是强制要求禁止省略。affection必须根据本轮互动变化更新，哪怕只是普通接触也要+1或+2，禁止连续两轮数值完全不变。③如有消息/帖子必须用对应标签：KKTMSG_START/END、THEQOO_START/END、BUBBLE_START/END、WEVERSE_START/END，标签单独成行]';
     }
 
     const controller = new AbortController();
