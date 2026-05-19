@@ -233,6 +233,7 @@ const MobileDrawer = ({ gameState, onClose, onSave, onLoad, onDelete, saveSlots 
   const cpAffection = targetMembers[0]?.affection || 0;
   const daughterProfile = (gameState as any).daughterProfile;
   const roundCount = gameState.history.filter(h => h.role === MessageRole.ASSISTANT).length;
+  const lang = (gameState as any).language || 'simplified';
 
   return (
     <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
