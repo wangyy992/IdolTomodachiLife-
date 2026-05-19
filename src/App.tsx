@@ -242,7 +242,7 @@ const MobileDrawer = ({ gameState, onClose, onSave, onLoad, onDelete, saveSlots 
       <div className="flex justify-center pt-3 pb-2"><div className="w-10 h-1 bg-[#EAE0D5] rounded-full"></div></div>
       <div className="flex items-center justify-between px-6 pb-4 border-b border-[#EAE0D5]">
         <h3 className="font-black text-[#C4936A] text-sm uppercase tracking-widest">
-          {isMomMode ? '{lang === "traditional" ? "母女信任度" : "母女信任度"}' : isCPMode ? '{lang === "traditional" ? "CP 羈絆值" : "CP 羁绊值"}' : '{lang === "traditional" ? "角色狀態" : "角色状态"}'}
+          {isMomMode ? '母女信任度' : isCPMode ? (lang === 'traditional' ? 'CP 羈絆值' : 'CP 羁绊值') : (lang === 'traditional' ? '角色狀態' : '角色状态')}
         </h3>
         <button onClick={onClose} className="p-2 hover:bg-[#F5E6D0] rounded-full transition-all"><X className="w-4 h-4 text-[#A0663A]" /></button>
       </div>
