@@ -299,7 +299,7 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
     playerName: '', playerAge: 19, identity: [] as string[],
     gameMode: 'romance' as string, targets: [] as string[], selectedCPs: [] as string[],
     daughterNationality: '', daughterPersonality: '', daughterBackground: '', daughterName: '',
-    playerApiKey: '', playerModel: 'deepseek-v4-flash'
+    playerApiKey: '', playerModel: 'deepseek-v4-flash', language: 'simplified'
   });
   const [customIdentity, setCustomIdentity] = useState('');
 
@@ -397,18 +397,29 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
           <AnimatePresence mode="wait">
             {step === 1 && (
               <motion.div key="s1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
+                <div className="space-y-2">
+                  <label className="text-xs font-black text-[#A0663A] uppercase">语言 / 語言</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[{id:'simplified',name:'简体中文'},{id:'traditional',name:'繁體中文'}].map(l => (
+                      <button key={l.id} onClick={() => setData({...data, language: l.id})}
+                        className={`p-3 rounded-xl border text-[13px] font-bold transition-all ${data.language === l.id ? 'bg-[#F5E6D0] border-[#C4936A] text-[#A0663A]' : 'bg-white border-[#EAE0D5] text-[#3D2B1F]'}`}>
+                        {l.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
                 <div className="space-y-2"><label className="text-xs font-black text-[#A0663A] uppercase">你的名字</label><input type="text" value={data.playerName} onChange={e => setData({...data, playerName: e.target.value})} className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-base focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" placeholder="请输入角色昵称..." /></div>
                 <div className="space-y-2"><label className="text-xs font-black text-[#A0663A] uppercase">年龄</label><input type="number" value={data.playerAge} onChange={e => setData({...data, playerAge: parseInt(e.target.value)})} className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-base focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" /></div>
                 <div className="space-y-2">
                   <label className="text-xs font-black text-[#A0663A] uppercase">DeepSeek API Key（可选）</label>
-                  <input type="password" value={data.playerApiKey} onChange={e => setData({...data, playerApiKey: e.target.value})} className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-base focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" placeholder="填入自己的key可无限玩～" />
+                  <input type="password" value={data.playerApiKey} onChange={e => setData({...data, playerApiKey: e.target.value})} className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-base focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" placeholder="填入自己的key可免费无限玩～" />
                   <p className="text-[10px] text-[#A0663A] opacity-70">不填则使用公共额度（可能较慢）。key仅存于本地，不会上传。</p>
                 </div>
                 {data.playerApiKey && (
                   <div className="space-y-2">
                     <label className="text-xs font-black text-[#A0663A] uppercase">选择模型</label>
                     <div className="grid grid-cols-2 gap-2">
-                      {[{id:'deepseek-v4-flash',name:'Flash',desc:'快速省钱'},{id:'deepseek-v4-pro',name:'Pro',desc:'质量更好'}].map(m => (
+                      {[{id:'deepseek-v4-flash',name:'Flash',desc:'快速省钱'},{id:'deepseek-v3',name:'V3',desc:'质量更好'}].map(m => (
                         <button key={m.id} onClick={() => setData({...data, playerModel: m.id})}
                           className={`p-3 rounded-xl border text-left transition-all ${data.playerModel === m.id ? 'bg-[#F5E6D0] border-[#C4936A] text-[#A0663A]' : 'bg-white border-[#EAE0D5] text-[#3D2B1F]'}`}>
                           <div className="font-bold text-[11px]">{m.name}</div>
@@ -634,6 +645,15 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [showConfirmReset, setShowConfirmReset] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
+  const [isTraditional, setIsTraditional] = useState(false);
+
+  const convertToTraditional = (text: string): string => {
+    if ((window as any).OpenCC) {
+      const converter = (window as any).OpenCC.Converter({ from: 'cn', to: 'twp' });
+      return converter(text);
+    }
+    return text;
+  };
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(gameState)); }, [gameState]);
@@ -673,7 +693,8 @@ export default function App() {
       ...gameState, ...data, members: initializedMembers,
       setupStep: SetupStep.CARDS, history: [], turnCount: 0,
       ...(daughterProfile ? { daughterProfile, momTrustLevel: 50 } : {}),
-      ...(data.playerApiKey ? { playerApiKey: data.playerApiKey, playerModel: data.playerModel } : {})
+      ...(data.playerApiKey ? { playerApiKey: data.playerApiKey, playerModel: data.playerModel } : {}),
+      language: data.language
     } as any;
     setGameState(newState);
     handleAIStep(summary, newState);
@@ -754,9 +775,11 @@ export default function App() {
       next.turnCount = (prev.turnCount || 0) + 1;
 
       // 把选项也存入content，让AI下一轮能看到上一轮给了什么选项
+      const isTraditionalMode = (prev as any).language === 'traditional' && (window as any).OpenCC;
+      const tw = isTraditionalMode ? (window as any).OpenCC.Converter({ from: 'cn', to: 'twp' }) : (t: string) => t;
       const textContent = contentBlocks
         .filter((b: any) => b.type === 'text')
-        .map((b: any) => b.content)
+        .map((b: any) => { b.content = tw(b.content); return b.content; })
         .join('\n');
       const optionsText = options.length > 0
         ? '\n【本轮可选行动】\n' + options.map((o: any) => o.text).join('\n')
@@ -766,7 +789,9 @@ export default function App() {
         ...next,
         history: [...next.history, {
           role: MessageRole.ASSISTANT,
-          content: textContent + optionsText,
+          content: (next.language === 'traditional' && (window as any).OpenCC)
+            ? (window as any).OpenCC.Converter({ from: 'cn', to: 'twp' })(textContent + optionsText)
+            : textContent + optionsText,
           timestamp: Date.now(),
           contentBlocks,
           currentMusicShow: musicResult || undefined,
@@ -897,9 +922,33 @@ export default function App() {
             </button>
           )}
           {apiKeyMissing && <div className="bg-[#F5E6D0] text-[#A0663A] text-[10px] font-black px-3 py-1 rounded-full border border-[#EAE0D5] animate-pulse">API KEY MISSING</div>}
-          <div className="text-right">
-            <div className="text-[10px] text-[#A0663A] font-bold uppercase">Round</div>
-            <div className="text-sm font-bold text-[#C4936A]">{roundCount}</div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => {
+                const newVal = !isTraditional;
+                setIsTraditional(newVal);
+                if ((window as any).OpenCC) {
+                  const converter = newVal
+                    ? (window as any).OpenCC.Converter({ from: 'cn', to: 'twp' })
+                    : (window as any).OpenCC.Converter({ from: 'tw', to: 'cn' });
+                  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+                  const nodes: Text[] = [];
+                  while (walker.nextNode()) nodes.push(walker.currentNode as Text);
+                  nodes.forEach(node => {
+                    if (node.parentElement?.tagName !== 'SCRIPT' && node.parentElement?.tagName !== 'STYLE') {
+                      node.textContent = converter(node.textContent || '');
+                    }
+                  });
+                }
+              }}
+              className="text-[10px] font-black text-[#A0663A] bg-[#F5E6D0] px-2 py-1 rounded-lg border border-[#EAE0D5] hover:bg-[#EAE0D5] transition-all"
+            >
+              {isTraditional ? '简' : '繁'}
+            </button>
+            <div className="text-right">
+              <div className="text-[10px] text-[#A0663A] font-bold uppercase">Round</div>
+              <div className="text-sm font-bold text-[#C4936A]">{roundCount}</div>
+            </div>
           </div>
         </header>
 
@@ -971,6 +1020,7 @@ export default function App() {
         </div>
       </main>
 
+      <script src="https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/full.js"></script>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap');
         * { font-family: 'Noto Sans SC', sans-serif; }
