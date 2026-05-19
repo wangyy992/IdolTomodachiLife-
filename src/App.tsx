@@ -297,8 +297,8 @@ const MobileDrawer = ({ gameState, onClose, onSave, onLoad, onDelete, saveSlots 
               {saveSlots.map((slot: any) => (
                 <div key={slot.id} className="bg-white border border-[#EAE0D5] rounded-xl p-3 flex items-center justify-between gap-2">
                   <button onClick={() => { onLoad(slot.id); onClose(); }} className="flex-1 text-left">
-                    <div className="text-[10px] font-black text-[#3D2B1F]">{slot.scene}</div>
-                    <div className="text-[9px] text-[#A0663A]">Round {slot.round} · {slot.time}</div>
+                    <div className="text-[10px] font-black text-[#3D2B1F]">{(slot as any).subject || slot.scene}</div>
+                    <div className="text-[9px] text-[#A0663A]">{slot.scene} · Round {slot.round} · {slot.time}</div>
                   </button>
                   <button onClick={() => onDelete(slot.id)} className="text-[#C4936A] text-[10px] hover:text-[#A0663A]">✕</button>
                 </div>
@@ -689,7 +689,12 @@ export default function App() {
   const saveGame = () => {
     const id = Date.now().toString();
     const time = new Date().toLocaleString('zh-TW', {month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
-    const slot = { id, name: `存档 ${time}`, time, scene: gameState.currentScene, round: gameState.turnCount || 0 };
+    const isCPSave = gameState.gameMode === 'CPCP';
+    const isMomSave = gameState.gameMode === 'mom';
+    const targetNames = gameState.members.filter(m => gameState.targets.includes(m.id)).map(m => m.name);
+    const daughterName = (gameState as any).daughterProfile?.name || '';
+    const subject = isMomSave ? (daughterName || '女儿') : isCPSave ? targetNames.join(' ♡ ') : targetNames.join(', ');
+    const slot = { id, name: `存档 ${time}`, time, scene: gameState.currentScene, round: gameState.turnCount || 0, subject };
     const newSlots = [slot, ...saveSlots].slice(0, 10);
     setSaveSlots(newSlots);
     localStorage.setItem('save_slots', JSON.stringify(newSlots));
@@ -968,8 +973,8 @@ export default function App() {
               {saveSlots.map(slot => (
                 <div key={slot.id} className="bg-white border border-[#EAE0D5] rounded-xl p-3 flex items-center justify-between gap-2">
                   <button onClick={() => loadGame(slot.id)} className="flex-1 text-left">
-                    <div className="text-[10px] font-black text-[#3D2B1F]">{slot.scene}</div>
-                    <div className="text-[9px] text-[#A0663A]">Round {slot.round} · {slot.time}</div>
+                    <div className="text-[10px] font-black text-[#3D2B1F]">{(slot as any).subject || slot.scene}</div>
+                    <div className="text-[9px] text-[#A0663A]">{slot.scene} · Round {slot.round} · {slot.time}</div>
                   </button>
                   <button onClick={() => deleteSlot(slot.id)} className="text-[#C4936A] text-[10px] hover:text-[#A0663A] flex-shrink-0">✕</button>
                 </div>
