@@ -441,8 +441,8 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
                     ))}
                   </div>
                 </div>
-                <div className="space-y-2"><label className="text-xs font-black text-[#A0663A] uppercase">${lang === "traditional" ? "您的名字" : "你的名字"}</label><input type="text" value={data.playerName} onChange={e => setData({...data, playerName: e.target.value})} className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-base focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" placeholder={lang === "traditional" ? "請輸入角色暱稱..." : "请输入角色昵称..."} /></div>
-                <div className="space-y-2"><label className="text-xs font-black text-[#A0663A] uppercase">${lang === "traditional" ? "年齡" : "年龄"}</label><input type="number" value={data.playerAge} onChange={e => setData({...data, playerAge: parseInt(e.target.value)})} className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-base focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" /></div>
+                <div className="space-y-2"><label className="text-xs font-black text-[#A0663A] uppercase">{lang === "traditional" ? "您的名字" : "你的名字"}</label><input type="text" value={data.playerName} onChange={e => setData({...data, playerName: e.target.value})} className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-base focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" placeholder={lang === "traditional" ? "請輸入角色暱稱..." : "请输入角色昵称..."} /></div>
+                <div className="space-y-2"><label className="text-xs font-black text-[#A0663A] uppercase">{lang === "traditional" ? "年齡" : "年龄"}</label><input type="number" value={data.playerAge} onChange={e => setData({...data, playerAge: parseInt(e.target.value)})} className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-base focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" /></div>
                 <div className="space-y-2">
                   <label className="text-xs font-black text-[#A0663A] uppercase">DeepSeek API Key（可选）</label>
                   <input type="password" value={data.playerApiKey} onChange={e => setData({...data, playerApiKey: e.target.value})} className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-base focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" placeholder="填入自己的key可免费无限玩～" />
@@ -467,7 +467,7 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
             )}
             {step === 2 && (
               <motion.div key="s2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
-                <label className="text-xs font-black text-[#A0663A] uppercase">${lang === "traditional" ? "選擇模式" : "选择模式"}</label>
+                <label className="text-xs font-black text-[#A0663A] uppercase">{lang === "traditional" ? "選擇模式" : "选择模式"}</label>
                 <div className="space-y-3">{modes.map(m => (
                   <button key={m.id} onClick={() => { setData({...data, gameMode: m.id, targets: [], identity: [], daughterNationality: '', daughterPersonality: '', daughterBackground: '', daughterName: '', playerApiKey: data.playerApiKey}); setSelectedGroup(null); }}
                     className={`w-full p-4 rounded-2xl border text-left transition-all ${data.gameMode === m.id ? 'bg-[#F5E6D0] border-[#C4936A] text-[#A0663A]' : 'bg-white border-[#EAE0D5] text-[#3D2B1F]'}`}>
@@ -481,7 +481,7 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
             )}
             {step === 3 && (
               <motion.div key="s3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
-                <label className="text-xs font-black text-[#A0663A] uppercase">${lang === "traditional" ? "選擇您的身份（可複選）" : "选择你的身份 (可多选)"}</label>
+                <label className="text-xs font-black text-[#A0663A] uppercase">{lang === "traditional" ? "選擇您的身份（可複選）" : "选择你的身份 (可多选)"}</label>
                 <div className="grid grid-cols-2 gap-2">{currentIds.map(i => (
                   <button key={i} onClick={() => setData({...data, identity: data.identity.includes(i) ? data.identity.filter(x => x !== i) : [...data.identity, i]})}
                     className={`p-3 rounded-xl border text-[11px] transition-all ${data.identity.includes(i) ? 'bg-[#F5E6D0] border-[#C4936A] text-[#A0663A] font-bold' : 'bg-white border-[#EAE0D5] text-[#3D2B1F]'}`}>
@@ -504,7 +504,7 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
                 {data.gameMode === 'mom' && (
                   <div className="space-y-5">
                     <div className="space-y-2">
-                      <label className="text-xs font-black text-[#A0663A] uppercase">${lang === "traditional" ? "女兒國籍" : "女儿国籍"}</label>
+                      <label className="text-xs font-black text-[#A0663A] uppercase">{lang === "traditional" ? "女兒國籍" : "女儿国籍"}</label>
                       <div className="grid grid-cols-2 gap-2">
                         {nationalities.map(n => (
                           <button key={n} onClick={() => setData({...data, daughterNationality: n})}
@@ -515,7 +515,7 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-black text-[#A0663A] uppercase">${lang === "traditional" ? "女兒性格" : "女儿性格"}</label>
+                      <label className="text-xs font-black text-[#A0663A] uppercase">{lang === "traditional" ? "女兒性格" : "女儿性格"}</label>
                       <div className="space-y-2">
                         {personalities.map(p => (
                           <button key={p.id} onClick={() => setData({...data, daughterPersonality: p.id})}
@@ -527,14 +527,14 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-black text-[#A0663A] uppercase">${lang === "traditional" ? "女兒的名字（選填，不填由AI生成）" : "女儿的名字（选填，不填由AI生成）"}</label>
+                      <label className="text-xs font-black text-[#A0663A] uppercase">{lang === "traditional" ? "女兒的名字（選填，不填由AI生成）" : "女儿的名字（选填，不填由AI生成）"}</label>
                       <input type="text" value={data.daughterName}
                         onChange={e => setData({...data, daughterName: e.target.value})}
                         className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-base focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]"
                         placeholder={lang === "traditional" ? "給女兒起個名字..." : "给女儿起个名字..."} />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-black text-[#A0663A] uppercase">${lang === "traditional" ? "家庭背景" : "家庭背景"}</label>
+                      <label className="text-xs font-black text-[#A0663A] uppercase">{lang === "traditional" ? "家庭背景" : "家庭背景"}</label>
                       <div className="grid grid-cols-3 gap-2">
                         {backgrounds.map(b => (
                           <button key={b} onClick={() => setData({...data, daughterBackground: b})}
