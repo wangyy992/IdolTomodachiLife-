@@ -286,6 +286,8 @@ export const INITIAL_MEMBERS: Member[] = [
       { targetId: 'yujin_ive', type: '跨团', affinity: 45, tension: 85, note: '前女友关系，同台时完美礼貌但张力极高' },
       { targetId: 'ryujin', type: '队内', affinity: 55, tension: 5, note: '稳定的队友关系' },
       { targetId: 'chaeryeong', type: '队内', affinity: 55, tension: 5, note: '稳定的队友关系' }
+      { targetId: 'haewon_nmixx', type: '跨团', affinity: 75, tension: 5, note: 'JYP同年生好友，练习生期间重叠，公开场合互相拥抱，是跨团最真实的友谊之一' },
+      
     ]
   },
 
@@ -688,6 +690,7 @@ export const INITIAL_MEMBERS: Member[] = [
       { targetId: 'chaewon', type: '队内', affinity: 72, tension: 5, note: '最爱逗她的队长姐姐' },
       { targetId: 'yunjin', type: '队内', affinity: 65, tension: 5, note: '稳定的队友关系' },
       { targetId: 'kazuha', type: '队内', affinity: 68, tension: 5, note: '温柔照顾她的姐姐' }
+      { targetId: 'kyujin_nmixx', type: '跨团', affinity: 70, tension: 5, note: 'KkyuChae：06同年生跨团挚友，两人都说朋友不多，奎珍主动靠近，恩採半夜想发消息又不好意思，互相是最重要的同龄好友' },
     ]
   },
 
@@ -862,6 +865,524 @@ export const INITIAL_MEMBERS: Member[] = [
       { targetId: 'wonyoung', type: '队内', affinity: 72, tension: 10, note: '最疼爱她的姐姐之一' },
       { targetId: 'liz', type: '队内', affinity: 72, tension: 10, note: '最早认识的成员，喜欢摸她的酒窝' },
       { targetId: 'gaeul', type: '队内', affinity: 70, tension: 5, note: '大姐和忙内的稳定关系' }
+    ]
+  },
+  // ==========================================
+// NMIXX（6人）
+// ==========================================
+// 成员：莉莉（대姐）、海媛（队长）、雪允、裴（Bae）、知宇、奎珍（忙内）
+// 重要关系：
+// - SullBae（雪允×裴）：04同年生室友，性格完全相反（内向vs外向）
+// - SullHaz（海媛×雪允×奎珍）：三人曾共同担任Show Champion特别MC
+// - KkyuChae（奎珍×LE SSERAFIM恩採）：06同年生，跨团挚友
+// - 海媛×ITZY有娜：JYP同年生，练习生期间重叠，互相拥抱问候
+// - 海媛保护雪允：团综中多次展现，海媛对雪允有强烈保护意识
+// ==========================================
+
+  // LILY
+  {
+    id: 'lily_nmixx',
+    name: '朴莉莉',
+    stageName: 'LILY',
+    group: 'NMIXX',
+    age: 2002,
+    nationality: '韩裔澳大利亚',
+    role: '主唱',
+    publicPersona: '高音天花板，从K-Pop Star出道的实力派，温暖开朗的大姐',
+    realPersonality: `【底色】音乐是她真正的母语，不是表演工具。在澳大利亚长大、韩国接受训练的双重背景让她比同团成员更早对"失去归属感"有深刻理解。她用音乐跨越一切语言隔阂，但私下有时候会不确定自己到底属于哪里。外表永远开朗温暖，内心有一块需要慢慢靠近才能看见的地方。
+
+【要强程度】在K-Pop Star被淘汰、训练六年半才出道的经历让她对"不被认可"有着超乎常人的敏感。她的胜负欲不是要赢谁，而是"我需要证明那六年的等待是值得的"。对自己声音的自尊心极高，如果觉得某场表演没有发挥出应有的水准，会反复回想很久。
+
+【情绪处理】往外倾倒——笑着说出来，或者通过歌唱把情绪发泄出去。她不太擅长把负面情绪藏着，但也不会在人前崩溃，会用开朗掩盖一些东西，只有真正亲近的人才能看穿。
+
+【相处方式】对所有人都热情，但热情的质感不一样。对真正在乎的人会展示非常细腻的一面——记得你说过的小事，在你需要的时候出现，然后假装是顺路。她邀请成员们去澳大利亚老家参观的举动，是她表达信任的最高形式。
+
+【CP/Romance互动】直接，热烈，一旦喜欢不会藏着。但在感情里也有澳大利亚式的随性——不想把关系搞得太复杂，追求自然流动的状态。与知宇之间有一种基于音乐的深层联结，两个人在创作上高度共鸣，但都把那个"联结"叫做友情。`,
+    affection: 0,
+    careerPressure: 55,
+    status: '活动中',
+    initialRelationships: [
+      { targetId: 'haewon_nmixx', type: '队内', affinity: 75, tension: 10, note: '大姐与队长，互相依赖的核心搭档' },
+      { targetId: 'jiwoo_nmixx', type: '队内', affinity: 78, tension: 10, note: '室友，音乐灵魂高度共鸣的搭档' },
+      { targetId: 'sullyoon_nmixx', type: '队内', affinity: 68, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'bae_nmixx', type: '队内', affinity: 65, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'kyujin_nmixx', type: '队内', affinity: 65, tension: 5, note: '大姐对忙内，温柔照顾' }
+    ]
+  },
+
+  // HAEWON
+  {
+    id: 'haewon_nmixx',
+    name: '吴海媛',
+    stageName: 'HAEWON',
+    group: 'NMIXX',
+    age: 2003,
+    nationality: '韩国',
+    role: '队长/主唱',
+    publicPersona: '创造出"Outfit Check"梗的治愈系队长，清甜嗓音极具辨识度',
+    realPersonality: `【底色】ISTP底色——表面随和，内心有一套极清醒的判断系统。她对人和事的感知力很强，但不会轻易说出来。当队长的方式不是发号施令，是默默把所有人的状态都托住，在没人注意的地方解决问题。她对雪允有很强的保护意识——雪允外表太耀眼，容易遭受不必要的审视，海媛会悄悄挡在前面。
+
+【要强程度】在专业上不允许自己停滞，但她的"要强"不声张。不会说"我要做到最好"，但会在训练结束后一个人留在练习室继续抠细节。她对团队整体成长的责任感比对个人荣誉更强烈。
+
+【情绪处理】往内收，但处理得很快。她有一种把情绪"整理干净"再拿出来的能力，所以你很少看到她在人前乱了阵脚。压力很大时会失眠，然后戴耳机听舒缓音乐，或者去做香水——把手忙起来是她恢复状态的方式。
+
+【相处方式】幽默感很特别，会用极度平静的表情说出很好笑的话。对不熟的人保持礼貌距离，熟了之后会展现出稍微有点"坏坏的"可爱——起外号、整蛊、然后一脸无辜。
+
+【CP/Romance互动】傲娇型保护者，喜欢了会用"照顾"来掩盖。保护你、记住你、在你难受的时候出现，但如果你直接问"你是不是喜欢我"，她会用一个玩笑把话题转走。与有娜（ITZY）是JYP同年生挚友，两人练习生期间重叠，公开活动会互相拥抱，是跨团关系里最真实的一段。`,
+    affection: 0,
+    careerPressure: 52,
+    status: '活动中',
+    initialRelationships: [
+      { targetId: 'lily_nmixx', type: '队内', affinity: 75, tension: 10, note: '大姐与队长，核心搭档' },
+      { targetId: 'sullyoon_nmixx', type: '队内', affinity: 80, tension: 10, note: 'SullHaz三人组之一，海媛对雪允有强烈保护意识，团综中多次挡在雪允前面' },
+      { targetId: 'jiwoo_nmixx', type: '队内', affinity: 72, tension: 5, note: '给知宇提供声乐建议和情绪支持的前辈' },
+      { targetId: 'kyujin_nmixx', type: '队内', affinity: 78, tension: 5, note: 'SullHaz三人组之一，教奎珍舞台礼仪的前辈' },
+      { targetId: 'bae_nmixx', type: '队内', affinity: 68, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'yuna_itzy', type: '跨团', affinity: 75, tension: 5, note: 'JYP同年生好友，练习生期间重叠，公开场合会互相拥抱，是跨团最真实的友谊之一' }
+    ]
+  },
+
+  // SULLYOON
+  {
+    id: 'sullyoon_nmixx',
+    name: '薛仑娥',
+    stageName: 'SULLYOON',
+    group: 'NMIXX',
+    age: 2004,
+    nationality: '韩国',
+    role: '领唱/舞蹈/视觉',
+    publicPersona: '视觉神颜，天使降临感，粉丝津津乐道的"JYP狙击手"',
+    realPersonality: `【底色】ISFP——团里唯一的内向型成员。她的神颜带来了极大的关注，但她本人其实不太舒服成为焦点。她喜欢安静，喜欢观察，习惯先看完所有人再决定要不要靠近。曾经通过了SM、YG、JYP等多家公司审核，她清楚自己的"外表价值"，但这是她压力的一部分，而不是自信的来源。
+
+【要强程度】追求"声音和外表一样值得被认可"。她在声乐上花了极大的努力，不想被当成只有脸的成员。在练习上极其认真，但不声张，你看不出她有多努力，只能看到她"突然变强了"。
+
+【情绪处理】往内收的高手，几乎不在人前展示情绪波动。如果感到不舒服，会变得更安静、更礼貌——这其实是她在竖起护盾。需要的是对方先创造一个安全的空间，然后等她自己走进去。
+
+【相处方式】慢热，但熟了极其真诚。她会帮你记住所有你说过的事，在你需要的时候用行动而不是语言回应。有一种"我已经把你放进心里很久了，只是没说出来"的感觉。
+
+【CP/Romance互动】气质型暧昧，被动中有步骤。她不会主动靠近，但会制造让对方靠近她的条件——站在你能看见的地方，说一句让你忍不住想再听一遍的话，然后不再多说。与裴（Bae）是SullBae组合：04同年生室友，一个内向一个外向，性格反差巨大却互补，裴帮她在陌生场合打开局面，她给裴提供安静的避风港。`,
+    affection: 0,
+    careerPressure: 53,
+    status: '活动中',
+    initialRelationships: [
+      { targetId: 'haewon_nmixx', type: '队内', affinity: 80, tension: 10, note: 'SullHaz三人组之一，海媛是她最强的保护者，两人有深厚的信任' },
+      { targetId: 'bae_nmixx', type: '队内', affinity: 85, tension: 8, note: 'SullBae：04同年生室友，内向vs外向的反差搭档，裴帮她解锁陌生场合，她是裴的安静港湾，被粉丝嗑到升天' },
+      { targetId: 'kyujin_nmixx', type: '队内', affinity: 75, tension: 8, note: 'SullHaz三人组之一，和奎珍共同担任过Show Champion特别MC' },
+      { targetId: 'jiwoo_nmixx', type: '队内', affinity: 68, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'lily_nmixx', type: '队内', affinity: 68, tension: 5, note: '稳定的队友关系' }
+    ]
+  },
+
+  // BAE
+  {
+    id: 'bae_nmixx',
+    name: '裴真率',
+    stageName: 'BAE',
+    group: 'NMIXX',
+    age: 2004,
+    nationality: '韩国',
+    role: '领唱/舞蹈',
+    publicPersona: '团内最高成员，眉毛担当，充满少女感的活力源泉',
+    realPersonality: `【底色】ENFP，被街头星探偶然发现才进入JYP，这个"意外的开始"让她比其他人更懂得珍惜。她内心有很强的感恩意识，不是说出来的那种，是体现在细节里的——记得每一个帮助过她的人，对工作机会永远认真对待。她有一种天然的无防备感，藏不住情绪，高兴了全脸都是，难过了也藏不住。
+
+【要强程度】不甘心只做"高个子美女"。她在声乐上花了大量努力，不想让外表盖过实力。她的努力方式很扎实，不炫耀，只是每次都比上一次好一点。
+
+【情绪处理】ENFP的处理方式——找人说话。压力大时会主动找能量相近的人聊天，通过倾诉和被倾听来恢复状态。她不太擅长独自消化，需要人的陪伴。
+
+【相处方式】直接、阳光，喜欢一个人会很快表现出来。她收集贝雷帽，这个习惯让她显得格外有生活感。她的直接有时候会让人措手不及，但没有恶意，就是藏不住。
+
+【CP/Romance互动】直球暖系，喜欢了就是喜欢，不绕弯子。与雪允（Sullyoon）是SullBae：04同年生室友，性格完全相反却高度互补——她是外向炸弹，雪允是安静磁场，两个人在一起的状态让粉丝觉得"就是她们了"。雪允因为她在陌生环境里打开了很多，她因为雪允学会了某种安静的力量。`,
+    affection: 0,
+    careerPressure: 50,
+    status: '活动中',
+    initialRelationships: [
+      { targetId: 'sullyoon_nmixx', type: '队内', affinity: 85, tension: 8, note: 'SullBae：04同年生室友，外向vs内向的完美互补，粉丝最嗑的组合之一' },
+      { targetId: 'haewon_nmixx', type: '队内', affinity: 70, tension: 5, note: '曾共同bubble直播，感情稳定' },
+      { targetId: 'jiwoo_nmixx', type: '队内', affinity: 72, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'lily_nmixx', type: '队内', affinity: 65, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'kyujin_nmixx', type: '队内', affinity: 68, tension: 5, note: '稳定的队友关系' }
+    ]
+  },
+
+  // JIWOO
+  {
+    id: 'jiwoo_nmixx',
+    name: '金智友',
+    stageName: 'JIWOO',
+    group: 'NMIXX',
+    age: 2005,
+    nationality: '韩国',
+    role: '主唱/说唱',
+    publicPersona: '独特音色的多才多艺担当，潮流感十足',
+    realPersonality: `【底色】ESFP，直觉敏锐，有一种独特的"慢节奏"幽默感——会在大家都在紧张的时候说出一句完全不相干的话让气氛瞬间破冰。她喜欢做香水（和海媛的爱好高度重叠，这是两个人私下很多聊天的起点）。她对音乐有很多自己的想法，但不太擅长把这些想法用语言说出来，更擅长直接在表演里展示。
+
+【要强程度】对自己声音的辨识度有极强的追求。她不想被定义成某一种风格，想证明自己可以驾驭的范围比外界认为的宽很多。偷偷在私下练习的时间比展示出来的多。
+
+【情绪处理】用沉浸来处理情绪——听音乐、做香水、研究自己感兴趣的东西。变得不爱说话是她需要独处充电的信号，不是生气，是在给自己充电。
+
+【相处方式】直接坦诚，不太绕弯子。喜欢的人面前会通过分享自己感兴趣的东西来建立连接——推荐一首歌、发一个好玩的东西、随手带你去一个她喜欢的地方。她的示好方式很实在，不让人猜。
+
+【CP/Romance互动】行动派，喜欢了表达，不擅长暗示。与莉莉（Lily）是室友，两人音乐灵魂高度共鸣——莉莉的声乐高度和知宇对音乐质感的追求碰在一起，两个人聊创作可以聊到忘记时间，粉丝说"她们在一起的时候像在谈恋爱"。`,
+    affection: 0,
+    careerPressure: 50,
+    status: '活动中',
+    initialRelationships: [
+      { targetId: 'lily_nmixx', type: '队内', affinity: 78, tension: 10, note: '室友，音乐灵魂高度共鸣，聊创作忘记时间的搭档' },
+      { targetId: 'haewon_nmixx', type: '队内', affinity: 72, tension: 5, note: '海媛给她提供声乐支持，共同爱好香水，有很多私下聊天' },
+      { targetId: 'sullyoon_nmixx', type: '队内', affinity: 68, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'bae_nmixx', type: '队内', affinity: 72, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'kyujin_nmixx', type: '队内', affinity: 70, tension: 5, note: '同龄感强的队友，互动轻松' }
+    ]
+  },
+
+  // KYUJIN
+  {
+    id: 'kyujin_nmixx',
+    name: '張圭珍',
+    stageName: 'KYUJIN',
+    group: 'NMIXX',
+    age: 2006,
+    nationality: '韩国',
+    role: '舞蹈领队/主舞/说唱',
+    publicPersona: '爆发力惊人的全能忙内，猫系视觉，Z世代最强战斗力',
+    realPersonality: `【底色】ESFJ——组织感强，责任心重，喜欢照顾人，但同时又是忙内，这两种身份有时候会产生内在矛盾。她在排练时会主动整理细节、提醒成员注意走位，这不是越权，是她对"团队完整性"有本能的执着。她喜欢骑自行车和摄影，这两件事都是她用来"清空"自己的方式。
+
+【要强程度】天生的竞争者，在舞台上会下意识成为视线焦点——不是刻意抢，是真的强到藏不住。不轻易认输，如果某次表演出了差错，会在脑子里复盘很多遍。她的胜负欲低调，但一直在。
+
+【情绪处理】情绪出口是运动和舞蹈。难过了去练习室，高兴了也去练习室。如果开始说"我没事"然后一个人待着，通常是有事。她不想让姐姐们担心，所以很多东西自己扛着。
+
+【相处方式】直球，爽快，说话不绕弯。被她认可的人会收到一种很直接的亲近——突然发一条消息问你在干什么，路过带你吃东西，然后假装这是顺手。对不熟的人有礼貌，但存在感不强。
+
+【CP/Romance互动】直球忙内，喜欢了很明显，但遇到真正喜欢的人会突然有点笨，因为脑子来不及过滤了。与恩採（LE SSERAFIM）是KkyuChae，06同年生跨团挚友——两人都说自己朋友不多，有彼此很开心。奎珍先去靠近恩採，恩採会在半夜想发消息但不好意思发。与海媛和雪允组成SullHaz，三人曾共同担任Show Champion特别MC，这个组合在粉丝心里有特别的位置。`,
+    affection: 0,
+    careerPressure: 52,
+    status: '活动中',
+    initialRelationships: [
+      { targetId: 'haewon_nmixx', type: '队内', affinity: 78, tension: 5, note: 'SullHaz三人组之一，海媛是她在团内最亲近的姐姐，教她舞台礼仪' },
+      { targetId: 'sullyoon_nmixx', type: '队内', affinity: 75, tension: 8, note: 'SullHaz三人组之一，共同担任Show Champion MC，反差感强但互补' },
+      { targetId: 'jiwoo_nmixx', type: '队内', affinity: 70, tension: 5, note: '同龄感强，互动轻松' },
+      { targetId: 'bae_nmixx', type: '队内', affinity: 68, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'lily_nmixx', type: '队内', affinity: 65, tension: 5, note: '大姐温柔照顾忙内' },
+      { targetId: 'eunchae', type: '跨团', affinity: 70, tension: 5, note: 'KkyuChae：06同年生跨团挚友，两人都说自己朋友不多，奎珍主动靠近恩採，恩採半夜想发消息又不好意思发，互相是对方最重要的同龄好友' }
+    ]
+  },
+
+// ==========================================
+// TWICE（9人）
+// ==========================================
+// 成员：娜琏（大姐）、晶妍、桃子、纱夏、志效（队长）、南（Mina）、多贤、彩瑛、子瑜（忙内）
+// 重要关系：
+// - NaJeong（娜琏×晶妍）：同年生最亲密好友，练习生时期一起成长
+// - MoSa/SaMo（桃子×纱夏）：日本三人组中最亲密，已同住多年
+// - MiSaMo（南×纱夏×桃子）：日本成员三人组
+// - 多贤×彩瑛×子瑜：忙内三人组，同在汉林艺术高中就读
+// - 志效×娜琏：相爱相杀的队长与大姐，长达十年的摩擦与依赖
+// - 南×纱夏：不需要说话也懂彼此的默契
+// ==========================================
+
+  // NAYEON
+  {
+    id: 'nayeon',
+    name: '林娜琏',
+    stageName: 'NAYEON',
+    group: 'TWICE',
+    age: 1995,
+    nationality: '韩国',
+    role: '大姐/领唱/中心',
+    publicPersona: '兔子姐姐，元气满满的活力源泉，TWICE的门面担当',
+    realPersonality: `【底色】十年偶像经历让她对这个行业有着超乎年龄的清醒。她的开朗是真实的，但也是她的护甲——在开朗里有很多真实的快乐，也有很多撑着的时刻，只有自己分得清。她是"先感受，后消化"的人，情绪很直接，但处理情绪需要时间独处。
+
+【要强程度】Solo出道让她产生了一种独立意识——不只是TWICE的大姐，也是她自己。对"大姐"身份有很强的责任感，但也会为了这个责任感压抑自己真实的情绪。她的胜负欲体现在"不能拖团队后腿"，而不是超越谁。
+
+【情绪处理】用笑声掩盖一切，直到真的撑不住了才会找一个没人的地方。她最难受的不是大的挫折，而是日积月累的疲惫，那种说不清楚的东西——某天会突然需要一个长假，但自己也不知道为什么。
+
+【相处方式】对所有人热情，但热情的厚度不一样。真正亲近的人会看到她偶尔的脆弱——很短暂，一闪而过，但她允许你看见，说明她信任你。与BLACKPINK的Jisoo和Jennie关系极好，是跨团最公开的友情之一。
+
+【CP/Romance互动】热烈有分寸，喜欢了会很明显，但不会乱来。与志效是十年相爱相杀——两个人都太清楚对方，太了解对方的弱点，所以既最亲近也最容易摩擦。谁都不肯先低头，但谁都知道对方在。`,
+    affection: 0,
+    careerPressure: 55,
+    status: '活动中',
+    initialRelationships: [
+      { targetId: 'jeongyeon_twice', type: '队内', affinity: 85, tension: 10, note: 'NaJeong：练习生时期一起成长的同年生最亲密好友，默契极深，彼此最了解对方' },
+      { targetId: 'jihyo_twice', type: '队内', affinity: 72, tension: 35, note: '大姐与队长的十年相爱相杀，互相了解到能精准踩到对方的点' },
+      { targetId: 'momo_twice', type: '队内', affinity: 75, tension: 5, note: '现同住，是TWICE内最亲密的日常伙伴之一' },
+      { targetId: 'sana_twice', type: '队内', affinity: 70, tension: 5, note: '稳定的好朋友' },
+      { targetId: 'dahyun_twice', type: '队内', affinity: 68, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'mina_twice', type: '队内', affinity: 65, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'chaeyoung_twice', type: '队内', affinity: 65, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'tzuyu_twice', type: '队内', affinity: 65, tension: 5, note: '大姐对忙内，温柔照顾' }
+    ]
+  },
+
+  // JEONGYEON
+  {
+    id: 'jeongyeon_twice',
+    name: '俞定延',
+    stageName: 'JEONGYEON',
+    group: 'TWICE',
+    age: 1996,
+    nationality: '韩国',
+    role: '领唱',
+    publicPersona: '帅气酷girl，TWICE里的帅担，直爽坦率广受喜爱',
+    realPersonality: `【底色】极度真实，藏不住任何情绪——脸就是内心的实时播报。她经历过严重的健康问题和长时间休养，这段经历让她对"活在当下"有了非常具体的理解。她的姐姐孔升妍是知名演员，她对"公众形象"有很清醒的判断——选择做真实的自己，而不是完美的偶像。
+
+【要强程度】对声音有很强的自尊心，但她的胜负欲更多体现在"不让大家因为我担心"。她经历过因为健康暂停活动，重新归来时那种"终于可以在该在的地方"的感受让她对每一次上台都有特别的感激。
+
+【情绪处理】直接，有什么说什么。但面对真正深层的情绪会变得沉默——那是她在处理说不出口的部分。这种时候不需要问，陪着就够了。她不喜欢被人同情，但需要"被陪着"。
+
+【相处方式】豪爽直球，真诚。对在乎的人会有"我就是要护着你"的保护欲，方式很直接，不拖泥带水。被她认真对待时你会很清楚地感受到——她不假装，所以她的好也是真实的。
+
+【CP/Romance互动】姐姐型，给很多安全感，但也需要对方能接住她偶尔的软弱。成年后与娜琏的关系发生了很大的变化——她说过"成年后我们有了很多喝酒聊天的机会，彼此更了解了"，那种了解让她们变成了另一种意义的依赖。`,
+    affection: 0,
+    careerPressure: 48,
+    status: '活动中',
+    initialRelationships: [
+      { targetId: 'nayeon', type: '队内', affinity: 85, tension: 10, note: 'NaJeong：练习生最亲密的同年生好友，成年后酒桌上打开了新的了解，默契极深' },
+      { targetId: 'jihyo_twice', type: '队内', affinity: 78, tension: 10, note: '最早加入JYP的同批练习生，十年深厚信任' },
+      { targetId: 'momo_twice', type: '队内', affinity: 72, tension: 5, note: '同年生96z，稳定的好朋友' },
+      { targetId: 'sana_twice', type: '队内', affinity: 70, tension: 5, note: '96z，同一宿舍组，关系稳定' },
+      { targetId: 'mina_twice', type: '队内', affinity: 72, tension: 5, note: '曾同住一室，关系亲近' },
+      { targetId: 'dahyun_twice', type: '队内', affinity: 68, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'chaeyoung_twice', type: '队内', affinity: 65, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'tzuyu_twice', type: '队内', affinity: 65, tension: 5, note: '稳定的队友关系' }
+    ]
+  },
+
+  // MOMO
+  {
+    id: 'momo_twice',
+    name: '平井桃',
+    stageName: 'MOMO',
+    group: 'TWICE',
+    age: 1996,
+    nationality: '日本',
+    role: '主舞/副唱/副唱说唱',
+    publicPersona: '舞蹈天才，人间香肠嘴，MiSaMo三人组核心',
+    realPersonality: `【底色】用身体语言表达一切，情绪、亲近、感谢，全部在动作里。她对语言的依赖比其他人低，但对肢体接触的需求比其他人高。在异国生活多年，她已经习惯了用笑容和动作跨越语言障碍——这让她拥有一种独特的"无需翻译"的温暖。在训练初期曾被要求减重，那段经历她很少提，但偶尔会透过玩笑话漏出来。
+
+【要强程度】对舞蹈有绝对的自尊心，是TWICE里对编舞细节最执着的人。她的努力量超乎常人，因为她知道自己的优势在哪里，所以会把那个优势做到极致——没有人比她更努力地维护"主舞"这个身份。
+
+【情绪处理】难过了会在练习室一个人跳，跳到情绪处理完为止。她不太擅长用言语整理感受，如果你想了解她在想什么，看她跳舞比问她有效。对异国他乡的不适感有时候会让她格外安静，那不是她原本的状态。
+
+【相处方式】肢体接触很自然，喜欢一个人会直接靠近。对在乎的人有极强的情感依赖，但方式很直接，不拐弯，不让人误解。
+
+【CP/Romance互动】用行动说话，喜欢了就靠过去。与纱夏（Sana）是SaMo：两人训练期间就已经最亲密，是日本三人组里最不需要语言的那一对，"24小时在一起"这件事她们做到了七年。现同住，这本身就是一种表态。`,
+    affection: 0,
+    careerPressure: 52,
+    status: '活动中',
+    initialRelationships: [
+      { targetId: 'sana_twice', type: '队内', affinity: 90, tension: 5, note: 'SaMo：MiSaMo中最亲密的组合，训练期唯一的好友，已同住多年，24小时在一起' },
+      { targetId: 'mina_twice', type: '队内', affinity: 82, tension: 5, note: 'MiSaMo日本成员三人组，异乡最深的依靠' },
+      { targetId: 'nayeon', type: '队内', affinity: 75, tension: 5, note: '现同住，日常关系亲密' },
+      { targetId: 'jihyo_twice', type: '队内', affinity: 78, tension: 5, note: '最信任的队长' },
+      { targetId: 'jeongyeon_twice', type: '队内', affinity: 72, tension: 5, note: '96z好友' },
+      { targetId: 'dahyun_twice', type: '队内', affinity: 70, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'chaeyoung_twice', type: '队内', affinity: 68, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'tzuyu_twice', type: '队内', affinity: 68, tension: 5, note: '稳定的队友关系' }
+    ]
+  },
+
+  // SANA
+  {
+    id: 'sana_twice',
+    name: '湊崎纱夏',
+    stageName: 'SANA',
+    group: 'TWICE',
+    age: 1996,
+    nationality: '日本',
+    role: '副唱/舞蹈',
+    publicPersona: '撒娇天后，全团粉丝杀手，天生的感情表达者',
+    realPersonality: `【底色】情感极其丰富且真实，她的撒娇不是表演，是她真实的相处方式。她对每一段关系都认真——给出去的都是真实的，所以也很容易受伤。她有一种"如果我对你好，我需要你也对我好"的隐性期待，但她不会说出来，因为她不想让对方有压力。
+
+【要强程度】对"被喜欢"有很强的需求，这不只是职业需要，是她真实的性格。渴望被人发现、被人珍视，这种渴望在她所有的行动里都有体现，但她自己可能没有完全意识到这一点。
+
+【情绪处理】情绪全在脸上，很难藏。开心了整个人都在发光，难过了整个人都像被雨淋了。不擅长处理复杂的长期压力，那种慢性的疲惫会让她显得格外沉默，和平时的她形成强烈反差——这个时候她需要桃子，只是坐在旁边什么都不说。
+
+【相处方式】粘人、直接、情感浓度极高。喜欢一个人会让对方完全感受到，不用猜。对在乎的人有强烈的占有欲，但是撒娇式的，不让人窒息。当多贤生病，她是第一个过来握手的人——这种细节是她真实的感情方式。
+
+【CP/Romance互动】全情投入型，一旦喜欢会把所有情感都押进去。与桃子（Momo）是SaMo：训练期间唯一的好友，两人共享了很多离家的孤独，现同住，那种懂得不需要解释。与南（Mina）是MiSaMo里最默契的组合之一，南说过"纱夏是最能照顾我的人"。`,
+    affection: 0,
+    careerPressure: 50,
+    status: '活动中',
+    initialRelationships: [
+      { targetId: 'momo_twice', type: '队内', affinity: 90, tension: 5, note: 'SaMo：训练期唯一好友，现同住，共享异乡孤独，最深的日本组合' },
+      { targetId: 'mina_twice', type: '队内', affinity: 82, tension: 5, note: 'MiSaMo，南说纱夏是最能照顾她的人' },
+      { targetId: 'dahyun_twice', type: '队内', affinity: 78, tension: 5, note: '多贤病了她第一个来握手，感情很真实' },
+      { targetId: 'jihyo_twice', type: '队内', affinity: 78, tension: 5, note: '深度信任的队长' },
+      { targetId: 'nayeon', type: '队内', affinity: 70, tension: 5, note: '稳定的好朋友' },
+      { targetId: 'jeongyeon_twice', type: '队内', affinity: 70, tension: 5, note: '96z，同一宿舍组' },
+      { targetId: 'chaeyoung_twice', type: '队内', affinity: 68, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'tzuyu_twice', type: '队内', affinity: 68, tension: 5, note: '稳定的队友关系' }
+    ]
+  },
+
+  // JIHYO
+  {
+    id: 'jihyo_twice',
+    name: '朴志效',
+    stageName: 'JIHYO',
+    group: 'TWICE',
+    age: 1997,
+    nationality: '韩国',
+    role: '队长/主唱',
+    publicPersona: 'God-JIHYO，实力派队长，用声音和责任心撑起整个团',
+    realPersonality: `【底色】8岁入JYP、训练十年才出道——这段经历塑造了她惊人的抗压能力和对行业的清醒认知。她知道什么是真实的，什么是表演。当队长的方式是：确保所有人都被照顾到，然后把自己放在最后。这个习惯是真心，也是某种自我保护方式——只要在照顾别人，就不用面对自己的疲惫。
+
+【要强程度】顶级使命感，对"TWICE"这个名字有极强的责任心。她的胜负欲不是针对外部，而是对自己——不能因为她拖团队后腿，这是雷打不动的底线。她记得自己十年等待的每一天，所以每一次上台都当成珍贵的事情。
+
+【情绪处理】习惯了最后一个哭。先确认所有成员都照顾到了，然后找一个没人的地方处理自己的情绪。她的崩溃是静悄悄的，不大声，但持续很久。需要的不是被询问，是有人主动坐在她旁边然后不问什么。
+
+【相处方式】对所有人很周到，但进入她内心的人极少。真正进去的人，会得到极其深厚的信任——她不假装，所以她的认真是真的认真。
+
+【CP/Romance互动】给予型，在关系里会付出极多，但接受的能力弱，被人好好对待时会不知所措。与娜琏的相爱相杀是十年的默契——两个人太了解彼此，所以既最亲近也最容易摩擦，谁都不肯先说软话，但谁都知道对方在。`,
+    affection: 0,
+    careerPressure: 60,
+    status: '活动中',
+    initialRelationships: [
+      { targetId: 'nayeon', type: '队内', affinity: 72, tension: 35, note: '十年相爱相杀，互相太了解，最亲近也最容易摩擦' },
+      { targetId: 'jeongyeon_twice', type: '队内', affinity: 78, tension: 10, note: '最早入JYP的同批练习生，十年信任' },
+      { targetId: 'momo_twice', type: '队内', affinity: 78, tension: 5, note: '最信任的舞蹈担当' },
+      { targetId: 'sana_twice', type: '队内', affinity: 78, tension: 5, note: '深度信任的队友' },
+      { targetId: 'mina_twice', type: '队内', affinity: 72, tension: 5, note: '曾同住一室，照顾过对方健康低谷' },
+      { targetId: 'dahyun_twice', type: '队内', affinity: 72, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'chaeyoung_twice', type: '队内', affinity: 70, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'tzuyu_twice', type: '队内', affinity: 72, tension: 5, note: '最信任的忙内' }
+    ]
+  },
+
+  // MINA
+  {
+    id: 'mina_twice',
+    name: '名井南',
+    stageName: 'MINA',
+    group: 'TWICE',
+    age: 1997,
+    nationality: '日裔美国人',
+    role: '副唱/舞蹈/视觉',
+    publicPersona: '黑天鹅，气质出尘，芭蕾出身的神秘视觉担当',
+    realPersonality: `【底色】芭蕾训练塑造了她的自律和优雅，也让她习惯了把所有东西压着。她经历过严重的焦虑症和长时间的活动暂停，这段经历让她对"照顾自己"有了新的理解——不再只是撑着，而是真的学会了说不。这种成长很珍贵，但她还在练习。
+
+【要强程度】对完美有执着，但已经学会了区分"完美主义"和"苛待自己"。她追求的是那种沉静的、属于她自己的美感，不需要任何人来评判。她的标准在内部，不在排行榜上。
+
+【情绪处理】现在比以前更愿意说出来。她已经学会了一套自己的方式：感受到压力就说出来，感到疲惫就休息。但这个"学会"是努力来的，不是天生的——她还是会有退回去的时刻。
+
+【相处方式】慢热，熟了极其真诚。她记住你的方式是观察——你的习惯、你的喜好、你不说出口的需求，她都注意到了，然后在某个时机用行动回应，不说"我注意到了"，只是做。
+
+【CP/Romance互动】气质型暧昧，不用说什么，单是存在感就已经很特别。在关系里需要足够的安全感才能放开，一旦放开会有非常深的投入。与纱夏是MiSaMo中最特别的一对——纱夏说"南是我们三个里面最需要被照顾的，但她照顾我们的方式最安静"。与桃子共享了身为日本人在异国的那种懂得，不需要解释太多。`,
+    affection: 0,
+    careerPressure: 45,
+    status: '活动中',
+    initialRelationships: [
+      { targetId: 'sana_twice', type: '队内', affinity: 82, tension: 5, note: 'MiSaMo，纱夏是最能照顾南的人，南用最安静的方式回应她' },
+      { targetId: 'momo_twice', type: '队内', affinity: 82, tension: 5, note: 'MiSaMo，异乡最深的依靠' },
+      { targetId: 'jihyo_twice', type: '队内', affinity: 72, tension: 5, note: '曾同住一室，志效在南健康低谷时照顾过她' },
+      { targetId: 'dahyun_twice', type: '队内', affinity: 78, tension: 5, note: '开朗的多贤用笑声治愈过南最难的时期' },
+      { targetId: 'jeongyeon_twice', type: '队内', affinity: 72, tension: 5, note: '曾同住一室，关系亲近' },
+      { targetId: 'nayeon', type: '队内', affinity: 65, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'chaeyoung_twice', type: '队内', affinity: 70, tension: 5, note: '彼此懂得的安静搭档' },
+      { targetId: 'tzuyu_twice', type: '队内', affinity: 72, tension: 5, note: '同为异国成员，有共同懂得的部分' }
+    ]
+  },
+
+  // DAHYUN
+  {
+    id: 'dahyun_twice',
+    name: '金多贤',
+    stageName: 'DAHYUN',
+    group: 'TWICE',
+    age: 1998,
+    nationality: '韩国',
+    role: '领唱说唱/副唱',
+    publicPersona: '白鸽少女，综艺感超强，TWICE的快乐源泉',
+    realPersonality: `【底色】真实的快乐和表演的快乐她自己分得很清楚，但外界永远只看到表演的那部分。她是那种"房间里有她就很安心"的存在，因为她有一种天然的化解能力——能让任何尴尬的情况变得轻松，不是刻意的，是她本能地在读场。
+
+【要强程度】对综艺感和说唱技能有很强的自尊心，不甘心只被当成气氛担当。在专业上的努力很少被看见，因为大家都在享受她带来的快乐，很少想到背后她花了多少时间打磨。
+
+【情绪处理】越是难受越是搞笑，直到真的需要帮助的时候才会用一种很小声的方式说出来。她说"我有点累了"的时候，通常已经很累很久了。需要的不是被询问，而是有人直接在她旁边坐下来，不需要她表演开心。
+
+【相处方式】对所有人都好，但那种好是自然流露的，不刻意。对在乎的人会有一种很稳的陪伴感，不需要做什么，就是在。与彩瑛是忙内线里最亲密的搭档，两人互相叫"姐妹"。
+
+【CP/Romance互动】接受慢，但认定了就很深情。她在感情上比外表看起来更认真，更容易受伤，只是包裹太好了让人看不出来。`,
+    affection: 0,
+    careerPressure: 48,
+    status: '活动中',
+    initialRelationships: [
+      { targetId: 'chaeyoung_twice', type: '队内', affinity: 82, tension: 5, note: '忙内线最亲密搭档，互相叫姐妹，汉林艺高同学' },
+      { targetId: 'tzuyu_twice', type: '队内', affinity: 78, tension: 5, note: '忙内三人组，汉林艺高同学' },
+      { targetId: 'sana_twice', type: '队内', affinity: 78, tension: 5, note: '纱夏生病时第一个来陪，感情真实深厚' },
+      { targetId: 'mina_twice', type: '队内', affinity: 78, tension: 5, note: '开朗治愈了南最难的时期' },
+      { targetId: 'jihyo_twice', type: '队内', affinity: 72, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'nayeon', type: '队内', affinity: 68, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'jeongyeon_twice', type: '队内', affinity: 68, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'momo_twice', type: '队内', affinity: 70, tension: 5, note: '稳定的队友关系' }
+    ]
+  },
+
+  // CHAEYOUNG
+  {
+    id: 'chaeyoung_twice',
+    name: '孙彩瑛',
+    stageName: 'CHAEYOUNG',
+    group: 'TWICE',
+    age: 1999,
+    nationality: '韩国',
+    role: '主力说唱/副唱',
+    publicPersona: '艺术家气质，纹身女孩，独特个人风格的创作者',
+    realPersonality: `【底色】艺术家的灵魂，不走寻常路。她有一套自己的审美体系，对流行趋势有清醒的判断，但也有自己不妥协的部分。她不害怕争议——纹身、艺术创作、公开恋情，每一次都是她选择做自己的声明。她知道"偶像"和"艺术家"之间有张力，她选择尽量做两个。
+
+【要强程度】创作欲是最大的驱动力，不在乎排名，在乎的是有没有说出想说的话、有没有留下真正属于她的东西。她对将就的创作极度不耐烦，宁愿不做也不做一个不真实的版本。
+
+【情绪处理】用创作和艺术——写歌、画画、任何形式的创作都是出口。她不太擅长把感受说给别人听，但你可以从她的作品里读到很多。BLACKPINK的Rosé是她最亲密的跨团好友，两人的感情是真实的艺术家灵魂共鸣。
+
+【相处方式】一对一的深度聊天比群体社交更舒服。对有趣的人有天然的吸引力，会主动靠近；对无聊的社交有明显的回避倾向。与多贤在汉林艺高是同学，这段早于TWICE的友情让她们之间有另一种层次的了解。
+
+【CP/Romance互动】追求真实的灵魂共振，受不了表演式的感情。喜欢了会有一种很酷的占有欲——不声张，但存在感极强。`,
+    affection: 0,
+    careerPressure: 45,
+    status: '活动中',
+    initialRelationships: [
+      { targetId: 'dahyun_twice', type: '队内', affinity: 82, tension: 5, note: '忙内三人组，汉林艺高同学，互相叫姐妹' },
+      { targetId: 'tzuyu_twice', type: '队内', affinity: 75, tension: 5, note: '忙内三人组，汉林艺高同学，彼此照顾' },
+      { targetId: 'jihyo_twice', type: '队内', affinity: 70, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'mina_twice', type: '队内', affinity: 70, tension: 5, note: '彼此懂得的安静搭档' },
+      { targetId: 'nayeon', type: '队内', affinity: 65, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'jeongyeon_twice', type: '队内', affinity: 65, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'momo_twice', type: '队内', affinity: 68, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'sana_twice', type: '队内', affinity: 68, tension: 5, note: '稳定的队友关系' }
+    ]
+  },
+
+  // TZUYU
+  {
+    id: 'tzuyu_twice',
+    name: '周子瑜',
+    stageName: 'TZUYU',
+    group: 'TWICE',
+    age: 1999,
+    nationality: '台湾',
+    role: '领舞/副唱/视觉/忙内',
+    publicPersona: '天生神颜，TWICE视觉担当，优雅忙内',
+    realPersonality: `【底色】在异国成长的过程中养成了极度独立的内心。她看起来永远安安静静，内心有很多东西在流动，只是不太说出来。她经历过2016年的旗帜争议事件，那个事件对一个十六岁的女孩来说太重了——她用沉默扛过来了，但那段经历让她对"公众"有了非常清醒且早熟的理解。她对家乡台湾有很深的思念。
+
+【要强程度】不满足于"视觉担当"的标签，对全方位提升有执着的追求。她的努力不声张，但在成员和工作人员眼里看得很清楚。她知道自己今天比昨天好了多少，这种自我评估系统是她的动力来源。
+
+【情绪处理】极度内敛。她处理情绪的方式是独处——回到自己的空间，等情绪自然平息。对家乡食物、家乡语言有极强的情感连接，想家的时候会用这些来安慰自己。与南（Mina）有一种共同的"异乡人"懂得，不需要解释太多。
+
+【相处方式】慢热，熟了之后非常温柔。记住你的方式是观察，在你没注意到的时候把事情安排好，然后不说。她负责给员瑛科普网络用语，这个权力倒置让两人的关系有了一种很可爱的层次。
+
+【CP/Romance互动】含蓄内敛，不会主动，但如果她愿意靠近你，那是经过很长时间观察之后做的决定。在关系里非常专一，被辜负了会很受伤，但不说，会慢慢退出去。`,
+    affection: 0,
+    careerPressure: 50,
+    status: '活动中',
+    initialRelationships: [
+      { targetId: 'chaeyoung_twice', type: '队内', affinity: 75, tension: 5, note: '忙内三人组，汉林艺高同学，彼此照顾' },
+      { targetId: 'dahyun_twice', type: '队内', affinity: 78, tension: 5, note: '忙内三人组，汉林艺高同学，多贤给了她很多家的感觉' },
+      { targetId: 'mina_twice', type: '队内', affinity: 72, tension: 5, note: '同为异国成员，有共同懂得的地方，安静的依靠' },
+      { targetId: 'jihyo_twice', type: '队内', affinity: 72, tension: 5, note: '最信任的队长' },
+      { targetId: 'nayeon', type: '队内', affinity: 65, tension: 5, note: '大姐对忙内，温柔照顾' },
+      { targetId: 'jeongyeon_twice', type: '队内', affinity: 65, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'momo_twice', type: '队内', affinity: 68, tension: 5, note: '稳定的队友关系' },
+      { targetId: 'sana_twice', type: '队内', affinity: 68, tension: 5, note: '稳定的队友关系' }
     ]
   },
 
