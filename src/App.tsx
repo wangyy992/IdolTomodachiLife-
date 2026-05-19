@@ -499,8 +499,8 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
             )}
             {step === 4 && (
               <motion.div key="s4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
-                {data.gameMode === 'romance' && <MemberPicker label=lang === "traditional" ? "選擇您的自擔" : "选择你的自担" />}
-                {data.gameMode === 'CPCP' && <MemberPicker label=lang === "traditional" ? "選兩個人來拉紅線" : "选两个人来拉郎" max={2} />}
+                {data.gameMode === 'romance' && <MemberPicker label={lang === "traditional" ? "選擇您的自擔" : "选择你的自担"} />}
+                {data.gameMode === 'CPCP' && <MemberPicker label={lang === "traditional" ? "選兩個人來拉紅線" : "选两个人来拉郎"} max={2} />}
                 {data.gameMode === 'mom' && (
                   <div className="space-y-5">
                     <div className="space-y-2">
