@@ -886,6 +886,7 @@ export default function App() {
   const momTrustLevel = (gameState as any).momTrustLevel || 50;
   const roundCount = gameState.turnCount || 0;
 
+  
   const lang = (gameState as any).language || 'simplified';
   const sidebarLabel = isMomMode ? '母女信任度' : isCPMode ? (lang === 'traditional' ? 'CP 羈絆值' : 'CP 羁绊值') : (lang === 'traditional' ? '角色狀態' : '角色状态');
   const modeLabel = isMomMode ? '宝妈' : isCPMode ? '助攻' : '攻略';
