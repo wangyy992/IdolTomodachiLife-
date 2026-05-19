@@ -232,7 +232,7 @@ const MobileDrawer = ({ gameState, onClose, onSave, onLoad, onDelete, saveSlots 
   const cpAffection = targetMembers[0]?.affection || 0;
   const daughterProfile = (gameState as any).daughterProfile;
   const roundCount = gameState.history.filter(h => h.role === MessageRole.ASSISTANT).length;
-
+  const lang = (gameState as any).language || 'simplified';
   return (
     <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
       transition={{ type: 'spring', damping: 30, stiffness: 300 }}
@@ -885,8 +885,7 @@ export default function App() {
   const roundCount = gameState.turnCount || 0;
 
   const lang = (gameState as any).language || 'simplified';
-  const sidebarLabel = isMomMode ? (lang === 'traditional' ? '{lang === "traditional" ? "母女信任度" : "母女信任度"}' : '{lang === "traditional" ? "母女信任度" : "母女信任度"}') : isCPMode ? (lang === 'traditional' ? 'CP 羈絆值' : '{lang === "traditional" ? "CP 羈絆值" : "CP 羁绊值"}') : (lang === 'traditional' ? '角色狀態' : '{lang === "traditional" ? "角色狀態" : "角色状态"}');
-  const modeLabel = isMomMode ? '宝妈' : isCPMode ? '助攻' : '攻略';
+  const sidebarLabel = isMomMode ? '母女信任度' : isCPMode ? (lang === 'traditional' ? 'CP 羈絆值' : 'CP 羁绊值') : (lang === 'traditional' ? '角色狀態' : '角色状态');  const modeLabel = isMomMode ? '宝妈' : isCPMode ? '助攻' : '攻略';
 
   return (
     <div className="flex h-screen bg-[#FAF7F2] overflow-hidden relative">
