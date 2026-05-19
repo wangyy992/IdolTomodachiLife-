@@ -210,11 +210,12 @@ const MusicShowUI = ({ result }: { result: any }) => (
   </div>
 );
 
-const OptionsUI = ({ options, isLatest }: { options: any[], isLatest: boolean }) => {
+const OptionsUI = ({ options, isLatest, lang }: { options: any[], isLatest: boolean, lang?: string }) => {
   if (!isLatest || !options?.length) return null;
+  const l = lang || 'simplified';
   return (
     <div className="mt-5 rounded-2xl bg-[#FAF7F2] border border-[#EAE0D5] p-4">
-      <div className="text-[9px] font-black text-[#A0663A] uppercase tracking-widest mb-3">{lang === "traditional" ? "可選行動" : "可选行动"}</div>
+      <div className="text-[9px] font-black text-[#A0663A] uppercase tracking-widest mb-3">{l === "traditional" ? "可選行動" : "可选行动"}</div>
       <div className="space-y-2.5">
         {options.map((opt: any, i) => {
           const text = typeof opt === 'string' ? opt : opt.text;
@@ -232,7 +233,7 @@ const MobileDrawer = ({ gameState, onClose, onSave, onLoad, onDelete, saveSlots 
   const cpAffection = targetMembers[0]?.affection || 0;
   const daughterProfile = (gameState as any).daughterProfile;
   const roundCount = gameState.history.filter(h => h.role === MessageRole.ASSISTANT).length;
-  const lang = (gameState as any).language || 'simplified';
+
   return (
     <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
       transition={{ type: 'spring', damping: 30, stiffness: 300 }}
@@ -768,7 +769,7 @@ export default function App() {
       ]) as string;
       processAIResponse(response, stateToUse);
     } catch(e) {
-      setGameState(prev => ({ ...prev, history: [...prev.history, { role: MessageRole.ASSISTANT, content: `{lang === "traditional" ? "抱歉，出現錯誤。" : "抱歉，出现错误。"}\n错误信息: ${e instanceof Error ? e.message : String(e)}`, timestamp: Date.now() }] }));
+      setGameState(prev => ({ ...prev, history: [...prev.history, { role: MessageRole.ASSISTANT, content: `抱歉，出现错误。\n错误信息: ${e instanceof Error ? e.message : String(e)}`, timestamp: Date.now() }] }));
     } finally { setIsLoading(false); }
   };
 
@@ -885,7 +886,8 @@ export default function App() {
   const roundCount = gameState.turnCount || 0;
 
   const lang = (gameState as any).language || 'simplified';
-  const sidebarLabel = isMomMode ? '母女信任度' : isCPMode ? (lang === 'traditional' ? 'CP 羈絆值' : 'CP 羁绊值') : (lang === 'traditional' ? '角色狀態' : '角色状态');  const modeLabel = isMomMode ? '宝妈' : isCPMode ? '助攻' : '攻略';
+  const sidebarLabel = isMomMode ? '母女信任度' : isCPMode ? (lang === 'traditional' ? 'CP 羈絆值' : 'CP 羁绊值') : (lang === 'traditional' ? '角色狀態' : '角色状态');
+  const modeLabel = isMomMode ? '宝妈' : isCPMode ? '助攻' : '攻略';
 
   return (
     <div className="flex h-screen bg-[#FAF7F2] overflow-hidden relative">
@@ -1054,12 +1056,12 @@ export default function App() {
                             if (block.type === 'musicshow') return isLatest ? <MusicShowUI key={bi} result={block.data} /> : null;
                             return null;
                           })}
-                          {msg.options && <OptionsUI options={msg.options} isLatest={isLatest} />}
+                          {msg.options && <OptionsUI options={msg.options} isLatest={isLatest} lang={(gameState as any).language} />}
                         </div>
                       ) : (
                         <div className="p-5 md:p-6 text-sm leading-relaxed markdown-container">
-                          <MarkdownBlock content={msg.content || '{lang === "traditional" ? "（劇情推進中...）" : "（剧情推进中...）"}'} />
-                          {msg.options && <OptionsUI options={msg.options} isLatest={isLatest} />}
+                          <MarkdownBlock content={msg.content || '（剧情推进中...）'} />
+                          {msg.options && <OptionsUI options={msg.options} isLatest={isLatest} lang={(gameState as any).language} />}
                         </div>
                       )}
                       {msg.content?.includes('错误信息') && (
