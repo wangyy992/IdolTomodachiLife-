@@ -285,7 +285,7 @@ export const INITIAL_MEMBERS: Member[] = [
       { targetId: 'yeji', type: '队内', affinity: 70, tension: 5, note: '经常一起玩闹的幼稚搭档' },
       { targetId: 'yujin_ive', type: '跨团', affinity: 45, tension: 85, note: '前女友关系，同台时完美礼貌但张力极高' },
       { targetId: 'ryujin', type: '队内', affinity: 55, tension: 5, note: '稳定的队友关系' },
-      { targetId: 'chaeryeong', type: '队内', affinity: 55, tension: 5, note: '稳定的队友关系' }
+      { targetId: 'chaeryeong', type: '队内', affinity: 55, tension: 5, note: '稳定的队友关系' },
       { targetId: 'haewon_nmixx', type: '跨团', affinity: 75, tension: 5, note: 'JYP同年生好友，练习生期间重叠，公开场合互相拥抱，是跨团最真实的友谊之一' },
       
     ]
@@ -689,7 +689,7 @@ export const INITIAL_MEMBERS: Member[] = [
       { targetId: 'sakura', type: '队内', affinity: 72, tension: 5, note: '宠溺她的姐姐，治愈源' },
       { targetId: 'chaewon', type: '队内', affinity: 72, tension: 5, note: '最爱逗她的队长姐姐' },
       { targetId: 'yunjin', type: '队内', affinity: 65, tension: 5, note: '稳定的队友关系' },
-      { targetId: 'kazuha', type: '队内', affinity: 68, tension: 5, note: '温柔照顾她的姐姐' }
+      { targetId: 'kazuha', type: '队内', affinity: 68, tension: 5, note: '温柔照顾她的姐姐' },
       { targetId: 'kyujin_nmixx', type: '跨团', affinity: 70, tension: 5, note: 'KkyuChae：06同年生跨团挚友，两人都说朋友不多，奎珍主动靠近，恩採半夜想发消息又不好意思，互相是最重要的同龄好友' },
     ]
   },
