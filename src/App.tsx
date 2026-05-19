@@ -214,7 +214,7 @@ const OptionsUI = ({ options, isLatest }: { options: any[], isLatest: boolean })
   if (!isLatest || !options?.length) return null;
   return (
     <div className="mt-5 rounded-2xl bg-[#FAF7F2] border border-[#EAE0D5] p-4">
-      <div className="text-[9px] font-black text-[#A0663A] uppercase tracking-widest mb-3">可选行动</div>
+      <div className="text-[9px] font-black text-[#A0663A] uppercase tracking-widest mb-3">{lang === "traditional" ? "可選行動" : "可选行动"}</div>
       <div className="space-y-2.5">
         {options.map((opt: any, i) => {
           const text = typeof opt === 'string' ? opt : opt.text;
@@ -240,7 +240,7 @@ const MobileDrawer = ({ gameState, onClose, onSave, onLoad, onDelete, saveSlots 
       <div className="flex justify-center pt-3 pb-2"><div className="w-10 h-1 bg-[#EAE0D5] rounded-full"></div></div>
       <div className="flex items-center justify-between px-6 pb-4 border-b border-[#EAE0D5]">
         <h3 className="font-black text-[#C4936A] text-sm uppercase tracking-widest">
-          {isMomMode ? '母女信任度' : isCPMode ? 'CP 羁绊值' : '角色状态'}
+          {isMomMode ? '{lang === "traditional" ? "母女信任度" : "母女信任度"}' : isCPMode ? '{lang === "traditional" ? "CP 羈絆值" : "CP 羁绊值"}' : '{lang === "traditional" ? "角色狀態" : "角色状态"}'}
         </h3>
         <button onClick={onClose} className="p-2 hover:bg-[#F5E6D0] rounded-full transition-all"><X className="w-4 h-4 text-[#A0663A]" /></button>
       </div>
@@ -283,12 +283,12 @@ const MobileDrawer = ({ gameState, onClose, onSave, onLoad, onDelete, saveSlots 
           </div>
         )}
         <div className="bg-white p-4 rounded-2xl border border-[#EAE0D5] space-y-2">
-          <div className="flex justify-between text-xs"><span className="text-[#A0663A]">场景</span><span className="font-bold text-[#3D2B1F]">{gameState.currentScene}</span></div>
+          <div className="flex justify-between text-xs"><span className="text-[#A0663A]">{lang === "traditional" ? "場景" : "场景"}</span><span className="font-bold text-[#3D2B1F]">{gameState.currentScene}</span></div>
           <div className="flex justify-between text-xs"><span className="text-[#A0663A]">Round</span><span className="font-bold text-[#C4936A]">{roundCount}</span></div>
-          {gameState.isComebackSetting && <div className="text-[10px] font-black text-[#A0663A] bg-[#F5E6D0] px-2 py-1 rounded-lg">回归期进行中</div>}
+          {gameState.isComebackSetting && <div className="text-[10px] font-black text-[#A0663A] bg-[#F5E6D0] px-2 py-1 rounded-lg">{lang === "traditional" ? "回歸期進行中" : "回归期进行中"}</div>}
         </div>
         <div className="space-y-2">
-          <button onClick={() => { onSave(); onClose(); }} className="w-full py-3 bg-[#C4936A] text-white rounded-2xl text-[10px] font-black uppercase hover:bg-[#A0663A] transition-all">💾 存档</button>
+          <button onClick={() => { onSave(); onClose(); }} className="w-full py-3 bg-[#C4936A] text-white rounded-2xl text-[10px] font-black uppercase hover:bg-[#A0663A] transition-all">{lang === "traditional" ? "💾 存檔" : "💾 存档"}</button>
           {saveSlots.length > 0 && (
             <div className="space-y-2">
               <div className="text-[9px] font-black text-[#A0663A] uppercase">读档</div>
@@ -319,6 +319,7 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
     playerApiKey: '', playerModel: 'deepseek-v4-flash', language: 'simplified'
   });
   const [customIdentity, setCustomIdentity] = useState('');
+  const lang = data.language || 'simplified';
 
   useEffect(() => {
     if (!(window as any).OpenCC) return;
@@ -440,8 +441,8 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
                     ))}
                   </div>
                 </div>
-                <div className="space-y-2"><label className="text-xs font-black text-[#A0663A] uppercase">你的名字</label><input type="text" value={data.playerName} onChange={e => setData({...data, playerName: e.target.value})} className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-base focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" placeholder="请输入角色昵称..." /></div>
-                <div className="space-y-2"><label className="text-xs font-black text-[#A0663A] uppercase">年龄</label><input type="number" value={data.playerAge} onChange={e => setData({...data, playerAge: parseInt(e.target.value)})} className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-base focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" /></div>
+                <div className="space-y-2"><label className="text-xs font-black text-[#A0663A] uppercase">${lang === "traditional" ? "您的名字" : "你的名字"}</label><input type="text" value={data.playerName} onChange={e => setData({...data, playerName: e.target.value})} className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-base focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" placeholder={lang === "traditional" ? "請輸入角色暱稱..." : "请输入角色昵称..."} /></div>
+                <div className="space-y-2"><label className="text-xs font-black text-[#A0663A] uppercase">${lang === "traditional" ? "年齡" : "年龄"}</label><input type="number" value={data.playerAge} onChange={e => setData({...data, playerAge: parseInt(e.target.value)})} className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-base focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" /></div>
                 <div className="space-y-2">
                   <label className="text-xs font-black text-[#A0663A] uppercase">DeepSeek API Key（可选）</label>
                   <input type="password" value={data.playerApiKey} onChange={e => setData({...data, playerApiKey: e.target.value})} className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-base focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]" placeholder="填入自己的key可免费无限玩～" />
@@ -461,12 +462,12 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
                     </div>
                   </div>
                 )}
-                <button onClick={() => setStep(2)} disabled={!data.playerName} className="w-full bg-[#C4936A] text-white py-4 rounded-2xl font-bold disabled:opacity-50 hover:bg-[#A0663A] transition-all">继续</button>
+                <button onClick={() => setStep(2)} disabled={!data.playerName} className="w-full bg-[#C4936A] text-white py-4 rounded-2xl font-bold disabled:opacity-50 hover:bg-[#A0663A] transition-all">{lang === "traditional" ? "繼續" : "继续"}</button>
               </motion.div>
             )}
             {step === 2 && (
               <motion.div key="s2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
-                <label className="text-xs font-black text-[#A0663A] uppercase">选择模式</label>
+                <label className="text-xs font-black text-[#A0663A] uppercase">${lang === "traditional" ? "選擇模式" : "选择模式"}</label>
                 <div className="space-y-3">{modes.map(m => (
                   <button key={m.id} onClick={() => { setData({...data, gameMode: m.id, targets: [], identity: [], daughterNationality: '', daughterPersonality: '', daughterBackground: '', daughterName: '', playerApiKey: data.playerApiKey}); setSelectedGroup(null); }}
                     className={`w-full p-4 rounded-2xl border text-left transition-all ${data.gameMode === m.id ? 'bg-[#F5E6D0] border-[#C4936A] text-[#A0663A]' : 'bg-white border-[#EAE0D5] text-[#3D2B1F]'}`}>
@@ -474,13 +475,13 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
                     <div className="text-[10px] opacity-60 mt-1">{m.desc}</div>
                   </button>
                 ))}</div>
-                <button onClick={() => setStep(1)} className="w-full py-3 bg-white text-[#A0663A] rounded-2xl text-sm font-bold border border-[#EAE0D5] hover:bg-[#F5E6D0] transition-all">← 上一步</button>
-                <button onClick={() => data.gameMode === 'mom' ? setStep(4) : setStep(3)} className="w-full bg-[#C4936A] text-white py-4 rounded-2xl font-bold hover:bg-[#A0663A] transition-all">下一步</button>
+                <button onClick={() => setStep(1)} className="w-full py-3 bg-white text-[#A0663A] rounded-2xl text-sm font-bold border border-[#EAE0D5] hover:bg-[#F5E6D0] transition-all">{lang === "traditional" ? "← 上一步" : "← 上一步"}</button>
+                <button onClick={() => data.gameMode === 'mom' ? setStep(4) : setStep(3)} className="w-full bg-[#C4936A] text-white py-4 rounded-2xl font-bold hover:bg-[#A0663A] transition-all">{lang === "traditional" ? "下一步" : "下一步"}</button>
               </motion.div>
             )}
             {step === 3 && (
               <motion.div key="s3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
-                <label className="text-xs font-black text-[#A0663A] uppercase">选择你的身份 (可多选)</label>
+                <label className="text-xs font-black text-[#A0663A] uppercase">${lang === "traditional" ? "選擇您的身份（可複選）" : "选择你的身份 (可多选)"}</label>
                 <div className="grid grid-cols-2 gap-2">{currentIds.map(i => (
                   <button key={i} onClick={() => setData({...data, identity: data.identity.includes(i) ? data.identity.filter(x => x !== i) : [...data.identity, i]})}
                     className={`p-3 rounded-xl border text-[11px] transition-all ${data.identity.includes(i) ? 'bg-[#F5E6D0] border-[#C4936A] text-[#A0663A] font-bold' : 'bg-white border-[#EAE0D5] text-[#3D2B1F]'}`}>
@@ -488,22 +489,22 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
                   </button>
                 ))}</div>
                 <input type="text" value={customIdentity} onChange={e => setCustomIdentity(e.target.value)}
-                  placeholder="或手动输入自定义身份..."
+                  placeholder="{lang === "traditional" ? "或手動輸入自訂身份..." : "或手动输入自定义身份..."}"
                   className="w-full bg-white border border-[#EAE0D5] rounded-xl p-3 text-base focus:ring-1 focus:ring-[#C4936A] outline-none text-[#3D2B1F]"
                   onKeyDown={(e) => { if (e.key === 'Enter') { const val = customIdentity.trim(); if (val && !data.identity.includes(val)) { setData({...data, identity: [...data.identity, val]}); setCustomIdentity(''); } e.preventDefault(); } }} />
-                <button onClick={() => setStep(2)} className="w-full py-3 bg-white text-[#A0663A] rounded-2xl text-sm font-bold border border-[#EAE0D5] hover:bg-[#F5E6D0] transition-all">← 上一步</button>
+                <button onClick={() => setStep(2)} className="w-full py-3 bg-white text-[#A0663A] rounded-2xl text-sm font-bold border border-[#EAE0D5] hover:bg-[#F5E6D0] transition-all">{lang === "traditional" ? "← 上一步" : "← 上一步"}</button>
                 <button onClick={() => { const val = customIdentity.trim(); const newIdentity = val && !data.identity.includes(val) ? [...data.identity, val] : data.identity; setData({...data, identity: newIdentity}); if (newIdentity.length > 0) setStep(4); }}
-                  disabled={data.identity.length === 0 && !customIdentity.trim()} className="w-full bg-[#C4936A] text-white py-4 rounded-2xl font-bold disabled:opacity-50 hover:bg-[#A0663A] transition-all">继续</button>
+                  disabled={data.identity.length === 0 && !customIdentity.trim()} className="w-full bg-[#C4936A] text-white py-4 rounded-2xl font-bold disabled:opacity-50 hover:bg-[#A0663A] transition-all">{lang === "traditional" ? "繼續" : "继续"}</button>
               </motion.div>
             )}
             {step === 4 && (
               <motion.div key="s4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
-                {data.gameMode === 'romance' && <MemberPicker label="选择你的自担" />}
-                {data.gameMode === 'CPCP' && <MemberPicker label="选两个人来拉郎" max={2} />}
+                {data.gameMode === 'romance' && <MemberPicker label=lang === "traditional" ? "選擇您的自擔" : "选择你的自担" />}
+                {data.gameMode === 'CPCP' && <MemberPicker label=lang === "traditional" ? "選兩個人來拉紅線" : "选两个人来拉郎" max={2} />}
                 {data.gameMode === 'mom' && (
                   <div className="space-y-5">
                     <div className="space-y-2">
-                      <label className="text-xs font-black text-[#A0663A] uppercase">女儿国籍</label>
+                      <label className="text-xs font-black text-[#A0663A] uppercase">${lang === "traditional" ? "女兒國籍" : "女儿国籍"}</label>
                       <div className="grid grid-cols-2 gap-2">
                         {nationalities.map(n => (
                           <button key={n} onClick={() => setData({...data, daughterNationality: n})}
@@ -514,7 +515,7 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-black text-[#A0663A] uppercase">女儿性格</label>
+                      <label className="text-xs font-black text-[#A0663A] uppercase">${lang === "traditional" ? "女兒性格" : "女儿性格"}</label>
                       <div className="space-y-2">
                         {personalities.map(p => (
                           <button key={p.id} onClick={() => setData({...data, daughterPersonality: p.id})}
@@ -526,14 +527,14 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-black text-[#A0663A] uppercase">女儿的名字（选填，不填由AI生成）</label>
+                      <label className="text-xs font-black text-[#A0663A] uppercase">${lang === "traditional" ? "女兒的名字（選填，不填由AI生成）" : "女儿的名字（选填，不填由AI生成）"}</label>
                       <input type="text" value={data.daughterName}
                         onChange={e => setData({...data, daughterName: e.target.value})}
                         className="w-full bg-white border border-[#EAE0D5] rounded-2xl p-4 text-base focus:ring-2 focus:ring-[#C4936A] outline-none text-[#3D2B1F]"
-                        placeholder="给女儿起个名字..." />
+                        placeholder={lang === "traditional" ? "給女兒起個名字..." : "给女儿起个名字..."} />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-black text-[#A0663A] uppercase">家庭背景</label>
+                      <label className="text-xs font-black text-[#A0663A] uppercase">${lang === "traditional" ? "家庭背景" : "家庭背景"}</label>
                       <div className="grid grid-cols-3 gap-2">
                         {backgrounds.map(b => (
                           <button key={b} onClick={() => setData({...data, daughterBackground: b})}
@@ -545,8 +546,8 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
                     </div>
                   </div>
                 )}
-                <button onClick={() => { setStep(data.gameMode === 'mom' ? 2 : 3); setSelectedGroup(null); setData({...data, targets: []}); }} className="w-full py-3 bg-white text-[#A0663A] rounded-2xl text-sm font-bold border border-[#EAE0D5] hover:bg-[#F5E6D0] transition-all">← 上一步</button>
-                <button onClick={() => onComplete(data)} disabled={!canProceedStep4()} className="w-full bg-[#C4936A] text-white py-4 rounded-2xl font-bold hover:bg-[#A0663A] transition-all disabled:opacity-50">Start!</button>
+                <button onClick={() => { setStep(data.gameMode === 'mom' ? 2 : 3); setSelectedGroup(null); setData({...data, targets: []}); }} className="w-full py-3 bg-white text-[#A0663A] rounded-2xl text-sm font-bold border border-[#EAE0D5] hover:bg-[#F5E6D0] transition-all">{lang === "traditional" ? "← 上一步" : "← 上一步"}</button>
+                <button onClick={() => onComplete(data)} disabled={!canProceedStep4()} className="w-full bg-[#C4936A] text-white py-4 rounded-2xl font-bold hover:bg-[#A0663A] transition-all disabled:opacity-50">{lang === "traditional" ? "開始！" : "Start!"}</button>
               </motion.div>
             )}
           </AnimatePresence>
@@ -767,7 +768,7 @@ export default function App() {
       ]) as string;
       processAIResponse(response, stateToUse);
     } catch(e) {
-      setGameState(prev => ({ ...prev, history: [...prev.history, { role: MessageRole.ASSISTANT, content: `抱歉，出现错误。\n错误信息: ${e instanceof Error ? e.message : String(e)}`, timestamp: Date.now() }] }));
+      setGameState(prev => ({ ...prev, history: [...prev.history, { role: MessageRole.ASSISTANT, content: `{lang === "traditional" ? "抱歉，出現錯誤。" : "抱歉，出现错误。"}\n错误信息: ${e instanceof Error ? e.message : String(e)}`, timestamp: Date.now() }] }));
     } finally { setIsLoading(false); }
   };
 
@@ -883,7 +884,8 @@ export default function App() {
   const momTrustLevel = (gameState as any).momTrustLevel || 50;
   const roundCount = gameState.turnCount || 0;
 
-  const sidebarLabel = isMomMode ? '母女信任度' : isCPMode ? 'CP 羁绊值' : '角色状态';
+  const lang = (gameState as any).language || 'simplified';
+  const sidebarLabel = isMomMode ? (lang === 'traditional' ? '{lang === "traditional" ? "母女信任度" : "母女信任度"}' : '{lang === "traditional" ? "母女信任度" : "母女信任度"}') : isCPMode ? (lang === 'traditional' ? 'CP 羈絆值' : '{lang === "traditional" ? "CP 羈絆值" : "CP 羁绊值"}') : (lang === 'traditional' ? '角色狀態' : '{lang === "traditional" ? "角色狀態" : "角色状态"}');
   const modeLabel = isMomMode ? '宝妈' : isCPMode ? '助攻' : '攻略';
 
   return (
@@ -892,10 +894,10 @@ export default function App() {
         <div className="absolute inset-0 z-[100] bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
           <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white rounded-[3rem] p-10 max-w-sm w-full shadow-2xl text-center space-y-6 border border-[#EAE0D5]">
             <div className="w-20 h-20 bg-[#F5E6D0] rounded-full flex items-center justify-center mx-auto"><RefreshCw className="w-10 h-10 text-[#C4936A] animate-spin-slow" /></div>
-            <div><h3 className="text-xl font-black text-[#3D2B1F]">确定重置吗？</h3><p className="text-sm text-[#A0663A] mt-2">所有进度将永久删除。</p></div>
+            <div><h3 className="text-xl font-black text-[#3D2B1F]">{lang === "traditional" ? "確定重置嗎？" : "确定重置吗？"}</h3><p className="text-sm text-[#A0663A] mt-2">{lang === "traditional" ? "所有進度將永久刪除。" : "所有进度将永久删除。"}</p></div>
             <div className="flex flex-col gap-3">
-              <button onClick={executeReset} className="w-full py-4 bg-[#3D2B1F] text-white rounded-3xl font-black text-sm hover:bg-black transition-all">确认重置</button>
-              <button onClick={() => setShowConfirmReset(false)} className="w-full py-4 bg-[#F5E6D0] text-[#A0663A] rounded-3xl font-black text-sm hover:bg-[#EAE0D5] transition-all">返回</button>
+              <button onClick={executeReset} className="w-full py-4 bg-[#3D2B1F] text-white rounded-3xl font-black text-sm hover:bg-black transition-all">{lang === "traditional" ? "確認重置" : "确认重置"}</button>
+              <button onClick={() => setShowConfirmReset(false)} className="w-full py-4 bg-[#F5E6D0] text-[#A0663A] rounded-3xl font-black text-sm hover:bg-[#EAE0D5] transition-all">{lang === "traditional" ? "返回" : "返回"}</button>
             </div>
           </motion.div>
         </div>
@@ -957,8 +959,8 @@ export default function App() {
           </section>
         </div>
         <div className="p-5 border-t border-[#EAE0D5] space-y-3">
-          <button onClick={saveGame} className="w-full flex items-center justify-center gap-2 py-3 bg-[#C4936A] text-white rounded-2xl text-[10px] font-black uppercase hover:bg-[#A0663A] transition-all">💾 存档</button>
-          <button onClick={() => setShowSaveSlots(!showSaveSlots)} className="w-full flex items-center justify-center gap-2 py-3 bg-white text-[#A0663A] rounded-2xl text-[10px] font-black uppercase border border-[#EAE0D5] hover:bg-[#F5E6D0] transition-all">📂 读档 ({saveSlots.length})</button>
+          <button onClick={saveGame} className="w-full flex items-center justify-center gap-2 py-3 bg-[#C4936A] text-white rounded-2xl text-[10px] font-black uppercase hover:bg-[#A0663A] transition-all">{lang === "traditional" ? "💾 存檔" : "💾 存档"}</button>
+          <button onClick={() => setShowSaveSlots(!showSaveSlots)} className="w-full flex items-center justify-center gap-2 py-3 bg-white text-[#A0663A] rounded-2xl text-[10px] font-black uppercase border border-[#EAE0D5] hover:bg-[#F5E6D0] transition-all">{lang === "traditional" ? "📂 讀檔" : "📂 读档"} ({saveSlots.length})</button>
           {showSaveSlots && saveSlots.length > 0 && (
             <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
               {saveSlots.map(slot => (
@@ -973,7 +975,7 @@ export default function App() {
             </div>
           )}
           {showSaveSlots && saveSlots.length === 0 && (
-            <div className="text-[10px] text-[#A0663A] text-center py-2">暂无存档</div>
+            <div className="text-[10px] text-[#A0663A] text-center py-2">{lang === "traditional" ? "暫無存檔" : "暂无存档"}</div>
           )}
           <button onClick={handleReset} className="w-full flex items-center justify-center gap-2 py-3 bg-white text-[#A0663A] rounded-2xl text-[10px] font-black uppercase border border-[#EAE0D5] hover:bg-[#F5E6D0] transition-all"><RefreshCw className="w-4 h-4" /> Reset</button>
         </div>
@@ -1057,14 +1059,14 @@ export default function App() {
                         </div>
                       ) : (
                         <div className="p-5 md:p-6 text-sm leading-relaxed markdown-container">
-                          <MarkdownBlock content={msg.content || '（剧情推进中...）'} />
+                          <MarkdownBlock content={msg.content || '{lang === "traditional" ? "（劇情推進中...）" : "（剧情推进中...）"}'} />
                           {msg.options && <OptionsUI options={msg.options} isLatest={isLatest} />}
                         </div>
                       )}
                       {msg.content?.includes('错误信息') && (
                         <div className="px-5 pb-4">
                           <button onClick={() => { let j = -1; for (let k = i-1; k >= 0; k--) { if (gameState.history[k].role === MessageRole.USER) { j = k; break; } } if (j !== -1) { const c = gameState.history[j].content; setGameState(prev => ({ ...prev, history: prev.history.slice(0, i) })); handleSend(c); } }}
-                            className="flex items-center gap-2 text-xs font-black text-[#C4936A] uppercase bg-white/50 px-3 py-2 rounded-xl border border-[#EAE0D5]"><RefreshCw className="w-3 h-3" /> 重试</button>
+                            className="flex items-center gap-2 text-xs font-black text-[#C4936A] uppercase bg-white/50 px-3 py-2 rounded-xl border border-[#EAE0D5]"><RefreshCw className="w-3 h-3" /> {lang === "traditional" ? "重試" : "重试"}</button>
                         </div>
                       )}
                     </div>
@@ -1089,7 +1091,7 @@ export default function App() {
           <div className="max-w-3xl mx-auto flex gap-3">
             <textarea value={input} onChange={e => setInput(e.target.value)}
               onKeyDown={e => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
-              placeholder="输入你的行动..."
+              placeholder={lang === "traditional" ? "輸入您的行動..." : "输入你的行动..."}
               className="flex-1 bg-[#FAF7F2] border border-[#EAE0D5] rounded-3xl px-6 py-4 text-base focus:ring-2 focus:ring-[#C4936A] resize-none h-14 custom-scrollbar outline-none text-[#3D2B1F]"
               disabled={isLoading} />
             <button onClick={() => handleSend()} disabled={isLoading || !input.trim()} className="bg-[#C4936A] text-white px-5 rounded-3xl active:scale-95 disabled:opacity-50 flex-shrink-0 hover:bg-[#A0663A] transition-all"><Send className="w-5 h-5" /></button>
