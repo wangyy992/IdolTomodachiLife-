@@ -320,6 +320,21 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
   });
   const [customIdentity, setCustomIdentity] = useState('');
 
+  useEffect(() => {
+    if (!(window as any).OpenCC) return;
+    if (data.language === 'traditional') {
+      const converter = (window as any).OpenCC.Converter({ from: 'cn', to: 'twp' });
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      const nodes: Text[] = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode as Text);
+      nodes.forEach(node => {
+        if (node.parentElement?.tagName !== 'SCRIPT' && node.parentElement?.tagName !== 'STYLE') {
+          node.textContent = converter(node.textContent || '');
+        }
+      });
+    }
+  }, [data.language]);
+
   const ids = ["韩国留学生","便利店/咖啡厅打工人","娱乐公司实习生","音乐节目工作人员","妆造师/发型助理","翻译/海外商务助理","娱乐记者/博主","普通粉丝","资深粉丝","公寓同栋住户","现任女友","前任","青梅竹马","发小","暗恋对象（单向）"];
   const cpIds = ["娱乐公司实习生","音乐节目工作人员","妆造师/发型助理","翻译/海外商务助理","娱乐记者/博主","普通粉丝","资深粉丝","韩国留学生","便利店/咖啡厅打工人","公寓同栋住户"];
   const currentIds = data.gameMode === 'CPCP' ? cpIds : ids;
