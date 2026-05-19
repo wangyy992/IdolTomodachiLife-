@@ -767,10 +767,10 @@ ${isInitialSetup
 ════════════════════════
 ${romanceOutputFormat}`;
 
-  const languageInstruction = (gameState as any).language === 'traditional'
-    ? '請使用繁體中文（台灣用語）進行所有輸出，包括劇情正文、對話、選項和所有文字。禁止輸出簡體中文。\n\n'
+const languageInstruction = (gameState as any).language === 'traditional'
+    ? '\n\n【語言強制要求】請使用繁體中文（台灣用語）進行所有輸出，包括劇情正文、對話、選項。禁止輸出任何簡體中文字符。'
     : '';
-  const systemPrompt = languageInstruction + (isCPMode ? cpPrompt : isMomMode ? momPrompt : romancePrompt);
+  const systemPrompt = (isCPMode ? cpPrompt : isMomMode ? momPrompt : romancePrompt) + languageInstruction;
 
   try {
     const cleanHistory = messages.slice(-10).map(msg => ({
