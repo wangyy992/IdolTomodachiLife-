@@ -489,7 +489,7 @@ const CharacterCreationWizard = ({ onComplete, members }: { onComplete: (data: a
                   </button>
                 ))}</div>
                 <input type="text" value={customIdentity} onChange={e => setCustomIdentity(e.target.value)}
-                  placeholder="{lang === "traditional" ? "或手動輸入自訂身份..." : "或手动输入自定义身份..."}"
+                  placeholder={lang === "traditional" ? "或手動輸入自訂身份..." : "或手动输入自定义身份..."}
                   className="w-full bg-white border border-[#EAE0D5] rounded-xl p-3 text-base focus:ring-1 focus:ring-[#C4936A] outline-none text-[#3D2B1F]"
                   onKeyDown={(e) => { if (e.key === 'Enter') { const val = customIdentity.trim(); if (val && !data.identity.includes(val)) { setData({...data, identity: [...data.identity, val]}); setCustomIdentity(''); } e.preventDefault(); } }} />
                 <button onClick={() => setStep(2)} className="w-full py-3 bg-white text-[#A0663A] rounded-2xl text-sm font-bold border border-[#EAE0D5] hover:bg-[#F5E6D0] transition-all">{lang === "traditional" ? "← 上一步" : "← 上一步"}</button>
